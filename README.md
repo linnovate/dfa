@@ -1,4 +1,4 @@
-[![Daml logo](https://daml.com/static/images/logo.png)](https://www.daml.com)
+[![Daml logo](https://daml.com/hubfs/Daml-1.svg)](https://www.daml.com)
 
 [![Download](https://img.shields.io/github/release/digital-asset/daml.svg?label=Download)](https://docs.daml.com/getting-started/installation.html)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/digital-asset/daml/blob/main/LICENSE)
@@ -60,14 +60,14 @@ If it doesn't, you can manually point your browser to http://localhost:3000.
 
 ## A quick tour
 
-You can log into the app by providing a user name, say `Alice`. For simplicity
+You can log into the app by providing a user name, say `Alice`. For the simplicity
 of this app, there is no password or sign-up required. You will be greeted by
 a screen indicating that you're not following anyone and that you don't have
 any followers yet. You can change this by following someone in the upper box,
 say `Bob`. After that, let's log out in the top right corner and log in as `Bob`.
 
-As `Bob`, we can see that we are not following anyone and that `Alice` is follwing
-us. We can follow `Alice` by clicking the plus symbol to the right of here name.
+As `Bob`, we can see that we are not following anyone and that `Alice` is following
+us. We can follow `Alice` by clicking the plus symbol to the right of her name.
 
 
 ## Deploying to DABL
@@ -80,7 +80,7 @@ To upload the Daml models, compile them into a DAR by executing
 ```
 daml build -o create-daml-app.dar
 ```
-at the root of your repository. Afterwards, open to the DABL website, select
+at the root of your repository. Afterwards, open the DABL website, select
 the ledger you want to deploy to, go to the "Daml" selection and upload the
 DAR `create-daml-app.dar` you have just created.
 
