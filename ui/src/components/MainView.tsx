@@ -1,10 +1,10 @@
 // Copyright (c) 2021 Digital Asset (Switzerland) GmbH and/or its affiliates. All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Container, Grid, Header, Icon, Segment, Divider } from 'semantic-ui-react';
 import { User } from '@daml.js/create-daml-app';
-import { useParty, useLedger, useStreamFetchByKeys, useStreamQueries } from '@daml/react';
+import { useParty, useStreamFetchByKeys, useFetchByKey } from '@daml/react';
 import Requests from './Requests';
 import RequestSendAndEdit from './RequestSendAndEdit';
 
@@ -13,6 +13,12 @@ const MainView: React.FC = () => {
   const username = useParty();
   const myUserResult = useStreamFetchByKeys(User.User, () => [username], [username]);
   const myUser = myUserResult.contracts[0]?.payload;
+  const admins = [{username: useFetchByKey(User.User, () => "Admin", [username]).contract?.key as string}];
+  /* Using:
+  const admins = [{username: "Admin"}];
+  is also possible but them we won't be sure that it exists
+  */
+
 // USERS_END
 
   return (
@@ -31,8 +37,7 @@ const MainView: React.FC = () => {
                   <Header.Subheader>Send a Request</Header.Subheader>
                 </Header.Content>
               </Header>
-              { /* TODO: implement admins for next line */ }
-              <RequestSendAndEdit admins={}/>
+              <RequestSendAndEdit admins={admins}/>
               <Divider />
               <Requests />
             </Segment>

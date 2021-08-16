@@ -1,10 +1,9 @@
 import React from 'react'
 import { Form, Button } from 'semantic-ui-react';
-import { Party } from '@daml/types';
 import { User } from '@daml.js/create-daml-app';
 import { useParty, useLedger } from '@daml/react';
 type Props = {
-    admins: Party[];
+    admins: User.User[];
 }
 const RequestSendAndEdit: React.FC<Props> = ({admins}) => {
   const sender = useParty();
@@ -30,12 +29,13 @@ const RequestSendAndEdit: React.FC<Props> = ({admins}) => {
   return (
     <Form onSubmit={submit}>
       <Form.Dropdown
+        fluid
+        search
         selection
         className='select-request-receiver'
         // If only one admin will be used the next line (and all the parts in the backend meant towards multiple admins should be removed)
         placeholder="Select who you want to process your request"
-        options={admins.map(admin => ({ key: admin, text: admin, value: admin }))}
-        value={receiver}
+        options={admins.map(admin => ({ key: admin.username, text: admin.username, value: admin.username }))}
         onChange={event => setReceiver(event.currentTarget.textContent ?? undefined)}
       />
       <Form.Input

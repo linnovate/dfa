@@ -39,3 +39,21 @@ Caused by: java.net.BindException: Address already in use
 14:13:42.656 [sandbox-akka.actor.default-dispatcher-4] INFO  akka.event.slf4j.Slf4jLogger - Slf4jLogger started 
 14:13:47.994 [program-resource-pool-2] INFO  c.d.p.apiserver.LedgerApiServer - Listening on localhost:6865 over plain text. 
 14:13:48.036 [program-resource-pool-4] INFO  com.daml.platform.sandboxnext.Runner - Initialized sandbox version 1.14.2 with ledger-id = create-daml-app-sandbox, port = 6865, dar file = List(.daml/dist/create-daml-app-0.1.0.dar), time mode = wall-clock time, ledger = in-memory, auth-service = AuthServiceWildcard$, contract ids seeding = strong 
+02:19:09.421 [sandbox-akka.actor.default-dispatcher-5] INFO  akka.event.slf4j.Slf4jLogger - Slf4jLogger started 
+02:19:15.189 [program-resource-pool-4] INFO  c.d.p.apiserver.LedgerApiServer - Listening on localhost:6865 over plain text. 
+02:19:15.206 [program-resource-pool-3] INFO  com.daml.platform.sandboxnext.Runner - Initialized sandbox version 1.14.2 with ledger-id = dbd91597-dfba-444e-abd8-c57f0a1d0435, port = 6865, dar file = List(.daml/dist/create-daml-app-0.1.0.dar), time mode = wall-clock time, ledger = in-memory, auth-service = AuthServiceWildcard$, contract ids seeding = strong 
+03:59:16.427 [sandbox-akka.actor.default-dispatcher-4] INFO  akka.event.slf4j.Slf4jLogger - Slf4jLogger started 
+03:59:24.757 [program-resource-pool-3] INFO  c.d.p.apiserver.LedgerApiServer - Listening on localhost:6865 over plain text. 
+03:59:24.797 [program-resource-pool-1] INFO  com.daml.platform.sandboxnext.Runner - Initialized sandbox version 1.14.2 with ledger-id = create-daml-app-sandbox, port = 6865, dar file = List(.daml/dist/create-daml-app-0.1.0.dar), time mode = wall-clock time, ledger = in-memory, auth-service = AuthServiceWildcard$, contract ids seeding = strong 
+04:32:55.019 [sandbox-akka.actor.default-dispatcher-4] INFO  akka.event.slf4j.Slf4jLogger - Slf4jLogger started 
+04:33:06.466 [program-resource-pool-3] INFO  c.d.p.apiserver.LedgerApiServer - Listening on localhost:6865 over plain text. 
+04:33:06.512 [program-resource-pool-2] INFO  com.daml.platform.sandboxnext.Runner - Initialized sandbox version 1.14.2 with ledger-id = create-daml-app-sandbox, port = 6865, dar file = List(.daml/dist/create-daml-app-0.1.0.dar), time mode = wall-clock time, ledger = in-memory, auth-service = AuthServiceWildcard$, contract ids seeding = strong 
+17:17:12.927 [sandbox-akka.actor.default-dispatcher-4] INFO  akka.event.slf4j.Slf4jLogger - Slf4jLogger started 
+17:17:23.261 [program-resource-pool-4] INFO  c.d.p.apiserver.LedgerApiServer - Listening on localhost:6865 over plain text. 
+17:17:23.313 [program-resource-pool-3] INFO  com.daml.platform.sandboxnext.Runner - Initialized sandbox version 1.14.2 with ledger-id = create-daml-app-sandbox, port = 6865, dar file = List(.daml/dist/create-daml-app-0.1.0.dar), time mode = wall-clock time, ledger = in-memory, auth-service = AuthServiceWildcard$, contract ids seeding = strong 
+17:26:36.886 [sandbox-akka.actor.default-dispatcher-4] INFO  akka.event.slf4j.Slf4jLogger - Slf4jLogger started 
+17:26:45.126 [program-resource-pool-3] INFO  c.d.p.apiserver.LedgerApiServer - Listening on localhost:6865 over plain text. 
+17:26:45.166 [program-resource-pool-1] INFO  com.daml.platform.sandboxnext.Runner - Initialized sandbox version 1.14.2 with ledger-id = create-daml-app-sandbox, port = 6865, dar file = List(.daml/dist/create-daml-app-0.1.0.dar), time mode = wall-clock time, ledger = in-memory, auth-service = AuthServiceWildcard$, contract ids seeding = strong 
+17:33:40.274 [sandbox-akka.actor.default-dispatcher-4] INFO  akka.event.slf4j.Slf4jLogger - Slf4jLogger started 
+17:33:49.084 [program-resource-pool-2] INFO  c.d.p.apiserver.LedgerApiServer - Listening on localhost:6865 over plain text. 
+17:33:49.130 [program-resource-pool-4] INFO  com.daml.platform.sandboxnext.Runner - Initialized sandbox version 1.14.2 with ledger-id = create-daml-app-sandbox, port = 6865, dar file = List(.daml/dist/create-daml-app-0.1.0.dar), time mode = wall-clock time, ledger = in-memory, auth-service = AuthServiceWildcard$, contract ids seeding = strong 
