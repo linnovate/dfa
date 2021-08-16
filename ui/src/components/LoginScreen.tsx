@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React, { useCallback } from 'react'
-import { Button, Form, Grid, Header, Image, Segment } from 'semantic-ui-react'
+import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react'
 import Credentials, { computeCredentials } from '../Credentials';
 import Ledger from '@daml/ledger';
 import { User } from '@daml.js/create-daml-app';
@@ -63,18 +63,7 @@ const LoginScreen: React.FC<Props> = ({onLogin}) => {
       <Grid.Column style={{ maxWidth: 450 }}>
         <Header as='h1' textAlign='center' size='huge' style={{color: '#223668'}}>
           <Header.Content>
-            Create
-            <Image
-              as='a'
-              href='https://www.daml.com/'
-              target='_blank'
-              src='/daml.svg'
-              alt='Daml Logo'
-              spaced
-              size='small'
-              verticalAlign='bottom'
-            />
-            App
+            Distrubuted Flight Approval
           </Header.Content>
         </Header>
         <Form size='large' className='test-select-login-screen'>
