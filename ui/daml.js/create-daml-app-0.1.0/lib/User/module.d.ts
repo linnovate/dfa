@@ -9,25 +9,45 @@ import * as damlLedger from '@daml/ledger';
 
 import * as pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662 from '@daml.js/d14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662';
 
-export declare type Follow = {
-  userToFollow: damlTypes.Party;
+export declare type Request = {
+  sender: damlTypes.Party;
+  receiver: damlTypes.Party;
+  content: string;
 };
 
-export declare const Follow:
-  damlTypes.Serializable<Follow> & {
+export declare const Request:
+  damlTypes.Template<Request, undefined, '91976a336dda8ea60d0e859ce793eb7e8e348f02cf1d03d7228aaa62de6daa89:User:Request'> & {
+  Archive: damlTypes.Choice<Request, pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662.DA.Internal.Template.Archive, {}, undefined>;
+};
+
+export declare namespace Request {
+  export type CreateEvent = damlLedger.CreateEvent<Request, undefined, typeof Request.templateId>
+  export type ArchiveEvent = damlLedger.ArchiveEvent<Request, typeof Request.templateId>
+  export type Event = damlLedger.Event<Request, undefined, typeof Request.templateId>
+  export type QueryResult = damlLedger.QueryResult<Request, undefined, typeof Request.templateId>
+}
+
+
+
+export declare type SendRequest = {
+  sender: damlTypes.Party;
+  content: string;
+};
+
+export declare const SendRequest:
+  damlTypes.Serializable<SendRequest> & {
   }
 ;
 
 
 export declare type User = {
   username: damlTypes.Party;
-  following: damlTypes.Party[];
 };
 
 export declare const User:
-  damlTypes.Template<User, User.Key, '95ecb0f837f28c9115dbcae3c4f2d50c4687725843a94008e75bc3b2db796c7a:User:User'> & {
+  damlTypes.Template<User, User.Key, '91976a336dda8ea60d0e859ce793eb7e8e348f02cf1d03d7228aaa62de6daa89:User:User'> & {
   Archive: damlTypes.Choice<User, pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662.DA.Internal.Template.Archive, {}, User.Key>;
-  Follow: damlTypes.Choice<User, Follow, damlTypes.ContractId<User>, User.Key>;
+  SendRequest: damlTypes.Choice<User, SendRequest, damlTypes.ContractId<Request>, User.Key>;
 };
 
 export declare namespace User {

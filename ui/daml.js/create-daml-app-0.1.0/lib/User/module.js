@@ -15,11 +15,40 @@ var damlLedger = require('@daml/ledger');
 var pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662 = require('@daml.js/d14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662');
 
 
-exports.Follow = {
-  decoder: damlTypes.lazyMemo(function () { return jtv.object({userToFollow: damlTypes.Party.decoder, }); }),
+exports.Request = {
+  templateId: '91976a336dda8ea60d0e859ce793eb7e8e348f02cf1d03d7228aaa62de6daa89:User:Request',
+  keyDecoder: damlTypes.lazyMemo(function () { return jtv.constant(undefined); }),
+  keyEncode: function () { throw 'EncodeError'; },
+  decoder: damlTypes.lazyMemo(function () { return jtv.object({sender: damlTypes.Party.decoder, receiver: damlTypes.Party.decoder, content: damlTypes.Text.decoder, }); }),
   encode: function (__typed__) {
   return {
-    userToFollow: damlTypes.Party.encode(__typed__.userToFollow),
+    sender: damlTypes.Party.encode(__typed__.sender),
+    receiver: damlTypes.Party.encode(__typed__.receiver),
+    content: damlTypes.Text.encode(__typed__.content),
+  };
+}
+,
+  Archive: {
+    template: function () { return exports.Request; },
+    choiceName: 'Archive',
+    argumentDecoder: damlTypes.lazyMemo(function () { return pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662.DA.Internal.Template.Archive.decoder; }),
+    argumentEncode: function (__typed__) { return pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662.DA.Internal.Template.Archive.encode(__typed__); },
+    resultDecoder: damlTypes.lazyMemo(function () { return damlTypes.Unit.decoder; }),
+    resultEncode: function (__typed__) { return damlTypes.Unit.encode(__typed__); },
+  },
+};
+
+
+damlTypes.registerTemplate(exports.Request);
+
+
+
+exports.SendRequest = {
+  decoder: damlTypes.lazyMemo(function () { return jtv.object({sender: damlTypes.Party.decoder, content: damlTypes.Text.decoder, }); }),
+  encode: function (__typed__) {
+  return {
+    sender: damlTypes.Party.encode(__typed__.sender),
+    content: damlTypes.Text.encode(__typed__.content),
   };
 }
 ,
@@ -28,14 +57,13 @@ exports.Follow = {
 
 
 exports.User = {
-  templateId: '95ecb0f837f28c9115dbcae3c4f2d50c4687725843a94008e75bc3b2db796c7a:User:User',
+  templateId: '91976a336dda8ea60d0e859ce793eb7e8e348f02cf1d03d7228aaa62de6daa89:User:User',
   keyDecoder: damlTypes.lazyMemo(function () { return damlTypes.lazyMemo(function () { return damlTypes.Party.decoder; }); }),
   keyEncode: function (__typed__) { return damlTypes.Party.encode(__typed__); },
-  decoder: damlTypes.lazyMemo(function () { return jtv.object({username: damlTypes.Party.decoder, following: damlTypes.List(damlTypes.Party).decoder, }); }),
+  decoder: damlTypes.lazyMemo(function () { return jtv.object({username: damlTypes.Party.decoder, }); }),
   encode: function (__typed__) {
   return {
     username: damlTypes.Party.encode(__typed__.username),
-    following: damlTypes.List(damlTypes.Party).encode(__typed__.following),
   };
 }
 ,
@@ -47,13 +75,13 @@ exports.User = {
     resultDecoder: damlTypes.lazyMemo(function () { return damlTypes.Unit.decoder; }),
     resultEncode: function (__typed__) { return damlTypes.Unit.encode(__typed__); },
   },
-  Follow: {
+  SendRequest: {
     template: function () { return exports.User; },
-    choiceName: 'Follow',
-    argumentDecoder: damlTypes.lazyMemo(function () { return exports.Follow.decoder; }),
-    argumentEncode: function (__typed__) { return exports.Follow.encode(__typed__); },
-    resultDecoder: damlTypes.lazyMemo(function () { return damlTypes.ContractId(exports.User).decoder; }),
-    resultEncode: function (__typed__) { return damlTypes.ContractId(exports.User).encode(__typed__); },
+    choiceName: 'SendRequest',
+    argumentDecoder: damlTypes.lazyMemo(function () { return exports.SendRequest.decoder; }),
+    argumentEncode: function (__typed__) { return exports.SendRequest.encode(__typed__); },
+    resultDecoder: damlTypes.lazyMemo(function () { return damlTypes.ContractId(exports.Request).decoder; }),
+    resultEncode: function (__typed__) { return damlTypes.ContractId(exports.Request).encode(__typed__); },
   },
 };
 

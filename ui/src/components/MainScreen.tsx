@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React from 'react'
-import { Image, Menu } from 'semantic-ui-react'
+import { Menu } from 'semantic-ui-react'
 import MainView from './MainView';
 import { useParty } from '@daml/react';
 
@@ -17,16 +17,6 @@ const MainScreen: React.FC<Props> = ({onLogout}) => {
   return (
     <>
       <Menu icon borderless>
-        <Menu.Item>
-          <Image
-            as='a'
-            href='https://www.daml.com/'
-            target='_blank'
-            src='/daml.svg'
-            alt='Daml Logo'
-            size='mini'
-          />
-        </Menu.Item>
         <Menu.Menu position='right' className='test-select-main-menu'>
           <Menu.Item position='right'>
             You are logged in as {useParty()}.
