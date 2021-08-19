@@ -1,5 +1,5 @@
 sdk-version: 1.14.2
-name: create-daml-app
+name: dfa
 version: 0.1.0
 source: daml
 parties:
@@ -12,7 +12,7 @@ dependencies:
 - daml-trigger
 sandbox-options:
 - --wall-clock-time
-- --ledgerid=create-daml-app-sandbox
+- --ledgerid=dfa-sandbox
 start-navigator: false
 codegen:
   js:

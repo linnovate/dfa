@@ -3,7 +3,7 @@
 
 import React from 'react';
 import { Container, Grid, Header, Icon, Segment, Divider } from 'semantic-ui-react';
-import { User } from '@daml.js/create-daml-app';
+import { User } from '@daml.js/dfa';
 import { useParty, useFetchByKey } from '@daml/react';
 import Requests from './Requests';
 import RequestSendAndEdit from './RequestSendAndEdit';

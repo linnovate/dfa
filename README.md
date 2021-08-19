@@ -13,7 +13,7 @@ At the root of the repository, run:
 
 ```sh
 daml build
-daml codegen js .daml/dist/create-daml-app-0.1.0.dar -o ui/daml.js
+daml codegen js .daml/dist/dfa-0.1.0.dar -o ui/daml.js
 ```
 
 The latter command generates TypeScript packages in the `daml.js` directory.

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Form, Button } from 'semantic-ui-react';
-import { User } from '@daml.js/create-daml-app';
+import { User } from '@daml.js/dfa';
 import { useParty, useLedger } from '@daml/react';
 type Props = {
     admins: User.User[];
