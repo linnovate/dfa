@@ -28,19 +28,17 @@ npm run-script build
 
 The last step is not absolutely necessary but useful to check that the app compiles.
 
-To start the application, go back do the main directory, start a Daml ledger and start the UI server use:
+To start the application, go back do the main directory and start a Daml ledger:
 
 ```sh
 cd ..
-trap killgroup SIGINT # we use this to make sure we can stop the processes
-killgroup(){
-pkill -f npm
-pkill -f daml
-pkill -f node
-}
-daml start & (cd ui; npm start)
+daml start
 ```
 
-This should open a browser window with a login screen.
+And to start the UI server open a new terminal and from the _ui_ directory run:
 
-If it doesn't, you can manually point your browser to http://localhost:3000.
+```sh
+npm start
+```
+
+When you see the message on the second terminal open the url shown.
