@@ -1,6 +1,6 @@
 import React from 'react';
 import { List } from 'semantic-ui-react';
-import { User } from '@daml.js/create-daml-app';
+import { User } from '@daml.js/dfa';
 
 type Props = {
     requests: User.Request[] | undefined;
