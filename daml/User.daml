@@ -4,15 +4,19 @@
 module User where
 import Daml.Script
 
+type Key = (Party, Text)
+
 makeAdmin =
   script do
     admin <- allocateParty "Admin"
     submit admin do
-      createCmd User with username = admin
+      let empty : [Request] = []
+      createCmd User with username = admin, requests = empty
 
 -- MAIN_TEMPLATE_BEGIN
 template User with
     username: Party
+    requests: [Request]
   where
     signatory username
 -- MAIN_TEMPLATE_END
@@ -21,16 +25,27 @@ template User with
     maintainer key
 
     -- REQUEST_BEGIN
-    nonconsuming choice SendRequest: ContractId Request with
-          sender: Party
+    nonconsuming choice SendRequest: ContractId User with
+          receiver: Party
           content: Text
-        controller sender
+        controller username
         do
-          create Request with sender, receiver = username, content
+          (_, receiverAdmin) <- fetchByKey @User receiver
+
+          -- #TODO: make sure a new request won't be made if it exists with the exact same text
+
+          create Request with sender = username, receiver = receiverAdmin.username, content
+          (_, requestId) <- fetchByKey @Request (username, content) -- We divide it into two lines for the ID
+          create this with requests = requestId :: requests
     -- REQUEST_END
+
 template Request with
     sender: Party
     receiver: Party
     content: Text
   where
     signatory sender, receiver
+
+
+    key (sender, content) : Key
+    maintainer key._1

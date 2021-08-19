@@ -7,6 +7,7 @@ import * as damlTypes from '@daml/types';
 /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
 import * as damlLedger from '@daml/ledger';
 
+import * as pkg40f452260bef3f29dede136108fc08a88d5a5250310281067087da6f0baddff7 from '@daml.js/40f452260bef3f29dede136108fc08a88d5a5250310281067087da6f0baddff7';
 import * as pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662 from '@daml.js/d14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662';
 
 export declare type Request = {
@@ -16,21 +17,22 @@ export declare type Request = {
 };
 
 export declare const Request:
-  damlTypes.Template<Request, undefined, '91976a336dda8ea60d0e859ce793eb7e8e348f02cf1d03d7228aaa62de6daa89:User:Request'> & {
-  Archive: damlTypes.Choice<Request, pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662.DA.Internal.Template.Archive, {}, undefined>;
+  damlTypes.Template<Request, Request.Key, '61c53e59ba6a6dacc6671503be754e983bb717f4f966397be526ffbe388d63ec:User:Request'> & {
+  Archive: damlTypes.Choice<Request, pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662.DA.Internal.Template.Archive, {}, Request.Key>;
 };
 
 export declare namespace Request {
-  export type CreateEvent = damlLedger.CreateEvent<Request, undefined, typeof Request.templateId>
+  export type Key = pkg40f452260bef3f29dede136108fc08a88d5a5250310281067087da6f0baddff7.DA.Types.Tuple2<damlTypes.Party, string>
+  export type CreateEvent = damlLedger.CreateEvent<Request, Request.Key, typeof Request.templateId>
   export type ArchiveEvent = damlLedger.ArchiveEvent<Request, typeof Request.templateId>
-  export type Event = damlLedger.Event<Request, undefined, typeof Request.templateId>
-  export type QueryResult = damlLedger.QueryResult<Request, undefined, typeof Request.templateId>
+  export type Event = damlLedger.Event<Request, Request.Key, typeof Request.templateId>
+  export type QueryResult = damlLedger.QueryResult<Request, Request.Key, typeof Request.templateId>
 }
 
 
 
 export declare type SendRequest = {
-  sender: damlTypes.Party;
+  receiver: damlTypes.Party;
   content: string;
 };
 
@@ -42,12 +44,13 @@ export declare const SendRequest:
 
 export declare type User = {
   username: damlTypes.Party;
+  requests: Request[];
 };
 
 export declare const User:
-  damlTypes.Template<User, User.Key, '91976a336dda8ea60d0e859ce793eb7e8e348f02cf1d03d7228aaa62de6daa89:User:User'> & {
+  damlTypes.Template<User, User.Key, '61c53e59ba6a6dacc6671503be754e983bb717f4f966397be526ffbe388d63ec:User:User'> & {
   Archive: damlTypes.Choice<User, pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662.DA.Internal.Template.Archive, {}, User.Key>;
-  SendRequest: damlTypes.Choice<User, SendRequest, damlTypes.ContractId<Request>, User.Key>;
+  SendRequest: damlTypes.Choice<User, SendRequest, damlTypes.ContractId<User>, User.Key>;
 };
 
 export declare namespace User {
