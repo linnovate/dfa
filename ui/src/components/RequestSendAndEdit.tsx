@@ -18,7 +18,7 @@ const RequestSendAndEdit: React.FC<Props> = ({admins}) => {
         return;
       }
       setIsSubmitting(true);
-      await ledger.exerciseByKey(User.User.SendRequest, receiver, {sender, content});
+      await ledger.exerciseByKey(User.User.SendRequest, sender, {receiver, content});
       setContent("");
     } catch (error) {
       alert(`Error sending message:\n${JSON.stringify(error)}`);
