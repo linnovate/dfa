@@ -21,7 +21,7 @@ const App: React.FC = () => {
         party={credentials.party}
         httpBaseUrl={httpBaseUrl}
       >
-        <MainScreen onLogout={() => setCredentials(undefined)}/>
+        <MainScreen credentials={credentials} onLogout={() => setCredentials(undefined)}/>
       </DamlLedger>
     : <LoginScreen onLogin={setCredentials} />
 }
