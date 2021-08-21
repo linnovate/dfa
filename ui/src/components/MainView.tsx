@@ -4,7 +4,7 @@
 import React from 'react';
 import { Container, Grid, Header, Icon, Segment, Divider } from 'semantic-ui-react';
 import { User } from '@daml.js/dfa';
-import { useParty, useFetchByKey } from '@daml/react';
+import { useParty, useStreamFetchByKeys } from '@daml/react';
 import Requests from './Requests';
 import RequestSendAndEdit from './RequestSendAndEdit';
 import RequestList from './RequestList';
@@ -17,13 +17,10 @@ type Props = {
 // USERS_BEGIN
 const MainView: React.FC<Props> = ({credentials}) => {
   const username = useParty();
-  const myUserResult = useFetchByKey(User.User, () => credentials?.token as string, [username]); // TODO useStreamFetchByKeys may be used instead of useFetchByKey if need continues
-  const myUser = myUserResult.contract?.payload;
-  const admins = [{username: useFetchByKey(User.User, () => "Admin", [username]).contract?.key as string, requests: []}];
-  /* Using:
-  const admins = [{username: "Admin", requests: []}];
-  is also possible but them we won't be sure that it exists
-  */
+  const myUserResult = useStreamFetchByKeys(User.User, () => [username], [username]); //TODO kill the person who decided to deprecate useStreamFetchByKey
+  const myUser = myUserResult.contracts[0]?.payload;
+  const adminsResult = useStreamFetchByKeys(User.Admin, () => [username], [username]); //FIXME admins won't be added
+  const admins = adminsResult.contracts.map((admin) => admin?.payload);
 
 // USERS_END
 

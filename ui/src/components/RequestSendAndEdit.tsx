@@ -3,7 +3,7 @@ import { Form, Button } from 'semantic-ui-react';
 import { User } from '@daml.js/dfa';
 import { useParty, useLedger } from '@daml/react';
 type Props = {
-    admins: User.User[];
+    admins: (User.Admin | undefined)[];
 }
 const RequestSendAndEdit: React.FC<Props> = ({admins}) => {
   const sender = useParty();
@@ -35,7 +35,7 @@ const RequestSendAndEdit: React.FC<Props> = ({admins}) => {
         className='select-request-receiver'
         // If only one admin will be used the next line (and all the parts in the backend meant towards multiple admins should be removed)
         placeholder="Select who you want to process your request"
-        options={admins.map(admin => ({ key: admin.username, text: admin.username, value: admin.username }))}
+        options={admins.map(admin => ({ key: admin?.adminame, text: admin?.adminame, value: admin?.adminame }))}
         onChange={event => setReceiver(event.currentTarget.textContent ?? undefined)}
       />
       <Form.Input

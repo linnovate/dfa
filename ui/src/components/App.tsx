@@ -23,7 +23,7 @@ const App: React.FC = () => {
       >
         <MainScreen credentials={credentials} onLogout={() => setCredentials(undefined)}/>
       </DamlLedger>
-    : <LoginScreen onLogin={setCredentials} />
+    : <LoginScreen onLogin={setCredentials} /> //TODO login for admins
 }
 // APP_END
 

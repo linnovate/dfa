@@ -11,7 +11,17 @@ makeAdmin =
     admin <- allocateParty "Admin"
     submit admin do
       let empty : [Request] = []
-      createCmd User with username = admin, requests = empty
+      createCmd Admin with adminame = admin, requests = empty
+
+template Admin with
+    adminame: Party
+    requests: [Request]
+  where
+    signatory adminame
+
+    key adminame: Party
+    maintainer key
+
 
 -- MAIN_TEMPLATE_BEGIN
 template User with
@@ -25,18 +35,19 @@ template User with
     maintainer key
 
     -- REQUEST_BEGIN
-    nonconsuming choice SendRequest: ContractId User with
+    nonconsuming choice SendRequest: ContractId Admin with
           receiver: Party
           content: Text
         controller username
         do
-          (_, receiverAdmin) <- fetchByKey @User receiver
+          (_, receiverAdmin) <- fetchByKey @Admin receiver
 
           -- #TODO: make sure a new request won't be made if it exists with the exact same text
 
-          create Request with sender = username, receiver = receiverAdmin.username, content
+          create Request with sender = username, receiver = receiverAdmin.adminame, content
           (_, requestId) <- fetchByKey @Request (username, content) -- We divide it into two lines for the ID
           create this with requests = requestId :: requests
+          create receiverAdmin with requests = requestId :: requests
     -- REQUEST_END
 
 template Request with

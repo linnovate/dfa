@@ -17,7 +17,7 @@ export declare type Request = {
 };
 
 export declare const Request:
-  damlTypes.Template<Request, Request.Key, '1a9f438b072e6533a09a02feabf85d41283b27c2669a44b9e3b160df3886f0bc:User:Request'> & {
+  damlTypes.Template<Request, Request.Key, '38d610cc56f0710feac1041fa6e2ad7a55231f20c7547d6334b05e45f4e449ac:User:Request'> & {
   Archive: damlTypes.Choice<Request, pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662.DA.Internal.Template.Archive, {}, Request.Key>;
 };
 
@@ -48,9 +48,9 @@ export declare type User = {
 };
 
 export declare const User:
-  damlTypes.Template<User, User.Key, '1a9f438b072e6533a09a02feabf85d41283b27c2669a44b9e3b160df3886f0bc:User:User'> & {
+  damlTypes.Template<User, User.Key, '38d610cc56f0710feac1041fa6e2ad7a55231f20c7547d6334b05e45f4e449ac:User:User'> & {
   Archive: damlTypes.Choice<User, pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662.DA.Internal.Template.Archive, {}, User.Key>;
-  SendRequest: damlTypes.Choice<User, SendRequest, damlTypes.ContractId<User>, User.Key>;
+  SendRequest: damlTypes.Choice<User, SendRequest, damlTypes.ContractId<Admin>, User.Key>;
 };
 
 export declare namespace User {
@@ -59,6 +59,26 @@ export declare namespace User {
   export type ArchiveEvent = damlLedger.ArchiveEvent<User, typeof User.templateId>
   export type Event = damlLedger.Event<User, User.Key, typeof User.templateId>
   export type QueryResult = damlLedger.QueryResult<User, User.Key, typeof User.templateId>
+}
+
+
+
+export declare type Admin = {
+  adminame: damlTypes.Party;
+  requests: Request[];
+};
+
+export declare const Admin:
+  damlTypes.Template<Admin, Admin.Key, '38d610cc56f0710feac1041fa6e2ad7a55231f20c7547d6334b05e45f4e449ac:User:Admin'> & {
+  Archive: damlTypes.Choice<Admin, pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662.DA.Internal.Template.Archive, {}, Admin.Key>;
+};
+
+export declare namespace Admin {
+  export type Key = damlTypes.Party
+  export type CreateEvent = damlLedger.CreateEvent<Admin, Admin.Key, typeof Admin.templateId>
+  export type ArchiveEvent = damlLedger.ArchiveEvent<Admin, typeof Admin.templateId>
+  export type Event = damlLedger.Event<Admin, Admin.Key, typeof Admin.templateId>
+  export type QueryResult = damlLedger.QueryResult<Admin, Admin.Key, typeof Admin.templateId>
 }
 
 
