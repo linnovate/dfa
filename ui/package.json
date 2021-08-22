@@ -1,9 +1,9 @@
 {
-  "name": "create-daml-app",
+  "name": "dfa",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@daml.js/create-daml-app": "file:daml.js/create-daml-app-0.1.0",
+    "@daml.js/dfa": "file:daml.js/dfa-0.1.0",
     "@daml/ledger": "1.14.2",
     "@daml/react": "1.14.2",
     "@daml/types": "1.14.2",

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Form, Button } from 'semantic-ui-react';
-import { User } from '@daml.js/create-daml-app';
+import { User } from '@daml.js/dfa';
 import { useParty, useLedger } from '@daml/react';
 type Props = {
     admins: User.User[];
@@ -18,7 +18,7 @@ const RequestSendAndEdit: React.FC<Props> = ({admins}) => {
         return;
       }
       setIsSubmitting(true);
-      await ledger.exerciseByKey(User.User.SendRequest, receiver, {sender, content});
+      await ledger.exerciseByKey(User.User.SendRequest, sender, {receiver, content});
       setContent("");
     } catch (error) {
       alert(`Error sending message:\n${JSON.stringify(error)}`);

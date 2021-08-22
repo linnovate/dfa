@@ -5,15 +5,17 @@ import React from 'react'
 import { Menu } from 'semantic-ui-react'
 import MainView from './MainView';
 import { useParty } from '@daml/react';
+import Credentials from '../Credentials';
 
 type Props = {
   onLogout: () => void;
+  credentials: Credentials | undefined;
 }
 
 /**
  * React component for the main screen of the `App`.
  */
-const MainScreen: React.FC<Props> = ({onLogout}) => {
+const MainScreen: React.FC<Props> = ({credentials, onLogout}) => {
   return (
     <>
       <Menu icon borderless>
@@ -31,7 +33,7 @@ const MainScreen: React.FC<Props> = ({onLogout}) => {
         </Menu.Menu>
       </Menu>
 
-      <MainView/>
+      <MainView credentials={credentials}/>
     </>
   );
 };
