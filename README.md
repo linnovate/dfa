@@ -45,10 +45,18 @@ When you see the message on the second terminal open the url shown.
 
 ## Uploading to damlhub
 The dfa project has a test environment in damlhub - currently we need to upload the artifact files manually to damlhub
+We build these artifacts in to the /target subdirectory
 
 ```
+# building daml
 daml build -o target/create-daml-app.dar
+
+#building the ui
+daml codegen js target/create-daml-app.dar -o ui/daml.js
+cd ui && npm install && npm run-script build
+zip -r ../target/create-daml-app-ui.zip build
 ```
+Then go to damlhub and upload create-daml-app.dar and create-daml-app-ui.zip
 
 
 
