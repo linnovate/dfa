@@ -5,6 +5,7 @@ module User where
 import Daml.Script
 
 type Key = (Party, Text)
+type Place = (Int, Int)
 
 makeAdmin =
   script do
@@ -38,13 +39,14 @@ template User with
     nonconsuming choice SendRequest: ContractId Admin with
           receiver: Party
           content: Text
+          geo: Place
         controller username
         do
           (_, receiverAdmin) <- fetchByKey @Admin receiver
 
           -- #TODO: make sure a new request won't be made if it exists with the exact same text
 
-          create Request with sender = username, receiver = receiverAdmin.adminame, content
+          create Request with sender = username, receiver = receiverAdmin.adminame, content, status = "Sent", geo = geo
           (_, requestId) <- fetchByKey @Request (username, content) -- We divide it into two lines for the ID
           create this with requests = requestId :: requests
           create receiverAdmin with requests = requestId :: requests
@@ -54,6 +56,8 @@ template Request with
     sender: Party
     receiver: Party
     content: Text
+    status: Text
+    geo: Place
   where
     signatory sender, receiver
 

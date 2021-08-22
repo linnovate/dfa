@@ -14,10 +14,12 @@ export declare type Request = {
   sender: damlTypes.Party;
   receiver: damlTypes.Party;
   content: string;
+  status: string;
+  geo: pkg40f452260bef3f29dede136108fc08a88d5a5250310281067087da6f0baddff7.DA.Types.Tuple2<damlTypes.Int, damlTypes.Int>;
 };
 
 export declare const Request:
-  damlTypes.Template<Request, Request.Key, '38d610cc56f0710feac1041fa6e2ad7a55231f20c7547d6334b05e45f4e449ac:User:Request'> & {
+  damlTypes.Template<Request, Request.Key, 'f6c1cd4b6865e28cb060452f7c31763d54f9cccc2704b072073ea8424f49a1f7:User:Request'> & {
   Archive: damlTypes.Choice<Request, pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662.DA.Internal.Template.Archive, {}, Request.Key>;
 };
 
@@ -34,6 +36,7 @@ export declare namespace Request {
 export declare type SendRequest = {
   receiver: damlTypes.Party;
   content: string;
+  geo: pkg40f452260bef3f29dede136108fc08a88d5a5250310281067087da6f0baddff7.DA.Types.Tuple2<damlTypes.Int, damlTypes.Int>;
 };
 
 export declare const SendRequest:
@@ -48,7 +51,7 @@ export declare type User = {
 };
 
 export declare const User:
-  damlTypes.Template<User, User.Key, '38d610cc56f0710feac1041fa6e2ad7a55231f20c7547d6334b05e45f4e449ac:User:User'> & {
+  damlTypes.Template<User, User.Key, 'f6c1cd4b6865e28cb060452f7c31763d54f9cccc2704b072073ea8424f49a1f7:User:User'> & {
   Archive: damlTypes.Choice<User, pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662.DA.Internal.Template.Archive, {}, User.Key>;
   SendRequest: damlTypes.Choice<User, SendRequest, damlTypes.ContractId<Admin>, User.Key>;
 };
@@ -69,7 +72,7 @@ export declare type Admin = {
 };
 
 export declare const Admin:
-  damlTypes.Template<Admin, Admin.Key, '38d610cc56f0710feac1041fa6e2ad7a55231f20c7547d6334b05e45f4e449ac:User:Admin'> & {
+  damlTypes.Template<Admin, Admin.Key, 'f6c1cd4b6865e28cb060452f7c31763d54f9cccc2704b072073ea8424f49a1f7:User:Admin'> & {
   Archive: damlTypes.Choice<Admin, pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662.DA.Internal.Template.Archive, {}, Admin.Key>;
 };
 

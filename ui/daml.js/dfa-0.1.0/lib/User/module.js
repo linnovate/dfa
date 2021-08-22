@@ -17,15 +17,17 @@ var pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662 = requir
 
 
 exports.Request = {
-  templateId: '38d610cc56f0710feac1041fa6e2ad7a55231f20c7547d6334b05e45f4e449ac:User:Request',
+  templateId: 'f6c1cd4b6865e28cb060452f7c31763d54f9cccc2704b072073ea8424f49a1f7:User:Request',
   keyDecoder: damlTypes.lazyMemo(function () { return damlTypes.lazyMemo(function () { return pkg40f452260bef3f29dede136108fc08a88d5a5250310281067087da6f0baddff7.DA.Types.Tuple2(damlTypes.Party, damlTypes.Text).decoder; }); }),
   keyEncode: function (__typed__) { return pkg40f452260bef3f29dede136108fc08a88d5a5250310281067087da6f0baddff7.DA.Types.Tuple2(damlTypes.Party, damlTypes.Text).encode(__typed__); },
-  decoder: damlTypes.lazyMemo(function () { return jtv.object({sender: damlTypes.Party.decoder, receiver: damlTypes.Party.decoder, content: damlTypes.Text.decoder, }); }),
+  decoder: damlTypes.lazyMemo(function () { return jtv.object({sender: damlTypes.Party.decoder, receiver: damlTypes.Party.decoder, content: damlTypes.Text.decoder, status: damlTypes.Text.decoder, geo: pkg40f452260bef3f29dede136108fc08a88d5a5250310281067087da6f0baddff7.DA.Types.Tuple2(damlTypes.Int, damlTypes.Int).decoder, }); }),
   encode: function (__typed__) {
   return {
     sender: damlTypes.Party.encode(__typed__.sender),
     receiver: damlTypes.Party.encode(__typed__.receiver),
     content: damlTypes.Text.encode(__typed__.content),
+    status: damlTypes.Text.encode(__typed__.status),
+    geo: pkg40f452260bef3f29dede136108fc08a88d5a5250310281067087da6f0baddff7.DA.Types.Tuple2(damlTypes.Int, damlTypes.Int).encode(__typed__.geo),
   };
 }
 ,
@@ -45,11 +47,12 @@ damlTypes.registerTemplate(exports.Request);
 
 
 exports.SendRequest = {
-  decoder: damlTypes.lazyMemo(function () { return jtv.object({receiver: damlTypes.Party.decoder, content: damlTypes.Text.decoder, }); }),
+  decoder: damlTypes.lazyMemo(function () { return jtv.object({receiver: damlTypes.Party.decoder, content: damlTypes.Text.decoder, geo: pkg40f452260bef3f29dede136108fc08a88d5a5250310281067087da6f0baddff7.DA.Types.Tuple2(damlTypes.Int, damlTypes.Int).decoder, }); }),
   encode: function (__typed__) {
   return {
     receiver: damlTypes.Party.encode(__typed__.receiver),
     content: damlTypes.Text.encode(__typed__.content),
+    geo: pkg40f452260bef3f29dede136108fc08a88d5a5250310281067087da6f0baddff7.DA.Types.Tuple2(damlTypes.Int, damlTypes.Int).encode(__typed__.geo),
   };
 }
 ,
@@ -58,7 +61,7 @@ exports.SendRequest = {
 
 
 exports.User = {
-  templateId: '38d610cc56f0710feac1041fa6e2ad7a55231f20c7547d6334b05e45f4e449ac:User:User',
+  templateId: 'f6c1cd4b6865e28cb060452f7c31763d54f9cccc2704b072073ea8424f49a1f7:User:User',
   keyDecoder: damlTypes.lazyMemo(function () { return damlTypes.lazyMemo(function () { return damlTypes.Party.decoder; }); }),
   keyEncode: function (__typed__) { return damlTypes.Party.encode(__typed__); },
   decoder: damlTypes.lazyMemo(function () { return jtv.object({username: damlTypes.Party.decoder, requests: damlTypes.List(exports.Request).decoder, }); }),
@@ -93,7 +96,7 @@ damlTypes.registerTemplate(exports.User);
 
 
 exports.Admin = {
-  templateId: '38d610cc56f0710feac1041fa6e2ad7a55231f20c7547d6334b05e45f4e449ac:User:Admin',
+  templateId: 'f6c1cd4b6865e28cb060452f7c31763d54f9cccc2704b072073ea8424f49a1f7:User:Admin',
   keyDecoder: damlTypes.lazyMemo(function () { return damlTypes.lazyMemo(function () { return damlTypes.Party.decoder; }); }),
   keyEncode: function (__typed__) { return damlTypes.Party.encode(__typed__); },
   decoder: damlTypes.lazyMemo(function () { return jtv.object({adminame: damlTypes.Party.decoder, requests: damlTypes.List(exports.Request).decoder, }); }),
