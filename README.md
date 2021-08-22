@@ -42,3 +42,13 @@ npm start
 ```
 
 When you see the message on the second terminal open the url shown.
+
+## Uploading to damlhub
+The dfa project has a test environment in damlhub - currently we need to upload the artifact files manually to damlhub
+
+```
+daml build -o target/create-daml-app.dar
+```
+
+
+
