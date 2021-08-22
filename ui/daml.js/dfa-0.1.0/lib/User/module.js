@@ -17,7 +17,7 @@ var pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662 = requir
 
 
 exports.Request = {
-  templateId: '1a9f438b072e6533a09a02feabf85d41283b27c2669a44b9e3b160df3886f0bc:User:Request',
+  templateId: '38d610cc56f0710feac1041fa6e2ad7a55231f20c7547d6334b05e45f4e449ac:User:Request',
   keyDecoder: damlTypes.lazyMemo(function () { return damlTypes.lazyMemo(function () { return pkg40f452260bef3f29dede136108fc08a88d5a5250310281067087da6f0baddff7.DA.Types.Tuple2(damlTypes.Party, damlTypes.Text).decoder; }); }),
   keyEncode: function (__typed__) { return pkg40f452260bef3f29dede136108fc08a88d5a5250310281067087da6f0baddff7.DA.Types.Tuple2(damlTypes.Party, damlTypes.Text).encode(__typed__); },
   decoder: damlTypes.lazyMemo(function () { return jtv.object({sender: damlTypes.Party.decoder, receiver: damlTypes.Party.decoder, content: damlTypes.Text.decoder, }); }),
@@ -58,7 +58,7 @@ exports.SendRequest = {
 
 
 exports.User = {
-  templateId: '1a9f438b072e6533a09a02feabf85d41283b27c2669a44b9e3b160df3886f0bc:User:User',
+  templateId: '38d610cc56f0710feac1041fa6e2ad7a55231f20c7547d6334b05e45f4e449ac:User:User',
   keyDecoder: damlTypes.lazyMemo(function () { return damlTypes.lazyMemo(function () { return damlTypes.Party.decoder; }); }),
   keyEncode: function (__typed__) { return damlTypes.Party.encode(__typed__); },
   decoder: damlTypes.lazyMemo(function () { return jtv.object({username: damlTypes.Party.decoder, requests: damlTypes.List(exports.Request).decoder, }); }),
@@ -82,11 +82,38 @@ exports.User = {
     choiceName: 'SendRequest',
     argumentDecoder: damlTypes.lazyMemo(function () { return exports.SendRequest.decoder; }),
     argumentEncode: function (__typed__) { return exports.SendRequest.encode(__typed__); },
-    resultDecoder: damlTypes.lazyMemo(function () { return damlTypes.ContractId(exports.User).decoder; }),
-    resultEncode: function (__typed__) { return damlTypes.ContractId(exports.User).encode(__typed__); },
+    resultDecoder: damlTypes.lazyMemo(function () { return damlTypes.ContractId(exports.Admin).decoder; }),
+    resultEncode: function (__typed__) { return damlTypes.ContractId(exports.Admin).encode(__typed__); },
   },
 };
 
 
 damlTypes.registerTemplate(exports.User);
+
+
+
+exports.Admin = {
+  templateId: '38d610cc56f0710feac1041fa6e2ad7a55231f20c7547d6334b05e45f4e449ac:User:Admin',
+  keyDecoder: damlTypes.lazyMemo(function () { return damlTypes.lazyMemo(function () { return damlTypes.Party.decoder; }); }),
+  keyEncode: function (__typed__) { return damlTypes.Party.encode(__typed__); },
+  decoder: damlTypes.lazyMemo(function () { return jtv.object({adminame: damlTypes.Party.decoder, requests: damlTypes.List(exports.Request).decoder, }); }),
+  encode: function (__typed__) {
+  return {
+    adminame: damlTypes.Party.encode(__typed__.adminame),
+    requests: damlTypes.List(exports.Request).encode(__typed__.requests),
+  };
+}
+,
+  Archive: {
+    template: function () { return exports.Admin; },
+    choiceName: 'Archive',
+    argumentDecoder: damlTypes.lazyMemo(function () { return pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662.DA.Internal.Template.Archive.decoder; }),
+    argumentEncode: function (__typed__) { return pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662.DA.Internal.Template.Archive.encode(__typed__); },
+    resultDecoder: damlTypes.lazyMemo(function () { return damlTypes.Unit.decoder; }),
+    resultEncode: function (__typed__) { return damlTypes.Unit.encode(__typed__); },
+  },
+};
+
+
+damlTypes.registerTemplate(exports.Admin);
 
