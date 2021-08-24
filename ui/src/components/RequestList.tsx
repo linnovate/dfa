@@ -11,7 +11,7 @@ const RequestList: React.FC<Props> = ({requests}) => {
         <List relaxed>
             {requests && requests.map((request) => (
                 <List.Item
-                    header={"To:" + request.receiver}
+                    header={"To: " + request.admin}
                     content={"Content: " + request.content}
                 >
                 </List.Item>

@@ -6,12 +6,12 @@ const Requests: React.FC = () => {
   return (
     <List relaxed>
       {useStreamQueries(User.Request).contracts.map(request => {
-        const {sender, receiver, content} = request.payload;
+        const {sender, admin, content} = request.payload;
         return (
           <ListItem
             className='select-request-item'
             key={request.contractId}>
-            <strong>{sender} &rarr; {receiver}:</strong> {content}
+            <strong>{sender} &rarr; {admin}:</strong> {content}
           </ListItem>
         );
       })}

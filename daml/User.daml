@@ -3,6 +3,7 @@
 
 module User where
 import Daml.Script
+import DA.List
 
 type Key = (Party, Text)
 type Place = (Int, Int)
@@ -12,6 +13,16 @@ makeAdmin =
     admin <- allocateParty "Admin"
     submit admin do
       createCmd Admin with adminame = admin
+    zoologist <- allocateParty "Zoologist"
+    submit zoologist do
+      createCmd Admin with adminame = zoologist
+    meteorologist <- allocateParty "Meteorologist"
+    submit meteorologist do
+      createCmd Admin with adminame = meteorologist
+    hamal <- allocateParty "Hamal"
+    submit hamal do
+      createCmd Admin with adminame = hamal
+    
 
 template Admin with
     adminame: Party
@@ -20,6 +31,15 @@ template Admin with
 
     key adminame: Party
     maintainer key
+
+
+template Contract
+  with
+    signatories: [Party]
+  where
+    signatory signatories
+    ensure
+      unique signatories
 
 
 -- MAIN_TEMPLATE_BEGIN
@@ -36,6 +56,8 @@ template User with
     -- REQUEST_BEGIN
     preconsuming choice SendRequest: ContractId User with
           receiver: Party
+          receivers: [Party]
+          contract: Contract
           content: Text
           geo: Place
         controller username
@@ -43,21 +65,39 @@ template User with
 
           -- #TODO: make sure a new request won't be made if it exists with the exact same text
 
-          create Request with sender = username, receiver = receiver, content, status = "Sent", geo = geo
+          create Request with sender = username, admin = receiver, contract = contract, receivers = receivers, signed = [], content, status = "Sent", geo = geo
           (_, requestId) <- fetchByKey @Request (username, content) -- We divide it into two lines for the ID
           create this with requests = requestId :: requests
     -- REQUEST_END
 
 template Request with
     sender: Party
-    receiver: Party
+    admin: Party
+    contract: Contract
+    receivers: [Party]
+    signed: [Party]
     content: Text
     status: Text
     geo: Place
   where
-    signatory sender
+    signatory sender, signed
 
     key (sender, content) : Key
     maintainer key._1
 
-    observer receiver
+    observer contract.signatories, admin
+
+    let notSigned = filter (`notElem` signed) contract.signatories
+
+    choice Sign : ContractId Request with
+        signer : Party
+      controller signer
+        do
+          assert (signer `elem` notSigned)
+          create this with signed = signer :: signed
+    choice Finalize : ContractId Contract with
+        signer : Party
+      controller signer
+        do
+          assert (sort signed == sort contract.signatories)
+          create contract
