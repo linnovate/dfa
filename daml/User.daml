@@ -11,12 +11,10 @@ makeAdmin =
   script do
     admin <- allocateParty "Admin"
     submit admin do
-      let empty : [Request] = []
-      createCmd Admin with adminame = admin, requests = empty
+      createCmd Admin with adminame = admin
 
 template Admin with
     adminame: Party
-    requests: [Request]
   where
     signatory adminame
 
@@ -36,20 +34,18 @@ template User with
     maintainer key
 
     -- REQUEST_BEGIN
-    nonconsuming choice SendRequest: ContractId Admin with
+    preconsuming choice SendRequest: ContractId User with
           receiver: Party
           content: Text
           geo: Place
         controller username
         do
-          (_, receiverAdmin) <- fetchByKey @Admin receiver
 
           -- #TODO: make sure a new request won't be made if it exists with the exact same text
 
-          create Request with sender = username, receiver = receiverAdmin.adminame, content, status = "Sent", geo = geo
+          create Request with sender = username, receiver = receiver, content, status = "Sent", geo = geo
           (_, requestId) <- fetchByKey @Request (username, content) -- We divide it into two lines for the ID
           create this with requests = requestId :: requests
-          create receiverAdmin with requests = requestId :: requests
     -- REQUEST_END
 
 template Request with
@@ -59,8 +55,7 @@ template Request with
     status: Text
     geo: Place
   where
-    signatory sender, receiver
-
+    signatory sender
 
     key (sender, content) : Key
     maintainer key._1

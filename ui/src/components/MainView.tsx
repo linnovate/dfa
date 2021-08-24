@@ -8,21 +8,13 @@ import { useParty, useStreamFetchByKeys } from '@daml/react';
 import Requests from './Requests';
 import RequestSendAndEdit from './RequestSendAndEdit';
 import RequestList from './RequestList';
-import Credentials from '../Credentials';
 
-type Props = {
-  credentials: Credentials | undefined;
-}
-
-// USERS_BEGIN
-const MainView: React.FC<Props> = ({credentials}) => {
+const MainView: React.FC = () => {
   const username = useParty();
-  const myUserResult = useStreamFetchByKeys(User.User, () => [username], [username]); //TODO kill the person who decided to deprecate useStreamFetchByKey
+  const myUserResult = useStreamFetchByKeys(User.User, () => [username], [username]);
   const myUser = myUserResult.contracts[0]?.payload;
-  const adminsResult = useStreamFetchByKeys(User.Admin, () => [username], [username]); //FIXME admins won't be added
+  const adminsResult = useStreamFetchByKeys(User.Admin, () => [username], [username]);
   const admins = adminsResult.contracts.map((admin) => admin?.payload);
-
-// USERS_END
 
   return (
     <Container>

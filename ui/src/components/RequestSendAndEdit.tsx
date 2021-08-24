@@ -36,7 +36,8 @@ const RequestSendAndEdit: React.FC<Props> = ({admins}) => {
         className='select-request-receiver'
         // If only one admin will be used the next line (and all the parts in the backend meant towards multiple admins should be removed)
         placeholder="Select who you want to process your request"
-        options={admins.map(admin => ({ key: admin?.adminame, text: admin?.adminame, value: admin?.adminame }))}
+        //TODO create something like: options={admins.map(admin => ({ key: admin?.adminame, text: admin?.adminame, value: admin?.adminame }))}
+        options={[{key: "Admin", text: "Admin", value: "Admin"}]}
         onChange={event => setReceiver(event.currentTarget.textContent ?? undefined)}
       />
       <Form.Input

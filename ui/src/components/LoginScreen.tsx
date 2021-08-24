@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React, { useCallback } from 'react'
-import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react'
+import { Button, Checkbox, Form, Grid, Header, Segment } from 'semantic-ui-react'
 import Credentials, { computeCredentials } from '../Credentials';
 import Ledger from '@daml/ledger';
 import { User } from '@daml.js/dfa';
@@ -11,30 +11,41 @@ import { useEffect } from 'react';
 
 type Props = {
   onLogin: (credentials: Credentials) => void;
+  setUserType: (isAdmin: Boolean) => void;
 }
 
 /**
  * React component for the login screen of the `App`.
  */
-const LoginScreen: React.FC<Props> = ({onLogin}) => {
+const LoginScreen: React.FC<Props> = ({onLogin, setUserType}) => {
   const [username, setUsername] = React.useState('');
-
-  const login = useCallback(async (credentials: Credentials) => {
+  var isAdmin = false;
+  const click = () => {
+    isAdmin = !isAdmin;
+  }
+  const login = useCallback(async (credentials: Credentials, isAdmin: Boolean) => {
     try {
       const ledger = new Ledger({token: credentials.token, httpBaseUrl});
-      if (await ledger.fetchByKey(User.User, credentials.party) === null) {
-        await ledger.create(User.User, {username: credentials.party, requests: []});
+      if (isAdmin) {
+        if (await ledger.fetchByKey(User.Admin, credentials.party) === null) { // cannot use isAdmin ? User.Admin : User.User for typing issues
+          await ledger.create(User.Admin, {adminame: credentials.party});
+        }
+      } else {
+        if (await ledger.fetchByKey(User.User, credentials.party) === null) {
+          await ledger.create(User.User, {username: credentials.party, requests: []});
+        }
       }
       onLogin(credentials);
+      setUserType(isAdmin);
     } catch(error) {
       alert(`Unknown error:\n${error}`);
     }
-  }, [onLogin]);
+  }, [onLogin, setUserType]);
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
     const credentials = computeCredentials(username);
-    await login(credentials);
+    await login(credentials, isAdmin);
   }
 
   const handleDablLogin = () => {
@@ -53,8 +64,8 @@ const LoginScreen: React.FC<Props> = ({onLogin}) => {
     }
     url.search = '';
     window.history.replaceState(window.history.state, '', url.toString());
-    login({token, party, ledgerId});
-  }, [login]);
+    login({token, party, ledgerId}, isAdmin);
+  }, [login, isAdmin]);
 
   return (
     <Grid textAlign='center' style={{ height: '100vh' }} verticalAlign='middle'>
@@ -78,6 +89,10 @@ const LoginScreen: React.FC<Props> = ({onLogin}) => {
                   className='test-select-username-field'
                   onChange={e => setUsername(e.currentTarget.value)}
                 />
+                <Checkbox
+                  onChange={click}
+                  label="I'm an Admin">
+                </Checkbox>
                 <Button
                   primary
                   fluid

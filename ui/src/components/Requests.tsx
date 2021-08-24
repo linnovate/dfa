@@ -1,11 +1,11 @@
 import React from 'react'
 import { List, ListItem } from 'semantic-ui-react';
 import { User } from '@daml.js/dfa';
-import { useStreamQuery } from '@daml/react';
+import { useStreamQueries } from '@daml/react';
 const Requests: React.FC = () => {
   return (
     <List relaxed>
-      {useStreamQuery(User.Request).contracts.map(request => {
+      {useStreamQueries(User.Request).contracts.map(request => {
         const {sender, receiver, content} = request.payload;
         return (
           <ListItem
