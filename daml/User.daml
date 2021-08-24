@@ -65,7 +65,7 @@ template User with
 
           -- #TODO: make sure a new request won't be made if it exists with the exact same text
 
-          create Request with sender = username, admin = receiver, contract = contract, receivers = receivers, signed = [], content, status = "Sent", geo = geo
+          create Request with sender = username, admin = receiver, contract = contract, receivers = receivers, signed = [], disapproved = [], content, status = "Sent", geo = geo
           (_, requestId) <- fetchByKey @Request (username, content) -- We divide it into two lines for the ID
           create this with requests = requestId :: requests
     -- REQUEST_END
@@ -76,6 +76,7 @@ template Request with
     contract: Contract
     receivers: [Party]
     signed: [Party]
+    disapproved: [Party]
     content: Text
     status: Text
     geo: Place
@@ -91,13 +92,35 @@ template Request with
 
     choice Sign : ContractId Request with
         signer : Party
+
       controller signer
+
         do
           assert (signer `elem` notSigned)
           create this with signed = signer :: signed
+
     choice Finalize : ContractId Contract with
         signer : Party
+
       controller signer
+
         do
           assert (sort signed == sort contract.signatories)
           create contract
+
+    choice Disapprove : ContractId Request with
+        signer : Party
+
+      controller signer
+
+        do
+          assert (signer `elem` notSigned)
+          create this with disapproved = signer :: disapproved
+
+    choice Remove : () with
+        signer : Party
+
+      controller signer
+
+        do
+          archive self

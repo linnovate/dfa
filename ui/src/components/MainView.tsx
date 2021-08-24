@@ -34,7 +34,6 @@ const MainView: React.FC = () => {
               </Header>
               <RequestSendAndEdit admins={admins}/>
               <Divider />
-              <Requests />
             </Segment>
             <Segment>
               <Header as='h2'>
