@@ -19,7 +19,7 @@ export declare type Request = {
 };
 
 export declare const Request:
-  damlTypes.Template<Request, Request.Key, '64cf37adfd98f121edd650e1d681cc825e44391e70fb980ae9748e4f5ab55c26:User:Request'> & {
+  damlTypes.Template<Request, Request.Key, '227a0a4c5c568fef4d281853ab73f94bb05cc8e42ae4f97063b8cbeae1e1405c:User:Request'> & {
   Archive: damlTypes.Choice<Request, pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662.DA.Internal.Template.Archive, {}, Request.Key>;
 };
 
@@ -51,7 +51,7 @@ export declare type User = {
 };
 
 export declare const User:
-  damlTypes.Template<User, User.Key, '64cf37adfd98f121edd650e1d681cc825e44391e70fb980ae9748e4f5ab55c26:User:User'> & {
+  damlTypes.Template<User, User.Key, '227a0a4c5c568fef4d281853ab73f94bb05cc8e42ae4f97063b8cbeae1e1405c:User:User'> & {
   Archive: damlTypes.Choice<User, pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662.DA.Internal.Template.Archive, {}, User.Key>;
   SendRequest: damlTypes.Choice<User, SendRequest, damlTypes.ContractId<User>, User.Key>;
 };
@@ -71,7 +71,7 @@ export declare type Admin = {
 };
 
 export declare const Admin:
-  damlTypes.Template<Admin, Admin.Key, '64cf37adfd98f121edd650e1d681cc825e44391e70fb980ae9748e4f5ab55c26:User:Admin'> & {
+  damlTypes.Template<Admin, Admin.Key, '227a0a4c5c568fef4d281853ab73f94bb05cc8e42ae4f97063b8cbeae1e1405c:User:Admin'> & {
   Archive: damlTypes.Choice<Admin, pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662.DA.Internal.Template.Archive, {}, Admin.Key>;
 };
 

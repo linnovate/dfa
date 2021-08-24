@@ -59,3 +59,5 @@ template Request with
 
     key (sender, content) : Key
     maintainer key._1
+
+    observer receiver
