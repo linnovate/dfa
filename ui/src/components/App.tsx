@@ -14,6 +14,7 @@ import { httpBaseUrl } from '../config';
 // APP_BEGIN
 const App: React.FC = () => {
   const [credentials, setCredentials] = React.useState<Credentials | undefined>();
+  const [isAdmin, setAdmin] = React.useState<Boolean | undefined>();
 
   return credentials
     ? <DamlLedger
@@ -21,9 +22,9 @@ const App: React.FC = () => {
         party={credentials.party}
         httpBaseUrl={httpBaseUrl}
       >
-        <MainScreen credentials={credentials} onLogout={() => setCredentials(undefined)}/>
+        <MainScreen onLogout={() => setCredentials(undefined)} isAdmin={isAdmin as Boolean}/>
       </DamlLedger>
-    : <LoginScreen onLogin={setCredentials} /> //TODO login for admins
+    : <LoginScreen onLogin={setCredentials} setUserType={setAdmin}/>
 }
 // APP_END
 

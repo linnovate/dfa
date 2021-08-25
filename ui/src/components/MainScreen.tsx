@@ -5,17 +5,18 @@ import React from 'react'
 import { Menu } from 'semantic-ui-react'
 import MainView from './MainView';
 import { useParty } from '@daml/react';
-import Credentials from '../Credentials';
+import MainAdminView from './MainAdminView';
 
 type Props = {
   onLogout: () => void;
-  credentials: Credentials | undefined;
+  isAdmin: Boolean;
 }
 
 /**
  * React component for the main screen of the `App`.
  */
-const MainScreen: React.FC<Props> = ({credentials, onLogout}) => {
+const MainScreen: React.FC<Props> = ({onLogout, isAdmin}) => {
+  const View = isAdmin ? MainAdminView : MainView;
   return (
     <>
       <Menu icon borderless>
@@ -32,8 +33,7 @@ const MainScreen: React.FC<Props> = ({credentials, onLogout}) => {
           />
         </Menu.Menu>
       </Menu>
-
-      <MainView credentials={credentials}/>
+      <View/>
     </>
   );
 };
