@@ -2,3 +2,4 @@
 /target
 /ui/node_modules
 *.log
+/wp/database
