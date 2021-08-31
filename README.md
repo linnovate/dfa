@@ -64,5 +64,14 @@ zip -r ../target/create-daml-app-ui.zip build
 ```
 Then go to damlhub and upload create-daml-app.dar and create-daml-app-ui.zip
 
+## Wordpress
+So ow does wordpress fit in? We want to use wordpress to show and manage various react components that are connected to the json-api and to manage them with elementor
 
+### Starting wordpress
+We use docker-compose tomanage the wordpress
+run 
+``` 
+cd wp
+docker-compose up -d 
+```
 
