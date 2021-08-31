@@ -73,5 +73,6 @@ run
 ``` 
 cd wp
 docker-compose up -d 
+The wordpress is in http://localhost:8080
 ```
 
