@@ -3,7 +3,7 @@
 ## Overview
 The DFA is intended to model collaberative / multi-partner-approval based workflows and make them accessible through the DAML UI and react components which are displayed and managed  with Wordpress and Elementor.
 
-![image](https://user-images.githubusercontent.com/245027/131503105-b3273485-10bd-4e48-8024-571a5ee0431e.png)
+  ![low-DAML - Frame 1 (3)](https://user-images.githubusercontent.com/245027/131503257-e22a5175-8262-4145-b645-de7e4d28ce94.jpg)
 
 
 ## Usage
