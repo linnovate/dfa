@@ -1,4 +1,10 @@
-# Welcome to _Distrubuted Flight Approval_
+# Welcome to _Distrubuted Flight Approval_ (DFA)
+
+## Overview
+The DFA is intended to model collaberative / multi-partner-approval based workflows and make them accessible through the DAML UI and react components which are displayed and managed  with Wordpress and Elementor.
+
+  ![low-DAML - Frame 1 (3)](https://user-images.githubusercontent.com/245027/131503257-e22a5175-8262-4145-b645-de7e4d28ce94.jpg)
+
 
 ## Usage
 
