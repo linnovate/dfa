@@ -19,7 +19,9 @@ const RequestSendAndEdit: React.FC<Props> = ({admins}) => {
       }
       setIsSubmitting(true);
       const placeholder = [1, 1]; // TODO add map component to choose your place and convert to [Int, Int] = DD * 10 ** 4
-      await ledger.exerciseByKey(User.User.SendRequest, sender, {receiver, content, geo: {_1: placeholder[0].toString(), _2: placeholder[1].toString()}});
+      const parties = ["Zoologist", "Meteorologist", "Hamal"];
+      const myContract = {signatories: parties};
+      await ledger.exerciseByKey(User.User.SendRequest, sender, {receiver, receivers: parties, contract: myContract, content, geo: {_1: placeholder[0].toString(), _2: placeholder[1].toString()}});
       setContent("");
     } catch (error) {
       alert(`Error sending message:\n${JSON.stringify(error)}`);

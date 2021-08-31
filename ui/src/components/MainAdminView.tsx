@@ -2,15 +2,24 @@ import React from 'react';
 import { Container, Grid, Header, Icon, Segment, Divider } from 'semantic-ui-react';
 import { User } from '@daml.js/dfa';
 import { useParty, useStreamFetchByKeys, useQuery } from '@daml/react';
-import RequestList from './RequestList';
+import AdminRequestList from './AdminRequestList';
 
 const MainAdminView: React.FC = () => {
 
+    const parties = ["Zoologist", "Meteorologist", "Hamal"];
     const adminame = useParty();
     const myUserResult = useStreamFetchByKeys(User.Admin, () => [adminame], [adminame]);
     const myUser = myUserResult.contracts[0]?.payload;
-    const requestResult = useQuery(User.Request, () => ({receiver: myUser?.adminame}), []);
-    const requests = requestResult.contracts.map((request) => request.payload);
+    const requestResult = useQuery(User.Request, () => ({admin: myUser?.adminame}), []);
+    const requiresReview = useQuery(User.Request, () => ({receivers: parties}), []); // we would want usually to create three different fields and check if the user is in one of them but our case is very simple
+    var allRequests = requestResult.contracts;
+    const admin = myUser as User.Admin;
+
+    if ((myUser?.adminame as string) in parties) {
+        allRequests = allRequests.concat(requiresReview.contracts);
+    }
+
+    const requests = allRequests.map((request) => request.payload);
 
     return (
         <Container>
@@ -28,7 +37,10 @@ const MainAdminView: React.FC = () => {
                                 </Header.Content>
                             </Header>
                             <Divider />
-                            <RequestList requests={requests} />
+                            <AdminRequestList
+                                requests = {requests}
+                                admin = {admin}
+                            />
                         </Segment>
                     </Grid.Column>
                 </Grid.Row>
