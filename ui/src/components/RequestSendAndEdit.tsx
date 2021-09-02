@@ -60,7 +60,7 @@ const RequestSendAndEdit: React.FC<Props> = () => {
         fluid
         className='select-request-send-button'
         type="submit"
-        disabled={isSubmitting || flight.time == "00:00"}
+        disabled={isSubmitting || flight.time === "00:00"}
         loading={isSubmitting}
         content="Send"
       />

@@ -10,8 +10,8 @@ const MainAdminView: React.FC = () => {
     const party = useParty();
     const allRequestResult = useQuery(User.CompletedRequest, () => ({parties: parties}), []);
     const allRequiresReview = useQuery(User.FlightRequest, () => ({parties: parties}), []);
-    const myRequestResults = allRequestResult.contracts.filter((req) => {if(party in req.observers || party in req.signatories) return req});
-    const myRequireReview = allRequiresReview.contracts.filter((req) => {if(party in req.observers || party in req.signatories) return req});
+    const myRequestResults = allRequestResult.contracts.filter((req) => {return party in req.observers || party in req.signatories ? req : null});
+    const myRequireReview = allRequiresReview.contracts.filter((req) => {return party in req.observers || party in req.signatories ? req : null});
     var myRequestResultsMap = myRequestResults.map((req) => req.payload);
     var myRequireReviewMap = myRequireReview.map((req) => req.payload);
 

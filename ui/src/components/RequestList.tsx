@@ -1,7 +1,7 @@
 import React from 'react';
 import { List, Button, Segment } from 'semantic-ui-react';
 import { User } from '@daml.js/dfa';
-import { useLedger, useParty } from '@daml/react';
+import { useParty } from '@daml/react';
 import ViewContract from './ViewContract';
 
 type Props = {
