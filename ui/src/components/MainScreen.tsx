@@ -15,7 +15,7 @@ type Props = {
  * React component for the main screen of the `App`.
  */
 const MainScreen: React.FC<Props> = ({onLogout}) => {
-  const View =  MainView;
+  const View = MainView;
   return (
     <>
       <Menu icon borderless>
