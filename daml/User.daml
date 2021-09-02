@@ -2,125 +2,99 @@
 -- SPDX-License-Identifier: Apache-2.0
 
 module User where
-import Daml.Script
-import DA.List
 
+--Attribute decleration
 type Key = (Party, Text)
-type Place = (Int, Int)
+type Place = (Decimal, Decimal)
 
-makeAdmin =
-  script do
-    admin <- allocateParty "Admin"
-    submit admin do
-      createCmd Admin with adminame = admin
-    zoologist <- allocateParty "Zoologist"
-    submit zoologist do
-      createCmd Admin with adminame = zoologist
-    meteorologist <- allocateParty "Meteorologist"
-    submit meteorologist do
-      createCmd Admin with adminame = meteorologist
-    hamal <- allocateParty "Hamal"
-    submit hamal do
-      createCmd Admin with adminame = hamal
-    
+data Flight = Flight {
+  location : Place;
+  time : Text;
+  altitude : Text
+} deriving (Eq, Show)
 
-template Admin with
-    adminame: Party
+getLocation: Place -> Text
+getLocation loc = show(loc._1) <> ", " <> show(loc._2)
+
+getFlightContent: Flight -> Text
+getFlightContent flightContent = getLocation(flightContent.location) <> ", " <> flightContent.time <> ", " <> flightContent.altitude
+
+
+{-
+FlightRequest:
+Signatory: User
+Observers: Admin, Acceptors
+Data: FlightData
+
+preconsuing choice Accept
+preconsuming choice Dissproved
+-}
+
+template FlightRequest with
+    user: Party
+    admin: Party
+    parties: [Party]
+    approvers: [Party]
+    disapprovers: [Party]
+    flight: Flight
   where
-    signatory adminame
+    signatory user
+    observer admin, parties
+    key (user, getFlightContent(flight)) : Key
+    maintainer key._1
 
-    key adminame: Party
-    maintainer key
+    preconsuming choice Approved: () with
+        approver: Party
+      controller approver
+      do
+        assert (elem approver parties)
+        assert (notElem approver approvers)
+        if (length approvers + 1 + length disapprovers == length parties) then do
+          create CompletedRequest with user=user, admin=admin, disapprovers=disapprovers, approvers=approver :: approvers, flight=flight
+          return ()
+        else do
+          create this with user=user, admin=admin, parties=parties, disapprovers=disapprovers, approvers=approver :: approvers, flight=flight
+          return ()
 
+    preconsuming choice Disapproved: () with
+        disapprover: Party
+      controller disapprover
+      do
+        assert (elem disapprover parties)
+        assert (notElem disapprover disapprovers)
+        if (length disapprovers + 1 + length approvers == length parties) then do
+          create CompletedRequest with user=user, admin=admin, disapprovers=disapprover :: disapprovers, approvers=approvers, flight=flight
+          return ()
+        else do
+          create this with user=user, admin=admin, parties=parties, disapprovers=disapprover :: disapprovers, approvers=approvers, flight=flight
+          return ()
 
-template Contract
-  with
-    signatories: [Party]
-  where
-    signatory signatories
-    ensure
-      unique signatories
-
-
--- MAIN_TEMPLATE_BEGIN
 template User with
     username: Party
-    requests: [Request]
+    requests: [ContractId FlightRequest]
   where
     signatory username
--- MAIN_TEMPLATE_END
-
     key username: Party
     maintainer key
 
-    -- REQUEST_BEGIN
-    preconsuming choice SendRequest: ContractId User with
-          receiver: Party
-          receivers: [Party]
-          contract: Contract
-          content: Text
-          geo: Place
-        controller username
-        do
+    preconsuming choice CreateRequest: ContractId User with
+        flight: Flight
+        admin: Party
+        parties: [Party]
+      controller username
+      do
+        create FlightRequest with user=username, flight=flight, admin=admin, parties=parties, approvers=[], disapprovers=[]
+        (flightId, _) <- fetchByKey @FlightRequest (username, getFlightContent(flight))
+        create this with username=username, requests = flightId :: requests
 
-          -- #TODO: make sure a new request won't be made if it exists with the exact same text
-
-          create Request with sender = username, admin = receiver, contract = contract, receivers = receivers, signed = [], disapproved = [], content, status = "Sent", geo = geo
-          (_, requestId) <- fetchByKey @Request (username, content) -- We divide it into two lines for the ID
-          create this with requests = requestId :: requests
-    -- REQUEST_END
-
-template Request with
-    sender: Party
+template CompletedRequest with
+    user: Party
     admin: Party
-    contract: Contract
-    receivers: [Party]
-    signed: [Party]
-    disapproved: [Party]
-    content: Text
-    status: Text
-    geo: Place
+    approvers: [Party]
+    disapprovers: [Party]
+    flight: Flight
   where
-    signatory sender, signed
-
-    key (sender, content) : Key
+    signatory user
+    observer admin, approvers, disapprovers
+    key (user, getFlightContent(flight)) : Key
     maintainer key._1
-
-    observer contract.signatories, admin
-
-    let notSigned = filter (`notElem` signed) contract.signatories
-
-    choice Sign : ContractId Request with
-        signer : Party
-
-      controller signer
-
-        do
-          assert (signer `elem` notSigned)
-          create this with signed = signer :: signed
-
-    choice Finalize : ContractId Contract with
-        signer : Party
-
-      controller signer
-
-        do
-          assert (sort signed == sort contract.signatories)
-          create contract
-
-    choice Disapprove : ContractId Request with
-        signer : Party
-
-      controller signer
-
-        do
-          assert (signer `elem` notSigned)
-          create this with disapproved = signer :: disapproved
-
-    choice Remove : () with
-        signer : Party
-
-      controller signer
-
-        do
-          archive self

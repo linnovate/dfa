@@ -7,6 +7,7 @@ import MainScreen from './MainScreen';
 import DamlLedger from '@daml/react';
 import Credentials from '../Credentials';
 import { httpBaseUrl } from '../config';
+import Ledger from '@daml/ledger';
 
 /**
  * React component for the entry point into the application.
@@ -14,17 +15,15 @@ import { httpBaseUrl } from '../config';
 // APP_BEGIN
 const App: React.FC = () => {
   const [credentials, setCredentials] = React.useState<Credentials | undefined>();
-  const [isAdmin, setAdmin] = React.useState<Boolean | undefined>();
-
   return credentials
     ? <DamlLedger
         token={credentials.token}
         party={credentials.party}
         httpBaseUrl={httpBaseUrl}
       >
-        <MainScreen onLogout={() => setCredentials(undefined)} isAdmin={isAdmin as Boolean}/>
+        <MainScreen onLogout={() => setCredentials(undefined)}/>
       </DamlLedger>
-    : <LoginScreen onLogin={setCredentials} setUserType={setAdmin}/>
+    : <LoginScreen onLogin={setCredentials}/>
 }
 // APP_END
 

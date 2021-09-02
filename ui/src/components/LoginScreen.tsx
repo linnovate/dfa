@@ -2,50 +2,47 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React, { useCallback } from 'react'
-import { Button, Checkbox, Form, Grid, Header, Segment } from 'semantic-ui-react'
+import { Button, Checkbox, Form, Grid, Header, Segment, Select } from 'semantic-ui-react'
 import Credentials, { computeCredentials } from '../Credentials';
 import Ledger from '@daml/ledger';
 import { User } from '@daml.js/dfa';
 import { DeploymentMode, deploymentMode, ledgerId, httpBaseUrl} from '../config';
 import { useEffect } from 'react';
+import { Party } from '@daml/types';
+import DamlLedger from '@daml/react';
 
 type Props = {
   onLogin: (credentials: Credentials) => void;
-  setUserType: (isAdmin: Boolean) => void;
 }
 
 /**
  * React component for the login screen of the `App`.
  */
-const LoginScreen: React.FC<Props> = ({onLogin, setUserType}) => {
+const LoginScreen: React.FC<Props> = ({onLogin}) => {
   const [username, setUsername] = React.useState('');
-  var isAdmin = false;
-  const click = () => {
-    isAdmin = !isAdmin;
-  }
-  const login = useCallback(async (credentials: Credentials, isAdmin: Boolean) => {
+  const [party, setParty] = React.useState('');
+  const login = useCallback(async (credentials: Credentials) => {
     try {
       const ledger = new Ledger({token: credentials.token, httpBaseUrl});
-      if (isAdmin) {
-        if (await ledger.fetchByKey(User.Admin, credentials.party) === null) { // cannot use isAdmin ? User.Admin : User.User for typing issues
-          await ledger.create(User.Admin, {adminame: credentials.party});
-        }
-      } else {
-        if (await ledger.fetchByKey(User.User, credentials.party) === null) {
-          await ledger.create(User.User, {username: credentials.party, requests: []});
+      if (party == 'User') {
+        if (await ledger.fetchByKey(User.User, credentials.party) === null) { // cannot use isAdmin ? User.Admin : User.User for typing issues
+          await ledger.create(User.User, {username: credentials.party, requests:[]});
         }
       }
       onLogin(credentials);
-      setUserType(isAdmin);
     } catch(error) {
       alert(`Unknown error:\n${error}`);
     }
-  }, [onLogin, setUserType]);
+  }, [onLogin]);
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
     const credentials = computeCredentials(username);
-    await login(credentials, isAdmin);
+    await login(credentials);
+  }
+
+  const changeParty = (party: string) => {
+    setParty(party)
   }
 
   const handleDablLogin = () => {
@@ -64,8 +61,8 @@ const LoginScreen: React.FC<Props> = ({onLogin, setUserType}) => {
     }
     url.search = '';
     window.history.replaceState(window.history.state, '', url.toString());
-    login({token, party, ledgerId}, isAdmin);
-  }, [login, isAdmin]);
+    login({token, party, ledgerId});
+  }, [login]);
 
   return (
     <Grid textAlign='center' style={{ height: '100vh' }} verticalAlign='middle'>
@@ -89,10 +86,13 @@ const LoginScreen: React.FC<Props> = ({onLogin, setUserType}) => {
                   className='test-select-username-field'
                   onChange={e => setUsername(e.currentTarget.value)}
                 />
-                <Checkbox
-                  onChange={click}
-                  label="I'm an Admin">
-                </Checkbox>
+                <select onChange={e => setParty(e.target.value)}>
+                  <option value="User">User</option>
+                  <option value="Admin">Admin</option>
+                  <option value="Zoolog">Zoolog</option>
+                  <option value="Meteorologist">Meteorologist</option>
+                  <option value="Hamal">Hamal</option>
+                </select>
                 <Button
                   primary
                   fluid

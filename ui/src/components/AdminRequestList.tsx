@@ -5,11 +5,10 @@ import { useLedger } from '@daml/react';
 import ViewContract from './ViewContract';
 
 type Props = {
-    requests: User.Request[] | undefined;
-    admin: User.Admin;
+    requests: User.FlightRequest[] | undefined;
 }
 
-const AdminRequestList: React.FC<Props> = ({requests, admin}) => {
+const AdminRequestList: React.FC<Props> = ({requests}) => {
     const ledger = useLedger();
     return (
         <List relaxed>
@@ -17,24 +16,18 @@ const AdminRequestList: React.FC<Props> = ({requests, admin}) => {
                 <Segment>
                     <List.Item
                         header={"To: " + request.admin}
-                        content={"Content: " + request.content}
+                        content={"Content: " + request.flight}
                     >
                     </List.Item>
                     <ViewContract
-                        receivers={request.receivers}
-                        approved={request.signed}
-                        disapproved={request.disapproved}
+                        receivers={request.parties}
+                        approved={request.approvers}
+                        disapproved={request.disapprovers}
                     >
                     </ViewContract>
                     <Button
                         positive
                         onClick={() => {
-                            if (admin.adminame === "Admin") { // check if the main admin is trying to finalize the process
-                                ledger.exerciseByKey(User.Request.Finalize, {_1: request.admin, _2: request.content}, {signer: admin.adminame}); //TODO: add a special status
-                            }
-                            else {
-                                ledger.exerciseByKey(User.Request.Sign, {_1: request.admin, _2: request.content}, {signer: admin.adminame});
-                            }
                         }}
                         animated='fade'
                     >
@@ -44,12 +37,6 @@ const AdminRequestList: React.FC<Props> = ({requests, admin}) => {
                     <Button
                         negative
                         onClick={() => {
-                            if (admin.adminame === "Admin") { // check if the main admin is trying to delete the request
-                                ledger.exerciseByKey(User.Request.Remove, {_1: request.admin, _2: request.content}, {signer: admin.adminame});
-                            }
-                            else {
-                                ledger.exerciseByKey(User.Request.Disapprove, {_1: request.admin, _2: request.content}, {signer: admin.adminame});
-                            }
                         }}
                         animated='fade'
                     >

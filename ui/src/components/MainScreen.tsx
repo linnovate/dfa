@@ -9,14 +9,13 @@ import MainAdminView from './MainAdminView';
 
 type Props = {
   onLogout: () => void;
-  isAdmin: Boolean;
 }
 
 /**
  * React component for the main screen of the `App`.
  */
-const MainScreen: React.FC<Props> = ({onLogout, isAdmin}) => {
-  const View = isAdmin ? MainAdminView : MainView;
+const MainScreen: React.FC<Props> = ({onLogout}) => {
+  const View =  MainView;
   return (
     <>
       <Menu icon borderless>
