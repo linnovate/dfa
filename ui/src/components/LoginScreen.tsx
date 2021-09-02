@@ -2,14 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React, { useCallback } from 'react'
-import { Button, Checkbox, Form, Grid, Header, Segment, Select } from 'semantic-ui-react'
+import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react'
 import Credentials, { computeCredentials } from '../Credentials';
 import Ledger from '@daml/ledger';
 import { User } from '@daml.js/dfa';
 import { DeploymentMode, deploymentMode, ledgerId, httpBaseUrl} from '../config';
 import { useEffect } from 'react';
-import { Party } from '@daml/types';
-import DamlLedger from '@daml/react';
 
 type Props = {
   onLogin: (credentials: Credentials) => void;

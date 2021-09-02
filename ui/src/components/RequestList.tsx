@@ -5,13 +5,13 @@ import { useLedger, useParty } from '@daml/react';
 import ViewContract from './ViewContract';
 
 type Props = {
-    requests: User.FlightRequest[] | undefined;
+    requests: User.FlightRequest[] | User.CompletedRequest[] | undefined;
 }
 
 const AdminRequestList: React.FC<Props> = ({requests}) => {
     const party = useParty();
 
-    const userIsParty = (request: any) => {
+    const userIsParty = (request: User.FlightRequest | User.CompletedRequest) => {
         if(party in request.parties && !(party in request.approvers) && !(party in request.disapprovers)) {
             return <><Button
                 positive
@@ -38,7 +38,7 @@ const AdminRequestList: React.FC<Props> = ({requests}) => {
             {requests && requests.map((request) => (
                 <Segment>
                     <List.Item
-                        header={"To: " + party}
+                        header={"From: " + party}
                         content={"Content: " + request.flight}
                     >
                     </List.Item>

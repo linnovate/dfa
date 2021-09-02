@@ -1,33 +1,28 @@
 import React from 'react';
 import { Container, Grid, Header, Icon, Segment, Divider } from 'semantic-ui-react';
 import { User } from '@daml.js/dfa';
-import { useParty, useStreamFetchByKeys, useQuery } from '@daml/react';
+import { useParty, useQuery } from '@daml/react';
 import RequestList from './RequestList';
+import RequestSendAndEdit from './RequestSendAndEdit';
 
 const MainAdminView: React.FC = () => {
     const parties = ["Zoolog", "Meteorologist", "Hamal"];
     const party = useParty();
-    var requestResult, requiresReview, allRequests;
+    const allRequestResult = useQuery(User.CompletedRequest, () => ({parties: parties}), []);
+    const allRequiresReview = useQuery(User.FlightRequest, () => ({parties: parties}), []);
+    const myRequestResults = allRequestResult.contracts.filter((req) => {if(party in req.observers || party in req.signatories) return req});
+    const myRequireReview = allRequiresReview.contracts.filter((req) => {if(party in req.observers || party in req.signatories) return req});
+    var myRequestResultsMap = myRequestResults.map((req) => req.payload);
+    var myRequireReviewMap = myRequireReview.map((req) => req.payload);
 
-    if (party in parties) {
-        requestResult = useQuery(User.CompletedRequest, () => ({parties: parties}), []);
-        requiresReview = useQuery(User.FlightRequest, () => ({parties: parties}), []);
-    }
-    else if (party == 'Admin') {
-        requestResult = useQuery(User.CompletedRequest, () => ({admin: party}), []);
-        requiresReview = useQuery(User.FlightRequest, () => ({admin: party}), []);
-    }
-    else {
-        requestResult = useQuery(User.CompletedRequest, () => ({user: party}), []);
-        requiresReview = useQuery(User.FlightRequest, () => ({user: party}), []);
-    }
 
-    allRequests = requestResult.contracts.map((request) => request.payload);
+    const userSegmentHandler = () => {
+        if(party === 'User') {
+            return <RequestSendAndEdit/>
+        }
+    }
     
 
-    if (party in parties) {
-        allRequests = allRequests.concat(requiresReview.contracts.map((request) => request.payload));
-    }
     return (
         <Container>
             <Grid centered columns={2}>
@@ -37,15 +32,30 @@ const MainAdminView: React.FC = () => {
                             {party ? `Welcome, ${party}!` : 'Loading...'}
                         </Header>
                         <Segment>
+                            {userSegmentHandler}
+                        </Segment>
+                        <Segment>
                             <Header as='h2'>
                                 <Icon name='globe' />
                                 <Header.Content>
-                                    Requests
+                                    Active Requests
                                 </Header.Content>
                             </Header>
                             <Divider />
                             <RequestList
-                                requests = {allRequests}
+                                requests = {myRequestResultsMap}
+                            />
+                        </Segment>
+                        <Segment>
+                            <Header as='h2'>
+                                <Icon name='globe' />
+                                <Header.Content>
+                                    Closed Requests
+                                </Header.Content>
+                            </Header>
+                            <Divider />
+                            <RequestList
+                                requests = {myRequireReviewMap}
                             />
                         </Segment>
                     </Grid.Column>
