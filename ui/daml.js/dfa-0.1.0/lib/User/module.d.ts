@@ -20,7 +20,7 @@ export declare type CompletedRequest = {
 };
 
 export declare const CompletedRequest:
-  damlTypes.Template<CompletedRequest, CompletedRequest.Key, 'c6657dffc277532f286510121973d7aa34f44b989b633901b21c802ec0961cdc:User:CompletedRequest'> & {
+  damlTypes.Template<CompletedRequest, CompletedRequest.Key, '9efa190a3bd776bca2b0e32d0b56dcc61721ed4be71d39b5c83995dcbe4e8051:User:CompletedRequest'> & {
   Archive: damlTypes.Choice<CompletedRequest, pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662.DA.Internal.Template.Archive, {}, CompletedRequest.Key>;
 };
 
@@ -52,7 +52,7 @@ export declare type User = {
 };
 
 export declare const User:
-  damlTypes.Template<User, User.Key, 'c6657dffc277532f286510121973d7aa34f44b989b633901b21c802ec0961cdc:User:User'> & {
+  damlTypes.Template<User, User.Key, '9efa190a3bd776bca2b0e32d0b56dcc61721ed4be71d39b5c83995dcbe4e8051:User:User'> & {
   Archive: damlTypes.Choice<User, pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662.DA.Internal.Template.Archive, {}, User.Key>;
   CreateRequest: damlTypes.Choice<User, CreateRequest, damlTypes.ContractId<User>, User.Key>;
 };
@@ -97,7 +97,7 @@ export declare type FlightRequest = {
 };
 
 export declare const FlightRequest:
-  damlTypes.Template<FlightRequest, FlightRequest.Key, 'c6657dffc277532f286510121973d7aa34f44b989b633901b21c802ec0961cdc:User:FlightRequest'> & {
+  damlTypes.Template<FlightRequest, FlightRequest.Key, '9efa190a3bd776bca2b0e32d0b56dcc61721ed4be71d39b5c83995dcbe4e8051:User:FlightRequest'> & {
   Archive: damlTypes.Choice<FlightRequest, pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662.DA.Internal.Template.Archive, {}, FlightRequest.Key>;
   Approved: damlTypes.Choice<FlightRequest, Approved, {}, FlightRequest.Key>;
   Disapproved: damlTypes.Choice<FlightRequest, Disapproved, {}, FlightRequest.Key>;

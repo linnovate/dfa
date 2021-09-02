@@ -20,24 +20,25 @@ type Props = {
  */
 const LoginScreen: React.FC<Props> = ({onLogin}) => {
   const [username, setUsername] = React.useState('');
-  const [party, setParty] = React.useState('User');
+  const [party, setParty] = React.useState('');
   const login = useCallback(async (credentials: Credentials) => {
     try {
       const ledger = new Ledger({token: credentials.token, httpBaseUrl});
+      console.log(party)
       if (party === 'User') {
         if (await ledger.fetchByKey(User.User, credentials.party) === null) {
-          await ledger.create(User.User, {username: username, requests:[]});
+          await ledger.create(User.User, {username: party, requests:[]});
         }
       }
-      onLogin({party: credentials.party, token: credentials.token, ledgerId: credentials.ledgerId});
+      onLogin({party: party, token: credentials.token, ledgerId: credentials.ledgerId});
     } catch(error) {
       alert(`Unknown error:\n${error}`);
     }
-  }, [onLogin]);
+  }, [onLogin, party]);
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
-    const credentials = computeCredentials(username);
+    const credentials = computeCredentials(party);
     await login(credentials);
   }
 
@@ -93,7 +94,7 @@ const LoginScreen: React.FC<Props> = ({onLogin}) => {
                   {key: "Zoolog", text: "Zoolog", value: "Zoolog"},
                   {key: "Meteorologist", text: "Meteorologist", value: "Meteorologist"},
                   {key: "Hamal", text: "Hamal", value: "Hamal"},]}
-                  onChange={e => setParty(e.currentTarget.textContent ?? 'User')}
+                  onChange={e => setParty(e.currentTarget.textContent ?? '')}
                 />
                 <Button
                   primary

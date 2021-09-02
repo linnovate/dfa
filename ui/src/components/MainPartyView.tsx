@@ -15,7 +15,6 @@ const MainAdminView: React.FC = () => {
     var myRequestResultsMap = myRequestResults.map((req) => req.payload);
     var myRequireReviewMap = myRequireReview.map((req) => req.payload);
 
-
     const userSegmentHandler = () => {
         if(party === "User") {
             return <Segment><RequestSendAndEdit/></Segment>
