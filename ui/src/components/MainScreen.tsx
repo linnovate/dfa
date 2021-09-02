@@ -3,9 +3,9 @@
 
 import React from 'react'
 import { Menu } from 'semantic-ui-react'
-import MainView from './MainView';
 import { useParty } from '@daml/react';
 import MainAdminView from './MainPartyView';
+import MainPartyView from './MainPartyView';
 
 type Props = {
   onLogout: () => void;
@@ -15,7 +15,7 @@ type Props = {
  * React component for the main screen of the `App`.
  */
 const MainScreen: React.FC<Props> = ({onLogout}) => {
-  const View = MainView;
+  const View = MainPartyView;
   return (
     <>
       <Menu icon borderless>

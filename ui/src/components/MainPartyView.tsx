@@ -2,7 +2,7 @@ import React from 'react';
 import { Container, Grid, Header, Icon, Segment, Divider } from 'semantic-ui-react';
 import { User } from '@daml.js/dfa';
 import { useParty, useStreamFetchByKeys, useQuery } from '@daml/react';
-import AdminRequestList from './RequestList';
+import RequestList from './RequestList';
 
 const MainAdminView: React.FC = () => {
     const parties = ["Zoolog", "Meteorologist", "Hamal"];
@@ -44,7 +44,7 @@ const MainAdminView: React.FC = () => {
                                 </Header.Content>
                             </Header>
                             <Divider />
-                            <AdminRequestList
+                            <RequestList
                                 requests = {allRequests}
                             />
                         </Segment>
