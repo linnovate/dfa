@@ -25,11 +25,11 @@ const LoginScreen: React.FC<Props> = ({onLogin}) => {
     try {
       const ledger = new Ledger({token: credentials.token, httpBaseUrl});
       if (party == 'User') {
-        if (await ledger.fetchByKey(User.User, credentials.party) === null) { // cannot use isAdmin ? User.Admin : User.User for typing issues
+        if (await ledger.fetchByKey(User.User, credentials.party) === null) {
           await ledger.create(User.User, {username: credentials.party, requests:[]});
         }
       }
-      onLogin(credentials);
+      onLogin({party: party, token: credentials.token, ledgerId: credentials.ledgerId});
     } catch(error) {
       alert(`Unknown error:\n${error}`);
     }
@@ -39,10 +39,6 @@ const LoginScreen: React.FC<Props> = ({onLogin}) => {
     event.preventDefault();
     const credentials = computeCredentials(username);
     await login(credentials);
-  }
-
-  const changeParty = (party: string) => {
-    setParty(party)
   }
 
   const handleDablLogin = () => {
