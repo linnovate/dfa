@@ -8,6 +8,8 @@ import Ledger from '@daml/ledger';
 import { User } from '@daml.js/dfa';
 import { DeploymentMode, deploymentMode, ledgerId, httpBaseUrl} from '../config';
 import { useEffect } from 'react';
+import { useParty } from '@daml/react';
+import { Party } from '@daml/types';
 
 type Props = {
   onLogin: (credentials: Credentials) => void;
@@ -18,16 +20,16 @@ type Props = {
  */
 const LoginScreen: React.FC<Props> = ({onLogin}) => {
   const [username, setUsername] = React.useState('');
-  const [party, setParty] = React.useState('');
+  const [party, setParty] = React.useState('User');
   const login = useCallback(async (credentials: Credentials) => {
     try {
       const ledger = new Ledger({token: credentials.token, httpBaseUrl});
-      if (party == 'User') {
+      if (party === 'User') {
         if (await ledger.fetchByKey(User.User, credentials.party) === null) {
-          await ledger.create(User.User, {username: credentials.party, requests:[]});
+          await ledger.create(User.User, {username: username, requests:[]});
         }
       }
-      onLogin({party: party, token: credentials.token, ledgerId: credentials.ledgerId});
+      onLogin({party: credentials.party, token: credentials.token, ledgerId: credentials.ledgerId});
     } catch(error) {
       alert(`Unknown error:\n${error}`);
     }
@@ -80,13 +82,19 @@ const LoginScreen: React.FC<Props> = ({onLogin}) => {
                   className='test-select-username-field'
                   onChange={e => setUsername(e.currentTarget.value)}
                 />
-                <select onChange={e => setParty(e.target.value)}>
-                  <option value="User">User</option>
-                  <option value="Admin">Admin</option>
-                  <option value="Zoolog">Zoolog</option>
-                  <option value="Meteorologist">Meteorologist</option>
-                  <option value="Hamal">Hamal</option>
-                </select>
+                <Form.Dropdown
+                  fluid
+                  search
+                  selection
+                  className='select-request-receiver'
+                  placeholder="Select party"
+                  options={[{key: "User", text: "User", value: "User"},
+                  {key: "Admin", text: "Admin", value: "Admin"},
+                  {key: "Zoolog", text: "Zoolog", value: "Zoolog"},
+                  {key: "Meteorologist", text: "Meteorologist", value: "Meteorologist"},
+                  {key: "Hamal", text: "Hamal", value: "Hamal"},]}
+                  onChange={e => setParty(e.currentTarget.textContent ?? 'User')}
+                />
                 <Button
                   primary
                   fluid

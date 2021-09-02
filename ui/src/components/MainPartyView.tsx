@@ -17,8 +17,8 @@ const MainAdminView: React.FC = () => {
 
 
     const userSegmentHandler = () => {
-        if(party === 'User') {
-            return <RequestSendAndEdit/>
+        if(party === "User") {
+            return <Segment><RequestSendAndEdit/></Segment>
         }
     }
     
@@ -31,9 +31,7 @@ const MainAdminView: React.FC = () => {
                         <Header as='h1' size='huge' color='blue' textAlign='center' style={{padding: '1ex 0em 0ex 0em'}}>
                             {party ? `Welcome, ${party}!` : 'Loading...'}
                         </Header>
-                        <Segment>
-                            {userSegmentHandler}
-                        </Segment>
+                        {userSegmentHandler()}
                         <Segment>
                             <Header as='h2'>
                                 <Icon name='globe' />
