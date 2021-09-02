@@ -13,13 +13,14 @@ import * as pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662 
 export declare type CompletedRequest = {
   user: damlTypes.Party;
   admin: damlTypes.Party;
+  parties: damlTypes.Party[];
   approvers: damlTypes.Party[];
   disapprovers: damlTypes.Party[];
   flight: Flight;
 };
 
 export declare const CompletedRequest:
-  damlTypes.Template<CompletedRequest, CompletedRequest.Key, 'c2100db0c56b69c11bde20ced3a2209eba1f79e904bb21bc79f3fac69e891687:User:CompletedRequest'> & {
+  damlTypes.Template<CompletedRequest, CompletedRequest.Key, '90df3ca7ec0251336fe475e918d16e4ddfdad8429fc28832918d1e13f14e6f5a:User:CompletedRequest'> & {
   Archive: damlTypes.Choice<CompletedRequest, pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662.DA.Internal.Template.Archive, {}, CompletedRequest.Key>;
 };
 
@@ -51,7 +52,7 @@ export declare type User = {
 };
 
 export declare const User:
-  damlTypes.Template<User, User.Key, 'c2100db0c56b69c11bde20ced3a2209eba1f79e904bb21bc79f3fac69e891687:User:User'> & {
+  damlTypes.Template<User, User.Key, '90df3ca7ec0251336fe475e918d16e4ddfdad8429fc28832918d1e13f14e6f5a:User:User'> & {
   Archive: damlTypes.Choice<User, pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662.DA.Internal.Template.Archive, {}, User.Key>;
   CreateRequest: damlTypes.Choice<User, CreateRequest, damlTypes.ContractId<User>, User.Key>;
 };
@@ -96,7 +97,7 @@ export declare type FlightRequest = {
 };
 
 export declare const FlightRequest:
-  damlTypes.Template<FlightRequest, FlightRequest.Key, 'c2100db0c56b69c11bde20ced3a2209eba1f79e904bb21bc79f3fac69e891687:User:FlightRequest'> & {
+  damlTypes.Template<FlightRequest, FlightRequest.Key, '90df3ca7ec0251336fe475e918d16e4ddfdad8429fc28832918d1e13f14e6f5a:User:FlightRequest'> & {
   Archive: damlTypes.Choice<FlightRequest, pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662.DA.Internal.Template.Archive, {}, FlightRequest.Key>;
   Approved: damlTypes.Choice<FlightRequest, Approved, {}, FlightRequest.Key>;
   Disapproved: damlTypes.Choice<FlightRequest, Disapproved, {}, FlightRequest.Key>;

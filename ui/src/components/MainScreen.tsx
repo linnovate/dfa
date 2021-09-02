@@ -5,7 +5,7 @@ import React from 'react'
 import { Menu } from 'semantic-ui-react'
 import MainView from './MainView';
 import { useParty } from '@daml/react';
-import MainAdminView from './MainAdminView';
+import MainAdminView from './MainPartyView';
 
 type Props = {
   onLogout: () => void;

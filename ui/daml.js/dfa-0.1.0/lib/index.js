@@ -7,4 +7,4 @@ function __export(m) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var User = require('./User');
 exports.User = User;
-exports.packageId = 'c2100db0c56b69c11bde20ced3a2209eba1f79e904bb21bc79f3fac69e891687';
+exports.packageId = '90df3ca7ec0251336fe475e918d16e4ddfdad8429fc28832918d1e13f14e6f5a';
