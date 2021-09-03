@@ -13,7 +13,7 @@ type Flight = {
 }
 
 const RequestSendAndEdit: React.FC<Props> = () => {
-  const sender = useParty();
+  const party = useParty();
   const ledger = useLedger();
   const [flight, setFlight] = React.useState<Flight>({x: "0", y: "0", time: "00:00", altitude: "0"});
   const [isSubmitting, setIsSubmitting] = React.useState(false);
@@ -23,7 +23,7 @@ const RequestSendAndEdit: React.FC<Props> = () => {
       event.preventDefault();
       setIsSubmitting(true);
       const parties = ["Zoolog", "Meteorologist", "Hamal"];
-      await ledger.exerciseByKey(User.User.CreateRequest, sender, {parties: parties, admin: "Admin", flight:flight});
+      await ledger.exerciseByKey(User.User.CreateRequest, party, {parties: parties, admin: "Admin", flight:flight});
     } catch (error) {
       alert(`Error sending message:\n${JSON.stringify(error)}`);
     } finally {

@@ -8,8 +8,6 @@ import Ledger from '@daml/ledger';
 import { User } from '@daml.js/dfa';
 import { DeploymentMode, deploymentMode, ledgerId, httpBaseUrl} from '../config';
 import { useEffect } from 'react';
-import { useParty } from '@daml/react';
-import { Party } from '@daml/types';
 
 type Props = {
   onLogin: (credentials: Credentials) => void;

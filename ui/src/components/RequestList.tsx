@@ -12,7 +12,7 @@ const AdminRequestList: React.FC<Props> = ({requests}) => {
     const party = useParty();
 
     const userIsParty = (request: User.FlightRequest | User.CompletedRequest) => {
-        if(party in request.parties && !(party in request.approvers) && !(party in request.disapprovers)) {
+        if(request.parties.indexOf(party) > -1 && !(request.approvers.indexOf(party) > -1) && !(request.disapprovers.indexOf(party) > -1)) {
             return <><Button
                 positive
                 onClick={() => {
@@ -48,7 +48,7 @@ const AdminRequestList: React.FC<Props> = ({requests}) => {
                         disapproved={request.disapprovers}
                     >
                     </ViewContract>
-                    {userIsParty}            
+                    {userIsParty(request)}            
                 </Segment>
             ))}
         </List>

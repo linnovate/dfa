@@ -6,12 +6,11 @@ import RequestList from './RequestList';
 import RequestSendAndEdit from './RequestSendAndEdit';
 
 const MainAdminView: React.FC = () => {
-    const parties = ["Zoolog", "Meteorologist", "Hamal"];
     const party = useParty();
-    const allRequestResult = useQuery(User.CompletedRequest, () => ({parties: parties}), []);
-    const allRequiresReview = useQuery(User.FlightRequest, () => ({parties: parties}), []);
-    const myRequestResults = allRequestResult.contracts.filter((req) => {return party in req.observers || party in req.signatories ? req : null});
-    const myRequireReview = allRequiresReview.contracts.filter((req) => {return party in req.observers || party in req.signatories ? req : null});
+    const allRequestResult = useQuery(User.CompletedRequest, () => ({}), []);
+    const allRequiresReview = useQuery(User.FlightRequest, () => ({}), []);
+    const myRequestResults = allRequestResult.contracts.filter((req) => req.observers.indexOf(party) > -1 || req.signatories.indexOf(party) > -1);
+    const myRequireReview = allRequiresReview.contracts.filter((req) => req.observers.indexOf(party) > -1 || req.signatories.indexOf(party) > -1)
     var myRequestResultsMap = myRequestResults.map((req) => req.payload);
     var myRequireReviewMap = myRequireReview.map((req) => req.payload);
 
@@ -40,7 +39,7 @@ const MainAdminView: React.FC = () => {
                             </Header>
                             <Divider />
                             <RequestList
-                                requests = {myRequestResultsMap}
+                                requests = {myRequireReviewMap}
                             />
                         </Segment>
                         <Segment>
@@ -52,7 +51,7 @@ const MainAdminView: React.FC = () => {
                             </Header>
                             <Divider />
                             <RequestList
-                                requests = {myRequireReviewMap}
+                                requests = {myRequestResultsMap}
                             />
                         </Segment>
                     </Grid.Column>
