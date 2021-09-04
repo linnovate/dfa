@@ -17,7 +17,6 @@ type Props = {
  * React component for the login screen of the `App`.
  */
 const LoginScreen: React.FC<Props> = ({onLogin}) => {
-  const [username, setUsername] = React.useState('');
   const [party, setParty] = React.useState('');
   const login = useCallback(async (credentials: Credentials) => {
     try {

@@ -60,8 +60,8 @@ const AdminRequestList: React.FC<Props> = ({requests, requestsId, update}) => {
             {requests && requests.map((request) => (
                 <Segment>
                     <List.Item
-                        header={"From: " + party}
-                        content={"Content: " + request.flight}
+                        header={"From: " + request.user}
+                        content={"Content: " + "X: " + request.flight.x + ", Y: " + request.flight.y + ", Time: " + request.flight.time + ", Altitude: " + request.flight.altitude}
                     >
                     </List.Item>
                     <ViewContract
