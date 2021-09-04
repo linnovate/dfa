@@ -20,7 +20,7 @@ const MainAdminView: React.FC = () => {
 
     const userSegmentHandler = () => {
         if(party === "User") {
-            return <Segment><RequestSendAndEdit/></Segment>
+            return <Segment><RequestSendAndEdit update={reload}/></Segment>
         }
     }
     

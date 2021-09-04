@@ -3,7 +3,9 @@ import { Form, Button } from 'semantic-ui-react';
 import { User } from '@daml.js/dfa';
 import { useParty, useLedger } from '@daml/react';
 
-type Props = {}
+type Props = {
+  update: Function;
+}
 
 type Flight = {
   x: string;
@@ -12,7 +14,7 @@ type Flight = {
   altitude: string;
 }
 
-const RequestSendAndEdit: React.FC<Props> = () => {
+const RequestSendAndEdit: React.FC<Props> = ({update}) => {
   const party = useParty();
   const ledger = useLedger();
   const [flight, setFlight] = React.useState<Flight>({x: "0", y: "0", time: "00:00", altitude: "0"});
@@ -28,6 +30,7 @@ const RequestSendAndEdit: React.FC<Props> = () => {
       alert(`Error sending message:\n${JSON.stringify(error)}`);
     } finally {
       setIsSubmitting(false);
+      update();
     }
   };
   return (
