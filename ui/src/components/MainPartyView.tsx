@@ -19,7 +19,8 @@ const MainAdminView: React.FC = () => {
     const reload = useReload();
 
     const userSegmentHandler = () => {
-        if(party === "User") {
+        const parties = ['Admin', 'Zoolog', 'Meteorologist', 'Hamal'];
+        if(parties.indexOf(party) === -1) {
             return <Segment><RequestSendAndEdit update={reload}/></Segment>
         }
     }

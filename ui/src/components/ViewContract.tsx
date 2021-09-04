@@ -10,11 +10,11 @@ type Props = {
 
 const ViewContract: React.FC<Props> = ({receivers, approved, disapproved}) => {
 
-    const status = (admin: Party) => {
-        if (admin in approved) {
+    const status = (party: Party) => {
+        if (approved.indexOf(party) !== -1) {
             return "\u2611";
         }
-        if (admin in disapproved) {
+        if (disapproved.indexOf(party) !== -1) {
             return "\u2612";
         }
         return "\u2610";
@@ -22,10 +22,10 @@ const ViewContract: React.FC<Props> = ({receivers, approved, disapproved}) => {
 
     return (
         <List>
-            {receivers.map((admin) => (
+            {receivers.map((party) => (
                 <List.Item
-                    header={admin}
-                    content={status(admin)}
+                    header={party}
+                    content={status(party)}
                 >
                 </List.Item>
             ))}

@@ -22,8 +22,8 @@ const LoginScreen: React.FC<Props> = ({onLogin}) => {
   const login = useCallback(async (credentials: Credentials) => {
     try {
       const ledger = new Ledger({token: credentials.token, httpBaseUrl});
-      console.log(party)
-      if (party === 'User') {
+      const parties = ['Admin', 'Zoolog', 'Meteorologist', 'Hamal'];
+      if (parties.indexOf(party) === -1) {
         if (await ledger.fetchByKey(User.User, credentials.party) === null) {
           await ledger.create(User.User, {username: party, requests:[]});
         }
@@ -59,6 +59,21 @@ const LoginScreen: React.FC<Props> = ({onLogin}) => {
     login({token, party, ledgerId});
   }, [login]);
 
+  const handleParties = () => {
+    const parties = ['Admin', 'Zoolog', 'Meteorologist', 'Hamal'];
+    if(parties.indexOf(party) === -1) {
+      return <Form.Input
+      fluid
+      icon='user'
+      iconPosition='left'
+      placeholder='Username'
+      value={party}
+      className='test-select-username-field'
+      onChange={e => setParty(e.currentTarget.value)}
+    />
+    }
+  }
+
   return (
     <Grid textAlign='center' style={{ height: '100vh' }} verticalAlign='middle'>
       <Grid.Column style={{ maxWidth: 450 }}>
@@ -72,15 +87,6 @@ const LoginScreen: React.FC<Props> = ({onLogin}) => {
             {deploymentMode !== DeploymentMode.PROD_DABL
             ? <>
                 {/* FORM_BEGIN */}
-                <Form.Input
-                  fluid
-                  icon='user'
-                  iconPosition='left'
-                  placeholder='Username'
-                  value={username}
-                  className='test-select-username-field'
-                  onChange={e => setUsername(e.currentTarget.value)}
-                />
                 <Form.Dropdown
                   fluid
                   search
@@ -92,13 +98,16 @@ const LoginScreen: React.FC<Props> = ({onLogin}) => {
                   {key: "Zoolog", text: "Zoolog", value: "Zoolog"},
                   {key: "Meteorologist", text: "Meteorologist", value: "Meteorologist"},
                   {key: "Hamal", text: "Hamal", value: "Hamal"},]}
+                  defaultValue={"User"}
                   onChange={e => setParty(e.currentTarget.textContent ?? '')}
                 />
+                {handleParties()}
                 <Button
                   primary
                   fluid
                   className='test-select-login-button'
-                  onClick={handleLogin}>
+                  onClick={handleLogin}
+                  disabled={party === "User" && party.length >= 3}>
                   Log in
                 </Button>
                 {/* FORM_END */}
