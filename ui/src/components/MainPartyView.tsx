@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Grid, Header, Icon, Segment, Divider } from 'semantic-ui-react';
 import { User } from '@daml.js/dfa';
-import { useParty, useQuery } from '@daml/react';
+import { useParty, useQuery, useReload } from '@daml/react';
 import RequestList from './RequestList';
 import RequestSendAndEdit from './RequestSendAndEdit';
 
@@ -10,9 +10,13 @@ const MainAdminView: React.FC = () => {
     const allRequestResult = useQuery(User.CompletedRequest, () => ({}), []);
     const allRequiresReview = useQuery(User.FlightRequest, () => ({}), []);
     const myRequestResults = allRequestResult.contracts.filter((req) => req.observers.indexOf(party) > -1 || req.signatories.indexOf(party) > -1);
-    const myRequireReview = allRequiresReview.contracts.filter((req) => req.observers.indexOf(party) > -1 || req.signatories.indexOf(party) > -1)
+    const myRequireReview = allRequiresReview.contracts.filter((req) => (req.observers.indexOf(party) > -1 || req.signatories.indexOf(party) > -1)
+    && (!(req.payload.approvers.indexOf(party) > -1) && !(req.payload.disapprovers.indexOf(party) > -1)));
     var myRequestResultsMap = myRequestResults.map((req) => req.payload);
-    var myRequireReviewMap = myRequireReview.map((req) => req.payload);
+    var myRequestResultsIdMap = myRequestResults.map((req) => req.contractId);
+    const myRequireReviewMap = myRequireReview.map((req) => req.payload);
+    const myRequireReviewIdMap = myRequireReview.map((req) => req.contractId);
+    const reload = useReload();
 
     const userSegmentHandler = () => {
         if(party === "User") {
@@ -20,9 +24,8 @@ const MainAdminView: React.FC = () => {
         }
     }
     
-
     return (
-        <Container>
+        <Container key={myRequireReviewMap.length}>
             <Grid centered columns={2}>
                 <Grid.Row stretched>
                     <Grid.Column>
@@ -40,6 +43,8 @@ const MainAdminView: React.FC = () => {
                             <Divider />
                             <RequestList
                                 requests = {myRequireReviewMap}
+                                requestsId = {myRequireReviewIdMap}
+                                update = {reload}
                             />
                         </Segment>
                         <Segment>
@@ -52,6 +57,8 @@ const MainAdminView: React.FC = () => {
                             <Divider />
                             <RequestList
                                 requests = {myRequestResultsMap}
+                                requestsId = {myRequestResultsIdMap}
+                                update = {reload}
                             />
                         </Segment>
                     </Grid.Column>
