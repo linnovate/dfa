@@ -20,7 +20,7 @@ const RequestSendAndEdit: React.FC<Props> = ({update}) => {
   const ledger = useLedger();
   const [flight, setFlight] = React.useState<Flight>({x: "0", y: "0", time: "00:00", altitude: "0"});
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [showMap, setShowMap] = React.useState(false);
+  const [showMap, setShowMap] = React.useState(true);
 
   const submit = async (event: React.FormEvent) => {
     try {
@@ -73,6 +73,9 @@ const RequestSendAndEdit: React.FC<Props> = ({update}) => {
       <Form.Input
         className='select-request-content'
         placeholder="Altitude"
+        type="number"
+        step='100'
+        min='0'
         value={flight.altitude}
         onChange={e => setFlight({x: flight.x, y: flight.y, time: flight.time, altitude: e.currentTarget.value})}
       />
