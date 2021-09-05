@@ -61,7 +61,7 @@ const AdminRequestList: React.FC<Props> = ({requests, requestsId, update}) => {
                 <Segment>
                     <List.Item
                         header={"From: " + request.user}
-                        content={"Content: " + "X: " + request.flight.x + ", Y: " + request.flight.y + ", Time: " + request.flight.time + ", Altitude: " + request.flight.altitude}
+                        content={"Content: X: " + request.flight.x + ", Y: " + request.flight.y + ", Time: " + request.flight.time + ", Altitude: " + request.flight.altitude}
                     >
                     </List.Item>
                     <ViewContract
