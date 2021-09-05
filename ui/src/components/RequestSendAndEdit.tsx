@@ -2,6 +2,7 @@ import React from 'react'
 import { Form, Button } from 'semantic-ui-react';
 import { User } from '@daml.js/dfa';
 import { useParty, useLedger } from '@daml/react';
+import { ChooseMap } from './Maps';
 
 type Props = {
   update: Function;
@@ -35,6 +36,10 @@ const RequestSendAndEdit: React.FC<Props> = ({update}) => {
   };
   return (
     <Form onSubmit={submit}>
+      {
+      <div style={{width:"100%", height:"400px"}}>
+      <ChooseMap onSubmit={(lat:number,lng:number) => setFlight({x: lat.toString(), y: lng.toString(), time: flight.time, altitude: flight.altitude})}/>
+      </div>}
       <Form.Input
         className='select-request-content'
         placeholder="X coordinates"
