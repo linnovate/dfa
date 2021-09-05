@@ -7,7 +7,6 @@ import MainScreen from './MainScreen';
 import DamlLedger from '@daml/react';
 import Credentials from '../Credentials';
 import { httpBaseUrl } from '../config';
-import Ledger from '@daml/ledger';
 
 /**
  * React component for the entry point into the application.

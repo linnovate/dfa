@@ -2,57 +2,68 @@ import React from 'react'
 import { Form, Button } from 'semantic-ui-react';
 import { User } from '@daml.js/dfa';
 import { useParty, useLedger } from '@daml/react';
+
 type Props = {
-    admins: (User.Admin | undefined)[];
+  update: Function;
 }
-const RequestSendAndEdit: React.FC<Props> = ({admins}) => {
-  const sender = useParty();
-  const [receiver, setReceiver] = React.useState<string | undefined>();
-  const [content, setContent] = React.useState("");
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+type Flight = {
+  x: string;
+  y: string;
+  time: string;
+  altitude: string;
+}
+
+const RequestSendAndEdit: React.FC<Props> = ({update}) => {
+  const party = useParty();
   const ledger = useLedger();
+  const [flight, setFlight] = React.useState<Flight>({x: "0", y: "0", time: "00:00", altitude: "0"});
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+
   const submit = async (event: React.FormEvent) => {
     try {
       event.preventDefault();
-      if (receiver === undefined) {
-        return;
-      }
       setIsSubmitting(true);
-      const placeholder = [1, 1]; // TODO add map component to choose your place and convert to [Int, Int] = DD * 10 ** 4
-      const parties = ["Zoologist", "Meteorologist", "Hamal"];
-      const myContract = {signatories: parties};
-      await ledger.exerciseByKey(User.User.SendRequest, sender, {receiver, receivers: parties, contract: myContract, content, geo: {_1: placeholder[0].toString(), _2: placeholder[1].toString()}});
-      setContent("");
+      const parties = ["Zoolog", "Meteorologist", "Hamal"];
+      await ledger.exerciseByKey(User.User.CreateRequest, party, {parties: parties, admin: "Admin", flight:flight});
     } catch (error) {
       alert(`Error sending message:\n${JSON.stringify(error)}`);
     } finally {
       setIsSubmitting(false);
+      update();
     }
   };
   return (
     <Form onSubmit={submit}>
-      <Form.Dropdown
-        fluid
-        search
-        selection
-        className='select-request-receiver'
-        // If only one admin will be used the next line (and all the parts in the backend meant towards multiple admins should be removed)
-        placeholder="Select who you want to process your request"
-        //TODO create something like: options={admins.map(admin => ({ key: admin?.adminame, text: admin?.adminame, value: admin?.adminame }))}
-        options={[{key: "Admin", text: "Admin", value: "Admin"}]}
-        onChange={event => setReceiver(event.currentTarget.textContent ?? undefined)}
+      <Form.Input
+        className='select-request-content'
+        placeholder="X coordinates"
+        value={flight.x}
+        onChange={e=> setFlight({x: e.currentTarget.value, y: flight.y, time: flight.time, altitude: flight.altitude})}
       />
       <Form.Input
         className='select-request-content'
-        placeholder="Request content"
-        value={content}
-        onChange={event => setContent(event.currentTarget.value)}
+        placeholder="Y coordinates"
+        value={flight.y}
+        onChange={e => setFlight({x: flight.x, y: e.currentTarget.value, time: flight.time, altitude: flight.altitude})}
+      />
+      <Form.Input
+        className='select-request-content'
+        placeholder="Time"
+        value={flight.time}
+        onChange={e => setFlight({x: flight.x, y: flight.y, time: e.currentTarget.value, altitude: flight.altitude})}
+      />
+      <Form.Input
+        className='select-request-content'
+        placeholder="Altitude"
+        value={flight.altitude}
+        onChange={e => setFlight({x: flight.x, y: flight.y, time: flight.time, altitude: e.currentTarget.value})}
       />
       <Button
         fluid
         className='select-request-send-button'
         type="submit"
-        disabled={isSubmitting || receiver === undefined || content === ""}
+        disabled={isSubmitting || flight.time === "00:00"}
         loading={isSubmitting}
         content="Send"
       />

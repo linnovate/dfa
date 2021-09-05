@@ -13,13 +13,14 @@ import * as pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662 
 export declare type CompletedRequest = {
   user: damlTypes.Party;
   admin: damlTypes.Party;
+  parties: damlTypes.Party[];
   approvers: damlTypes.Party[];
   disapprovers: damlTypes.Party[];
   flight: Flight;
 };
 
 export declare const CompletedRequest:
-  damlTypes.Template<CompletedRequest, CompletedRequest.Key, 'c2100db0c56b69c11bde20ced3a2209eba1f79e904bb21bc79f3fac69e891687:User:CompletedRequest'> & {
+  damlTypes.Template<CompletedRequest, CompletedRequest.Key, '9efa190a3bd776bca2b0e32d0b56dcc61721ed4be71d39b5c83995dcbe4e8051:User:CompletedRequest'> & {
   Archive: damlTypes.Choice<CompletedRequest, pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662.DA.Internal.Template.Archive, {}, CompletedRequest.Key>;
 };
 
@@ -51,7 +52,7 @@ export declare type User = {
 };
 
 export declare const User:
-  damlTypes.Template<User, User.Key, 'c2100db0c56b69c11bde20ced3a2209eba1f79e904bb21bc79f3fac69e891687:User:User'> & {
+  damlTypes.Template<User, User.Key, '9efa190a3bd776bca2b0e32d0b56dcc61721ed4be71d39b5c83995dcbe4e8051:User:User'> & {
   Archive: damlTypes.Choice<User, pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662.DA.Internal.Template.Archive, {}, User.Key>;
   CreateRequest: damlTypes.Choice<User, CreateRequest, damlTypes.ContractId<User>, User.Key>;
 };
@@ -96,7 +97,7 @@ export declare type FlightRequest = {
 };
 
 export declare const FlightRequest:
-  damlTypes.Template<FlightRequest, FlightRequest.Key, 'c2100db0c56b69c11bde20ced3a2209eba1f79e904bb21bc79f3fac69e891687:User:FlightRequest'> & {
+  damlTypes.Template<FlightRequest, FlightRequest.Key, '9efa190a3bd776bca2b0e32d0b56dcc61721ed4be71d39b5c83995dcbe4e8051:User:FlightRequest'> & {
   Archive: damlTypes.Choice<FlightRequest, pkgd14e08374fc7197d6a0de468c968ae8ba3aadbf9315476fd39071831f5923662.DA.Internal.Template.Archive, {}, FlightRequest.Key>;
   Approved: damlTypes.Choice<FlightRequest, Approved, {}, FlightRequest.Key>;
   Disapproved: damlTypes.Choice<FlightRequest, Disapproved, {}, FlightRequest.Key>;
@@ -113,7 +114,8 @@ export declare namespace FlightRequest {
 
 
 export declare type Flight = {
-  location: pkg40f452260bef3f29dede136108fc08a88d5a5250310281067087da6f0baddff7.DA.Types.Tuple2<damlTypes.Numeric, damlTypes.Numeric>;
+  x: string;
+  y: string;
   time: string;
   altitude: string;
 };

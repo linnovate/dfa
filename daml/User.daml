@@ -5,19 +5,16 @@ module User where
 
 --Attribute decleration
 type Key = (Party, Text)
-type Place = (Decimal, Decimal)
 
 data Flight = Flight {
-  location : Place;
+  x : Text,
+  y : Text,
   time : Text;
   altitude : Text
 } deriving (Eq, Show)
 
-getLocation: Place -> Text
-getLocation loc = show(loc._1) <> ", " <> show(loc._2)
-
 getFlightContent: Flight -> Text
-getFlightContent flightContent = getLocation(flightContent.location) <> ", " <> flightContent.time <> ", " <> flightContent.altitude
+getFlightContent flightContent = flightContent.x <> ", " <> flightContent.y <> ", " <> flightContent.time <> ", " <> flightContent.altitude
 
 
 {-
@@ -50,7 +47,7 @@ template FlightRequest with
         assert (elem approver parties)
         assert (notElem approver approvers)
         if (length approvers + 1 + length disapprovers == length parties) then do
-          create CompletedRequest with user=user, admin=admin, disapprovers=disapprovers, approvers=approver :: approvers, flight=flight
+          create CompletedRequest with user=user, admin=admin, disapprovers=disapprovers, approvers=approver :: approvers, flight=flight, parties=parties
           return ()
         else do
           create this with user=user, admin=admin, parties=parties, disapprovers=disapprovers, approvers=approver :: approvers, flight=flight
@@ -63,7 +60,7 @@ template FlightRequest with
         assert (elem disapprover parties)
         assert (notElem disapprover disapprovers)
         if (length disapprovers + 1 + length approvers == length parties) then do
-          create CompletedRequest with user=user, admin=admin, disapprovers=disapprover :: disapprovers, approvers=approvers, flight=flight
+          create CompletedRequest with user=user, admin=admin, disapprovers=disapprover :: disapprovers, approvers=approvers, flight=flight, parties=parties
           return ()
         else do
           create this with user=user, admin=admin, parties=parties, disapprovers=disapprover :: disapprovers, approvers=approvers, flight=flight
@@ -90,11 +87,12 @@ template User with
 template CompletedRequest with
     user: Party
     admin: Party
+    parties: [Party]
     approvers: [Party]
     disapprovers: [Party]
     flight: Flight
   where
     signatory user
-    observer admin, approvers, disapprovers
+    observer admin, parties
     key (user, getFlightContent(flight)) : Key
     maintainer key._1
