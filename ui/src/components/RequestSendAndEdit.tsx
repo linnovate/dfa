@@ -20,6 +20,7 @@ const RequestSendAndEdit: React.FC<Props> = ({update}) => {
   const ledger = useLedger();
   const [flight, setFlight] = React.useState<Flight>({x: "0", y: "0", time: "00:00", altitude: "0"});
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [showMap, setShowMap] = React.useState(false);
 
   const submit = async (event: React.FormEvent) => {
     try {
@@ -34,11 +35,22 @@ const RequestSendAndEdit: React.FC<Props> = ({update}) => {
       update();
     }
   };
+
+  const mapHandler =() => {
+    return (showMap ? <ChooseMap onSubmit={(lat:number,lng:number) => setFlight({x: lat.toString(), y: lng.toString(), time: flight.time, altitude: flight.altitude})}/> : null);
+  }
+
   return (
     <Form onSubmit={submit}>
+      <Button fluid
+        className=''
+        type="button"
+        onClick={() => {setShowMap(!showMap)}}
+        content={showMap ? "Close map" : "Open map"}
+        />
       {
-      <div style={{width:"100%", height:"400px"}}>
-      <ChooseMap onSubmit={(lat:number,lng:number) => setFlight({x: lat.toString(), y: lng.toString(), time: flight.time, altitude: flight.altitude})}/>
+      <div style={{width:"100%", height: showMap ? "400px" : "0px"}}>
+      {mapHandler()}
       </div>}
       <Form.Input
         className='select-request-content'
