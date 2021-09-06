@@ -36,10 +36,6 @@ const RequestSendAndEdit: React.FC<Props> = ({update}) => {
     }
   };
 
-  const mapHandler =() => {
-    return (showMap ? <ChooseMap onSubmit={(lat:number,lng:number) => setFlight({lat: lat.toString(), lng: lng.toString(), time: flight.time, altitude: flight.altitude})}/> : null);
-  }
-
   return (
     <Form onSubmit={submit}>
       <Button fluid
@@ -50,7 +46,7 @@ const RequestSendAndEdit: React.FC<Props> = ({update}) => {
         />
       {
       <div style={{width:"100%", height: showMap ? "400px" : "0px"}}>
-      {mapHandler()}
+      {showMap && (<ChooseMap onSubmit={(lat:number,lng:number) => setFlight({lat: lat.toString(), lng: lng.toString(), time: flight.time, altitude: flight.altitude})}/>)}
       </div>}
       <Form.Input
         className='select-request-content'
