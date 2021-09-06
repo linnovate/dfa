@@ -5,7 +5,7 @@ import { useLedger, useParty } from '@daml/react';
 import ViewContract from './ViewContract';
 import { FlightRequest } from '../../daml.js/dfa-0.1.0/lib/User';
 import { ContractId } from '@daml/types';
-import { PinsMap } from './Maps';
+import { PinMap } from './Maps';
 
 type Props = {
     requests: User.FlightRequest[] | User.CompletedRequest[];
@@ -66,7 +66,7 @@ const AdminRequestList: React.FC<Props> = ({requests, requestsId, update}) => {
                     >
                     </List.Item>
                     <div style={{width:"100%", height:"300px"}}>
-                        <PinsMap lat={parseFloat(request.flight.x)} lng={parseFloat(request.flight.y)}/>
+                        <PinMap lat={parseFloat(request.flight.x)} lng={parseFloat(request.flight.y)}/>
                     </div>
                     <ViewContract
                         receivers={request.parties}

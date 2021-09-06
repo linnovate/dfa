@@ -65,6 +65,7 @@ const RequestSendAndEdit: React.FC<Props> = ({update}) => {
         onChange={e => setFlight({x: flight.x, y: e.currentTarget.value, time: flight.time, altitude: flight.altitude})}
       />
       <Form.Input
+        type="datetime-local"
         className='select-request-content'
         placeholder="Time"
         value={flight.time}
