@@ -62,11 +62,11 @@ const AdminRequestList: React.FC<Props> = ({requests, requestsId, update}) => {
                 <Segment>
                     <List.Item
                         header={"From: " + request.user}
-                        content={"Content: X: " + request.flight.x + ", Y: " + request.flight.y + ", Time: " + request.flight.time + ", Altitude: " + request.flight.altitude}
+                        content={"Content: lat: " + request.flight.lat + ", lng: " + request.flight.lng + ", Time: " + request.flight.time + ", Altitude: " + request.flight.altitude}
                     >
                     </List.Item>
                     <div style={{width:"100%", height:"300px"}}>
-                        <PinMap lat={parseFloat(request.flight.x)} lng={parseFloat(request.flight.y)}/>
+                        <PinMap lat={parseFloat(request.flight.lat)} lng={parseFloat(request.flight.lng)}/>
                     </div>
                     <ViewContract
                         receivers={request.parties}
