@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { GoogleMap, Marker, withGoogleMap, withScriptjs} from "react-google-maps"
+import { GoogleMap, InfoWindow, Marker, withGoogleMap, withScriptjs} from "react-google-maps"
 
 type PinProps = {
     lat : number;
@@ -10,15 +10,33 @@ type ChooseProps = {
     onSubmit: Function
 }
 
+const CustomMarker = (props : any) => {
+    const [infoVisible, setInfoVisible] = useState(false);
+    return <Marker
+        position={props.position}
+        visible={props.visible} 
+        onMouseOver={() => {
+            setInfoVisible(true);
+        }}
+        onMouseOut={() => {
+            setInfoVisible(false);
+        }}>
+            {infoVisible && (<InfoWindow><h4>Lat: {props.position.lat}<br/> Lng: {props.position.lng}</h4></InfoWindow>)}
+    </Marker>
+}
+
 const UncomposedPinsMap = withScriptjs(withGoogleMap((props: any) => (
     <GoogleMap
         defaultZoom={8}
         defaultCenter={{ lat: props.lat, lng: props.lng }}>    
-      <Marker position={{ lat: props.lat, lng: props.lng }} />
+        <CustomMarker 
+            position={{lat: props.lat, lng: props.lng}}
+            visible={true}>
+        </CustomMarker>
     </GoogleMap>
     )));
 
-export const PinsMap = (props: PinProps) => (
+export const PinMap = (props: PinProps) => (
     <UncomposedPinsMap
         googleMapURL= {"https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places"}
         loadingElement= {<div style={{ height: `100%` }} />}
@@ -57,7 +75,10 @@ const UncomposedChooseMap = withScriptjs(withGoogleMap((props: any) => {
         center={center}
         defaultZoom={8}
         defaultCenter={{lat:0,lng:0}}>
-            <Marker position={markerPosition} visible={markerVisible}></Marker>
+            <CustomMarker 
+                position={markerPosition}
+                visible={markerVisible}>
+            </CustomMarker>
     </GoogleMap>
 }));
 
