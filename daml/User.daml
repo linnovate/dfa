@@ -7,14 +7,14 @@ module User where
 type Key = (Party, Text)
 
 data Flight = Flight {
-  x : Text,
-  y : Text,
+  lat : Text,
+  lng : Text,
   time : Text;
   altitude : Text
 } deriving (Eq, Show)
 
 getFlightContent: Flight -> Text
-getFlightContent flightContent = flightContent.x <> ", " <> flightContent.y <> ", " <> flightContent.time <> ", " <> flightContent.altitude
+getFlightContent flightContent = flightContent.lat <> ", " <> flightContent.lng <> ", " <> flightContent.time <> ", " <> flightContent.altitude
 
 
 {-
