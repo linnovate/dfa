@@ -2,14 +2,15 @@ import React from 'react'
 import { Form, Button } from 'semantic-ui-react';
 import { User } from '@daml.js/dfa';
 import { useParty, useLedger } from '@daml/react';
+import { ChooseMap } from './Maps';
 
 type Props = {
   update: Function;
 }
 
 type Flight = {
-  x: string;
-  y: string;
+  lat: string;
+  lng: string;
   time: string;
   altitude: string;
 }
@@ -17,8 +18,9 @@ type Flight = {
 const RequestSendAndEdit: React.FC<Props> = ({update}) => {
   const party = useParty();
   const ledger = useLedger();
-  const [flight, setFlight] = React.useState<Flight>({x: "0", y: "0", time: "00:00", altitude: "0"});
+  const [flight, setFlight] = React.useState<Flight>({lat: "0", lng: "0", time: "00:00", altitude: "0"});
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [showMap, setShowMap] = React.useState(true);
 
   const submit = async (event: React.FormEvent) => {
     try {
@@ -33,31 +35,46 @@ const RequestSendAndEdit: React.FC<Props> = ({update}) => {
       update();
     }
   };
+
   return (
     <Form onSubmit={submit}>
+      <Button fluid
+        className=''
+        type="button"
+        onClick={() => {setShowMap(!showMap)}}
+        content={showMap ? "Close map" : "Open map"}
+        />
+      {
+      <div style={{width:"100%", height: showMap ? "400px" : "0px"}}>
+      {showMap && (<ChooseMap onSubmit={(lat:number,lng:number) => setFlight({lat: lat.toString(), lng: lng.toString(), time: flight.time, altitude: flight.altitude})}/>)}
+      </div>}
       <Form.Input
         className='select-request-content'
-        placeholder="X coordinates"
-        value={flight.x}
-        onChange={e=> setFlight({x: e.currentTarget.value, y: flight.y, time: flight.time, altitude: flight.altitude})}
+        placeholder="lat coordinates"
+        value={flight.lat}
+        onChange={e=> setFlight({lat: e.currentTarget.value, lng: flight.lng, time: flight.time, altitude: flight.altitude})}
       />
       <Form.Input
         className='select-request-content'
-        placeholder="Y coordinates"
-        value={flight.y}
-        onChange={e => setFlight({x: flight.x, y: e.currentTarget.value, time: flight.time, altitude: flight.altitude})}
+        placeholder="lng coordinates"
+        value={flight.lng}
+        onChange={e => setFlight({lat: flight.lat, lng: e.currentTarget.value, time: flight.time, altitude: flight.altitude})}
       />
       <Form.Input
+        type="datetime-local"
         className='select-request-content'
         placeholder="Time"
         value={flight.time}
-        onChange={e => setFlight({x: flight.x, y: flight.y, time: e.currentTarget.value, altitude: flight.altitude})}
+        onChange={e => setFlight({lat: flight.lat, lng: flight.lng, time: e.currentTarget.value, altitude: flight.altitude})}
       />
       <Form.Input
         className='select-request-content'
         placeholder="Altitude"
+        type="number"
+        step='100'
+        min='0'
         value={flight.altitude}
-        onChange={e => setFlight({x: flight.x, y: flight.y, time: flight.time, altitude: e.currentTarget.value})}
+        onChange={e => setFlight({lat: flight.lat, lng: flight.lng, time: flight.time, altitude: e.currentTarget.value})}
       />
       <Button
         fluid
