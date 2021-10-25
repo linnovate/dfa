@@ -14,3 +14,41 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+div.login-from {
+  position: absolute;
+  top: 3.2em;
+  right: 2em;
+  height: auto !important;
+  padding: 2em !important;
+  background-color: white;
+  border: 1px solid #dedede;
+  z-index: 9999;
+}
+
+.create-request {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: flex-end;
+  background-color: white;
+  padding: 1em;
+  border: 1px solid #dedede;
+}
+
+.create-request .field {
+  margin: 1em 1em 0 1em !important;
+  width: 20%;
+  min-width: 260px;
+}
+
+.create-request .select-request-send-button {
+  margin-top: 2em;
+  min-width: 260px;
+  width: 15%;
+}
+
+.map-toggle {
+  margin-bottom: 1em !important;
+}

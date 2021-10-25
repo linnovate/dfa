@@ -30,7 +30,7 @@ add_action('elementor/init', function () {
 add_action('elementor/widgets/widgets_registered', function () {
 
 	require_once(__DIR__ . '/widgets/AbstractWidget.php');
-
+	require_once(__DIR__ . '/widgets/user-widget.php');
 	require_once(__DIR__ . '/widgets/create-request.php');
 	require_once(__DIR__ . '/widgets/my-requests.php');
 	require_once(__DIR__ . '/widgets/requests-for-approval.php');

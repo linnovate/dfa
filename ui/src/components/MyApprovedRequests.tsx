@@ -13,7 +13,7 @@ type Props = {
     update: Function;
 }
 
-const RequestList: React.FC<Props> = ({requests, requestsId, update}) => {
+const MyApprovedRequests: React.FC<Props> = ({requests, requestsId, update}) => {
     const party = useParty();
     const ledger = useLedger();
 
@@ -81,4 +81,4 @@ const RequestList: React.FC<Props> = ({requests, requestsId, update}) => {
     );
 };
 
-export default RequestList;
+export default MyApprovedRequests;
