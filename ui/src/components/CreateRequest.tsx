@@ -1,8 +1,9 @@
 import React from 'react'
-import { Form, Button, Divider } from 'semantic-ui-react';
+import { Form, Button } from 'semantic-ui-react';
 import { User } from '@daml.js/dfa';
 import { useParty, useLedger } from '@daml/react';
 import { ChooseMap } from './Maps';
+import { useGlobalState } from "../contexts/GlobalState";
 
 type Props = {
   update: Function;
@@ -16,6 +17,8 @@ type Flight = {
 }
 
 const CreateRequest: React.FC<Props> = ({update}) => {
+  const [user] = useGlobalState('user');
+
   const party = useParty();
   const ledger = useLedger();
   const [flight, setFlight] = React.useState<Flight>({lat: "0", lng: "0", time: "00:00", altitude: "0"});
@@ -32,7 +35,7 @@ const CreateRequest: React.FC<Props> = ({update}) => {
       alert(`Error sending message:\n${JSON.stringify(error)}`);
     } finally {
       setIsSubmitting(false);
-      update();
+//       update();
     }
   };
   

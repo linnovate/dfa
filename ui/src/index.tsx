@@ -6,7 +6,7 @@ import ReactDOM from 'react-dom';
 import 'semantic-ui-css/semantic.min.css';
 import './index.css';
 
-
+import { GlobalStateProvider } from "./contexts/GlobalState";
 import { ElementreeProvider, AddComponent } from "./contexts/ElementreeProvider";
 import DamlProvider from "./contexts/DamlProvider";
 
@@ -22,16 +22,20 @@ import Users from './components/Users';
 import ViewMap from './components/ViewMap';
 
 
-// import App from './components/App';
+import App from './components/App';
 
-// ReactDOM.render(<App />, document.getElementById('root'));
+const root = document.getElementById('root');
+
+// root && ReactDOM.render(<App />, root);
 
 
 // Setup a general provider with a binding widgets list
 ReactDOM.render(
-  <DamlProvider>
-    <ElementreeProvider />
-  </DamlProvider>,
+  <GlobalStateProvider>
+    <DamlProvider>
+      <ElementreeProvider />
+    </DamlProvider>
+  </GlobalStateProvider>,
   document.createElement('div')
 );
 
@@ -39,8 +43,8 @@ ReactDOM.render(
 // Register - elementree widgets
 const widgets = {
   UserWidget,
-  AllRequests,
   CreateRequest,
+  AllRequests,
   MyApprovedRequests,
   MyRequests,
   RequestsForApproval,
@@ -87,8 +91,9 @@ class ElementreeElement extends HTMLElement {
 customElements.define('elementree-widget', ElementreeElement);
 
 
-// ElementreeWidgets("UserWidget", document.getElementById('root'), {})
-// document.getElementById('root').innerHTML = `
-// <elementree-widget name='UserWidget'></elementree-widget>
-// <elementree-widget name='CreateRequest'></elementree-widget>
-// `;
+ElementreeWidgets("UserWidget", document.getElementById('root'), {})
+root && (root.innerHTML = `
+<elementree-widget name='UserWidget'></elementree-widget>
+<elementree-widget name='CreateRequest'></elementree-widget>
+<elementree-widget name='MyRequests'></elementree-widget>
+`);

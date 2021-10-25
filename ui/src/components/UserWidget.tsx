@@ -1,53 +1,40 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Menu } from 'semantic-ui-react'
+import { useGlobalState } from "../contexts/GlobalState";
 
 import LoginScreen from './LoginScreen';
 
 type Props = {
 }
 
-function getSessionStorageOrDefault(key: string, defaultValue: Credentials | undefined) {
-  const stored = sessionStorage.getItem(key);
-  if (!stored) {
-    return defaultValue;
-  }
-  return JSON.parse(stored);
-}
-
 const UserWidget: React.FC<Props> = () => {
       
-    const [credentials, setCredentials] = useState(getSessionStorageOrDefault('Credentials', undefined));
-
     const [showLogin, setShowLogin] = useState(false);
 
-    const party = credentials?.party;
-    
+    const [user, setUser] = useGlobalState('user');
+
     const clickToLogin = (data) => {
         setShowLogin(true);
     }
 
     const onLogin = (credentials) => {
-        setCredentials(credentials);
+        sessionStorage.setItem('Credentials', JSON.stringify(credentials));
+        setUser(credentials);
         setShowLogin(false);
-        window.location.reload();
     }
 
     const onLogout = () => {
         sessionStorage.removeItem('Credentials');
-        window.location.reload();
+        setUser(null);
     }
 
-    useEffect(() => {
-        sessionStorage[credentials ? 'setItem' : 'removeItem']('Credentials', JSON.stringify(credentials));
-    }, [credentials]);
-  
     return (
         <Menu icon borderless>
             <Menu.Menu position='right' className='test-select-main-menu'>
-                { party &&
-                    <Menu.Item position='right'>You are logged in as {party}.</Menu.Item>
+                { user &&
+                    <Menu.Item position='right'>You are logged in as {user.party}.</Menu.Item>
                 }
-                { party &&
+                { user &&
                     <Menu.Item
                         position='right'
                         active={false}
@@ -56,7 +43,7 @@ const UserWidget: React.FC<Props> = () => {
                         icon='log out'
                     />
                 }
-                { !party &&
+                { !user &&
                     <Menu.Item
                         position='right'
                         active={false}
