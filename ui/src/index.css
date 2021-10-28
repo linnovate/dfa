@@ -52,3 +52,7 @@ div.login-from {
 .map-toggle {
   margin-bottom: 1em !important;
 }
+
+.graph-img {
+  max-width: 100%;
+}

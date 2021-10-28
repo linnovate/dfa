@@ -20,13 +20,13 @@ import MyRequests from './components/MyRequests';
 import RequestsForApproval from './components/RequestsForApproval';
 import Users from './components/Users';
 import ViewMap from './components/ViewMap';
-
+import Graph from './components/Graph';
 
 import App from './components/App';
 
 const root = document.getElementById('root');
 
-// root && ReactDOM.render(<App />, root);
+root && ReactDOM.render(<App />, root);
 
 
 // Setup a general provider with a binding widgets list
@@ -50,6 +50,7 @@ const widgets = {
   RequestsForApproval,
   Users,
   ViewMap,
+  Graph,
 };
 
 
@@ -91,9 +92,6 @@ class ElementreeElement extends HTMLElement {
 customElements.define('elementree-widget', ElementreeElement);
 
 
-ElementreeWidgets("UserWidget", document.getElementById('root'), {})
-root && (root.innerHTML = `
-<elementree-widget name='UserWidget'></elementree-widget>
-<elementree-widget name='CreateRequest'></elementree-widget>
-<elementree-widget name='MyRequests'></elementree-widget>
-`);
+// root && (root.innerHTML = `
+// <elementree-widget name='Graph'></elementree-widget>
+// `);
