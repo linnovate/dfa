@@ -38,4 +38,6 @@ add_action('elementor/widgets/widgets_registered', function () {
 	require_once(__DIR__ . '/widgets/all-requests.php');
 	require_once(__DIR__ . '/widgets/users.php');
 	require_once(__DIR__ . '/widgets/view-map.php');
+  require_once(__DIR__ . '/widgets/view-graph.php');
+	
 });
