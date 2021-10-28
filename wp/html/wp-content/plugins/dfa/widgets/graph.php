@@ -25,17 +25,16 @@ class Widget_Graph extends AbstractWidget
 	{
 		/* ================================== General =================================== */
 
-		//         $this->start_controls_section('general', array(
-		//             'label' => __('General', 'dfa'),
-		//         ));
+		$this->start_controls_section('general', array(
+			'label' => __('General', 'dfa'),
+		));
 
-		//         $this->add_control('btnText', array(
-		//             'type'        => Controls_Manager::TEXT,
-		//             'label'       => __('Text:', 'dfa'),
-		//             'default' => __('Create request', 'dfa'),
-		//         ));
+		$this->add_control('imgSrc', array(
+			'type'        => Controls_Manager::TEXT,
+			'label'       => __('Image url:', 'dfa'),
+		));
 
-		//         $this->end_controls_section();
+		$this->end_controls_section();
 
 	}
 }

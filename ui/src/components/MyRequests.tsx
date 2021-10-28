@@ -6,10 +6,16 @@ import { FlightRequest } from '../../daml.js/dfa-0.1.0/lib/User';
 import { ContractId } from '@daml/types';
 import { PinMap } from './Maps';
 import ViewContract from './ViewContract';
+import { useGlobalState } from "../contexts/GlobalState";
 
 import results from '../data.json';
 
 const MyRequests: React.FC = () => {
+
+    const user = useGlobalState('user');
+//     if (!user) {
+//         return <div>no-login</div>
+//     }
     const party = useParty();
     const allRequestResult = useQuery(User.CompletedRequest, () => ({}), []);
     const allRequiresReview = useQuery(User.FlightRequest, () => ({}), []);
