@@ -35,7 +35,6 @@ class Widget_Graph extends AbstractWidget
 		));
 
 		$this->end_controls_section();
-
 	}
 }
 
