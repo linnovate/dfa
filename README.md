@@ -73,7 +73,6 @@ So ow does wordpress fit in? We want to use wordpress to show and manage various
 We use docker-compose tomanage the wordpress
 run 
 ``` 
-cd wp
 docker-compose up -d 
 The wordpress is in http://localhost:8080
 ```
