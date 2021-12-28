@@ -3,3 +3,8 @@ target
 
 # Data
 data
+
+# Wordpress
+wordpress/*
+!/wordpress/wp-content
+!/wordpress/static

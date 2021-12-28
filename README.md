@@ -28,9 +28,9 @@ The latter command generates TypeScript packages in the `daml.js` directory.
 Next, navigate to the `ui` directory and install the dependencies and build the app by running:
 
 ```sh
-cp daml-one/daml.js ui/ -r
 cd ui
 npm i
+npm i @daml.js/dfa@file:../daml-one/daml.js/dfa-0.1.0
 npm run-script build
 ```
 

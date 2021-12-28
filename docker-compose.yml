@@ -46,7 +46,6 @@ services:
       - 3000:3000
     volumes:
      - ./ui:/usr/src/app
-    # - ./daml-one/daml.js:/usr/src/app/daml.js
     command: sh -c "yarn install && yarn start"
 
   wordpress:
@@ -56,8 +55,7 @@ services:
      - WORDPRESS_DB_USER=root
      - WORDPRESS_DB_PASSWORD=password
     volumes:
-     - ./wordpress/wp-content:/var/www/html/wp-content
-     - ./wordpress/static:/var/www/html/static
+     - ./wordpress:/var/www/html
     depends_on:
       - mysql
     links:
