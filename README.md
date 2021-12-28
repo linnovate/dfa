@@ -18,8 +18,9 @@ First, we need to generate TypeScript code bindings for the compiled Daml model.
 At the root of the repository, run:
 
 ```sh
+cd daml-one/
 daml build
-daml codegen js .daml/dist/dfa-0.1.0.dar -o ui/daml.js
+daml codegen js .daml/dist/dfa-0.1.0.dar -o ./daml.js
 ```
 
 The latter command generates TypeScript packages in the `daml.js` directory.
@@ -27,6 +28,7 @@ The latter command generates TypeScript packages in the `daml.js` directory.
 Next, navigate to the `ui` directory and install the dependencies and build the app by running:
 
 ```sh
+cp daml-one/daml.js ui/ -r
 cd ui
 npm i
 npm run-script build
@@ -37,7 +39,7 @@ The last step is not absolutely necessary but useful to check that the app compi
 To start the application, go back do the main directory and start a Daml ledger:
 
 ```sh
-cd ..
+cd daml-one/
 daml start
 ```
 

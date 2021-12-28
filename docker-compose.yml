@@ -39,15 +39,15 @@ services:
   #    - ./daml-two:/data
     #command: sh -c "daml start"
  
- # ui:
-    #image: node:alpine
-    #working_dir: /usr/src/app
-    #ports:
-    #  - 3000:3000
-    #volumes:
-    # - ./ui:/usr/src/app
+  ui:
+    image: node:alpine
+    working_dir: /usr/src/app
+    ports:
+      - 3000:3000
+    volumes:
+     - ./ui:/usr/src/app
     # - ./daml-one/daml.js:/usr/src/app/daml.js
-    #command: sh -c "yarn install && yarn start"
+    command: sh -c "yarn install && yarn start"
 
   wordpress:
     image: wordpress:php7.4-fpm-alpine
