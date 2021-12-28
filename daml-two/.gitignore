@@ -1,0 +1,6 @@
+# Dist
+.daml
+daml.js/
+
+# Logs
+*.log

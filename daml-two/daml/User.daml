@@ -1,0 +1,78 @@
+-- Copyright (c) 2021 Digital Asset (Switzerland) GmbH and/or its affiliates. All rights reserved.
+-- SPDX-License-Identifier: Apache-2.0
+
+module User where
+
+data Flight = Flight {
+  lat : Text,
+  lng : Text,
+  time : Text;
+  altitude : Text
+} deriving (Eq, Show)
+
+template FlightRequest
+  with
+    user: Party
+    parties: [Party]
+    approvers: [Party]
+    disapprovers: [Party]
+    flight: Flight
+  where
+    signatory user
+    observer parties
+
+    preconsuming choice Approved: ()
+      with
+        approver: Party
+      controller approver
+        do
+          assert (elem approver parties)
+          assert (notElem approver approvers)
+          if (length approvers + 1 + length disapprovers == length parties) then do
+            create CompletedRequest with user=user, parties=parties, disapprovers=disapprovers, approvers=approver :: approvers, flight=flight
+            return ()
+          else do
+            create this with user=user, parties=parties, disapprovers=disapprovers, approvers=approver :: approvers, flight=flight
+            return ()
+
+    preconsuming choice Disapproved: ()
+      with
+        disapprover: Party
+      controller disapprover
+        do
+          assert (elem disapprover parties)
+          assert (notElem disapprover disapprovers)
+          if (length disapprovers + 1 + length approvers == length parties) then do
+            create CompletedRequest with user=user, parties=parties, disapprovers=disapprover :: disapprovers, approvers=approvers, flight=flight
+            return ()
+          else do
+            create this with user=user, parties=parties, disapprovers=disapprover :: disapprovers, approvers=approvers, flight=flight
+            return ()
+
+template CompletedRequest
+  with
+    user: Party
+    parties: [Party]
+    approvers: [Party]
+    disapprovers: [Party]
+    flight: Flight
+  where
+    signatory user
+    observer parties
+
+template User
+  with
+    username: Party
+  where
+    signatory username
+    key username: Party
+    maintainer key
+
+    preconsuming choice CreateRequest: ()
+      with
+        flight: Flight
+        parties: [Party]
+      controller username
+        do
+          create FlightRequest with user=username, parties=parties, flight=flight, approvers=[], disapprovers=[]
+          return ()

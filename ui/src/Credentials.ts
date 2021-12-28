@@ -30,7 +30,7 @@ function computeToken(party: string): string {
 
 export const computeCredentials = (party: string): Credentials => {
   const token = computeToken(party);
-  return {party, token, ledgerId};
+  return { party, token, ledgerId };
 }
 
 export default Credentials;

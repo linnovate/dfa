@@ -3,8 +3,9 @@
 
 case $1 in
 	build)
+		cd daml
 		daml build
-		daml codegen js .daml/dist/dfa-0.1.0.dar -o ui/daml.js
+		daml codegen js .daml/dist/dfa-0.1.0.dar -o ../ui/daml.js
 		# Build UI
 		cd ui
 		npm i
@@ -14,18 +15,20 @@ case $1 in
 	start)
 		echo `pwd`
 		echo " starting daml"
+		cd daml
 		daml start &
 		echo "starting dev server"
-		cd ui && npm start
+		cd ../ui && npm start
 		;;
 
 	hub)
 		# building daml
-		daml build -o target/create-daml-app.dar
+		cd daml		
+		daml build -o ../target/create-daml-app.dar
 
 		#building the ui
-		daml codegen js target/create-daml-app.dar -o ui/daml.js
-		cd ui && npm install && npm run-script build
+		daml codegen js ../target/create-daml-app.dar -o ../ui/daml.js
+		cd ../ui && npm install && npm run-script build
 		zip -r ../target/create-daml-app-ui.zip build
 		;;
 	*)

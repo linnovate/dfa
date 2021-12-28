@@ -23,11 +23,13 @@ const filter = function (pathname, req) {
 };
 
 module.exports = function (app) {
+    
   app.use(
     createProxyMiddleware(filter, {
       target: httpJsonDevUrl,
       ws: true, //Proxy websockets
     })
   );
+
 };
 

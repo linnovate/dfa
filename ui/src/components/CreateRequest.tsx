@@ -1,9 +1,8 @@
 import React from 'react'
-import { Form, Button } from 'semantic-ui-react';
+import { Form, Button, Header, Icon, Segment, Divider } from 'semantic-ui-react';
+import { useParty, useLedger, useReload} from '@daml/react';
 import { User } from '@daml.js/dfa';
-import { useParty, useLedger } from '@daml/react';
 import { ChooseMap } from './Maps';
-import { useGlobalState } from "../contexts/GlobalState";
 
 type Props = {
   update: Function;
@@ -12,95 +11,112 @@ type Props = {
 type Flight = {
   lat: string;
   lng: string;
-  time: string;
+  timeStart: string;
+  timeEnd: string;
   altitude: string;
 }
 
 const CreateRequest: React.FC<Props> = ({update}) => {
-  const [user] = useGlobalState('user');
-
+  
+  const parties = ["Zoolog", "Meteorologist", "Hamal"];
   const party = useParty();
   const ledger = useLedger();
-  const [flight, setFlight] = React.useState<Flight>({lat: "0", lng: "0", time: "00:00", altitude: "0"});
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [showMap, setShowMap] = React.useState(false);
+  const reload = useReload();
+  const allowRequest = party && !parties.includes(party);
 
+  const [flight, setFlight] = React.useState<Flight>({});
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [showMap, setShowMap] = React.useState(true);
+  
   const submit = async (event: React.FormEvent) => {
     try {
       event.preventDefault();
       setIsSubmitting(true);
-      const parties = ["Zoolog", "Meteorologist", "Hamal"];
-      await ledger.exerciseByKey(User.User.CreateRequest, party, {parties: parties, admin: "Admin", flight:flight});
+      await ledger.exerciseByKey(User.User.CreateRequest, party, { parties, flight });
+      reload();
     } catch (error) {
       alert(`Error sending message:\n${JSON.stringify(error)}`);
     } finally {
       setIsSubmitting(false);
-//       update();
     }
   };
   
-    return (
-        <Form onSubmit={submit} className="create-request">
-          <Button
-            className='map-toggle'
-            type="button"
-            onClick={() => {setShowMap(!showMap)}}
-            content={showMap ? "Close map" : "Open map"}
-            />
+  return (
+    <Segment  className="daml-section">
+
+      <Header as='h2'>
+          <Icon name='globe' />
+          <Header.Content>Create Request</Header.Content>
+      </Header>
+
+      <Divider />
+
+      {allowRequest && 
+        <Form className="create-request-form">
+            <Button
+              basic
+              color='blue'
+              icon
+              labelPosition='left'
+              onClick={() => {setShowMap(!showMap)}}
+            >
+              <Icon name='map' />
+              map
+            </Button>
+
           {
-          <div style={{width:"100%", height: showMap ? "400px" : "0px"}}>
-          {showMap && (<ChooseMap onSubmit={(lat:number,lng:number) => setFlight({lat: lat.toString(), lng: lng.toString(), time: flight.time, altitude: flight.altitude})}/>)}
+          <div className="create-request-map" style={{width:"100%", height: showMap ? "400px" : "0px"}}>
+          {showMap && (<ChooseMap onSubmit={(lat:number,lng:number) => setFlight({ ...flight, lat: lat.toString(), lng: lng.toString() })}/>)}
           </div>}
-
-          <Form.Field
-            label='Lat coordinates'
-            placeholder='Lat coordinates'
-            control='input'
-            type='number'
+          <Form.Input
+            className='select-request-content'
+            label="lat coordinates"
             value={flight.lat}
-            onChange={e=> setFlight({lat: e.currentTarget.value, lng: flight.lng, time: flight.time, altitude: flight.altitude})}
+            onChange={e=> setFlight({ ...flight, lat: e.currentTarget.value})}
           />
-
-          <Form.Field
-            label='Lng coordinates'
-            placeholder='Lng coordinates'
-            control='input'
-            type='number'
+          <Form.Input
+            className='select-request-content'
+            label="lng coordinates"
             value={flight.lng}
-            onChange={e => setFlight({lat: flight.lat, lng: e.currentTarget.value, time: flight.time, altitude: flight.altitude})}
+            onChange={e=> setFlight({ ...flight, lng: e.currentTarget.value})}
           />
-
-          <Form.Field
-            label='Time'
-            placeholder='Time'
-            control='input'
-            type='datetime-local'
-            value={flight.time}
-            onChange={e => setFlight({lat: flight.lat, lng: flight.lng, time: e.currentTarget.value, altitude: flight.altitude})}
-          />
-
-          <Form.Field
-            label='Altitude'
-            placeholder="Altitude"
-            control='input'
+          <Form.Input
+            className='select-request-content'
+            label="Altitude"
             type="number"
             step='100'
             min='0'
             value={flight.altitude}
-            onChange={e => setFlight({lat: flight.lat, lng: flight.lng, time: flight.time, altitude: e.currentTarget.value})}
+            onChange={e=> setFlight({ ...flight, altitude: e.currentTarget.value})}
           />
-
+          <Divider className="Divider" />
+          <Form.Input
+            className='select-request-content'
+            label="Start time"
+            type="datetime-local"
+            value={flight.timeStart}
+            onChange={e=> setFlight({ ...flight, timeStart: e.currentTarget.value})}
+          />
+          <Form.Input
+            className='select-request-content'
+            label="End time"
+            type="datetime-local"
+            value={flight.timeEnd}
+            onChange={e=> setFlight({ ...flight, timeEnd: e.currentTarget.value})}
+          />
           <Button
             primary
             className='select-request-send-button'
-            type="submit"
-            disabled={isSubmitting || flight.time === "00:00"}
+            onClick={submit}
+            disabled={isSubmitting || !(flight.lat && flight.lng && flight.altitude)}
             loading={isSubmitting}
             content="Send"
           />
-
         </Form>
-    );
+      }
+
+    </Segment>
+  );
 };
 
 export default CreateRequest;

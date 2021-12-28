@@ -1,3 +1,3 @@
 import * as User from './User';
 export { User } ;
-export declare const packageId = '9efa190a3bd776bca2b0e32d0b56dcc61721ed4be71d39b5c83995dcbe4e8051';
+export declare const packageId = 'dee4517467071e8622936e9bc1785b69e5c84cc7a1842d809412b4bd7e2781d4';

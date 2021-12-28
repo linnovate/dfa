@@ -1,0 +1,95 @@
+-- Copyright (c) 2021 Digital Asset (Switzerland) GmbH and/or its affiliates. All rights reserved.
+-- SPDX-License-Identifier: Apache-2.0
+
+module User where
+
+-- lookupByKey @GroupMember (org, group, approver)
+
+template GroupMember
+  with
+    org: Party
+    group: Party
+    member: Party
+  where
+    signatory org
+    observer org, group, member
+    key (org, group, member) : (Party, Party, Party)
+    maintainer key._1
+
+data Flight = Flight {
+  lat : Text,
+  lng : Text,
+  timeStart : Text,
+  timeEnd : Text,
+  altitude : Text
+} deriving (Eq, Show)
+
+template FlightRequest
+  with
+    user: Party
+    parties: [Party]
+    approvers: [Party]
+    disapprovers: [Party]
+    flight: Flight
+  where
+    signatory user
+    observer parties
+    key (user, flight) : (Party, Flight)
+    maintainer key._1
+
+    preconsuming choice Approved: ()
+      with
+        approver: Party
+      controller approver
+        do
+          assert (elem approver parties)
+          assert (notElem approver approvers)
+          if (length approvers + 1 + length disapprovers == length parties) then do
+            create CompletedRequest with user=user, parties=parties, disapprovers=disapprovers, approvers=  approver :: approvers, flight=flight
+            return ()
+          else do
+            create this with user=user, parties=parties, disapprovers=disapprovers, approvers= approver :: approvers, flight=flight
+            return ()
+
+    preconsuming choice Disapproved: ()
+      with
+        disapprover: Party
+      controller disapprover
+        do
+          assert (elem disapprover parties)
+          assert (notElem disapprover disapprovers)
+          if (length disapprovers + 1 + length approvers == length parties) then do
+            create CompletedRequest with user=user, parties=parties, disapprovers= disapprover :: disapprovers, approvers=approvers, flight=flight
+            return ()
+          else do
+            create this with user=user, parties=parties, disapprovers= disapprover :: disapprovers, approvers=approvers, flight=flight
+            return ()
+
+template CompletedRequest
+  with
+    user: Party
+    parties: [Party]
+    approvers: [Party]
+    disapprovers: [Party]
+    flight: Flight
+  where
+    signatory user
+    observer parties
+
+template User
+  with
+    username: Party
+    parties: [Party]
+  where
+    signatory username
+    observer parties
+    key username: Party
+    maintainer key
+
+    preconsuming choice CreateRequest: ContractId User
+      with
+        flight: Flight
+      controller username
+        do
+          create FlightRequest with user=username, parties=parties, flight=flight, approvers=[], disapprovers=[]
+          create this with username=username, parties=parties

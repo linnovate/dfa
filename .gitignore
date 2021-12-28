@@ -1,5 +1,5 @@
-/.daml
-/target
-/ui/node_modules
-*.log
-/wp/database
+# Dist
+target
+
+# Data
+data

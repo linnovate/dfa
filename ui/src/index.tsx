@@ -1,65 +1,56 @@
-// Copyright (c) 2021 Digital Asset (Switzerland) GmbH and/or its affiliates. All rights reserved.
-// SPDX-License-Identifier: Apache-2.0
+
+// ========================= Bases ========================= //
 
 import React from 'react';
 import ReactDOM from 'react-dom';
 import 'semantic-ui-css/semantic.min.css';
 import './index.css';
 
+// ======================= Providers ======================= //
+
 import { GlobalStateProvider } from "./contexts/GlobalState";
-import { ElementreeProvider, AddComponent } from "./contexts/ElementreeProvider";
+import { BlocktreeProvider, AddComponent } from "./contexts/BlocktreeProvider";
 import DamlProvider from "./contexts/DamlProvider";
 
+// ====================== Components ======================= //
 
-// Import - elementree widgets
 import UserWidget from './components/UserWidget';
 import AllRequests from './components/AllRequests';
 import CreateRequest from './components/CreateRequest';
 import MyApprovedRequests from './components/MyApprovedRequests';
 import MyRequests from './components/MyRequests';
 import RequestsForApproval from './components/RequestsForApproval';
+import RequestsGraph from './components/RequestsGraph';
 import Users from './components/Users';
-import ViewMap from './components/ViewMap';
-import Graph from './components/Graph';
 
-import App from './components/App';
+import CreateMember from './components/CreateMember';
+import Members from './components/Members';
 
-const root = document.getElementById('root');
-
-root && ReactDOM.render(<App />, root);
-
-
-// Setup a general provider with a binding widgets list
-ReactDOM.render(
-  <GlobalStateProvider>
-    <DamlProvider>
-      <ElementreeProvider />
-    </DamlProvider>
-  </GlobalStateProvider>,
-  document.createElement('div')
-);
-
-
-// Register - elementree widgets
 const widgets = {
   UserWidget,
+
   CreateRequest,
   AllRequests,
-  MyApprovedRequests,
+
+  RequestsGraph,
+
   MyRequests,
+  MyApprovedRequests,
+
   RequestsForApproval,
+
   Users,
-  ViewMap,
-  Graph,
+
+  CreateMember,
+  
+  Members,
 };
 
+// =================== Boocktree handler =================== //
 
-// Setup function - elementree widgets
-// example: window.ElementreeWidgets("my_widget_name", el, {})
-window.ElementreeWidgets = function (name, el, settings) {
+window.BlocktreeWidgets = function (name, el, settings) {
   try {
     if (widgets[name]) {
-      // render the widget
       AddComponent(el, widgets[name], settings);
     } else {
       el.innerHTML = `Block <strong>${name}</strong> is empty client component`;
@@ -69,17 +60,11 @@ window.ElementreeWidgets = function (name, el, settings) {
   }
 }
 
-// Setup customElements - elementree widgets
-// example: <elementree-widget name="my_widget_name" data-prop-1=""  data-prop-2="" ></elementree-widget>
 class ElementreeElement extends HTMLElement {
-//   constructor() {
-//     super();
-//   }
   connectedCallback() {
     const name = this.getAttribute("name")
     try {
       if (widgets[name]) {
-        // render the widget
         AddComponent(this, widgets[name], this.dataset);
       } else {
         this.innerHTML = `Block <strong>${name}</strong> is empty client component`;
@@ -91,7 +76,34 @@ class ElementreeElement extends HTMLElement {
 }
 customElements.define('elementree-widget', ElementreeElement);
 
+// ========================= Setup ========================= //
 
-// root && (root.innerHTML = `
-// <elementree-widget name='Graph'></elementree-widget>
-// `);
+// setup as Blocktree
+ReactDOM.render(
+  <GlobalStateProvider >
+    <DamlProvider>
+      <BlocktreeProvider />
+    </DamlProvider>
+  </GlobalStateProvider>,
+  document.createElement('div')
+);
+
+// ========================= Test ========================== //
+
+root && (root.innerHTML = `
+  <elementree-widget name='UserWidget'></elementree-widget>
+
+  <elementree-widget name='CreateMember'></elementree-widget>
+  <elementree-widget name='Members'></elementree-widget>
+
+  <elementree-widget name='CreateRequest'></elementree-widget>
+  <elementree-widget name='MyRequests'></elementree-widget>
+
+  <elementree-widget name='MyApprovedRequests'></elementree-widget>
+  <elementree-widget name='RequestsForApproval'></elementree-widget>
+
+  <elementree-widget name='AllRequests'></elementree-widget>
+  <elementree-widget name='Users'></elementree-widget>
+
+  <elementree-widget name='RequestsGraph'></elementree-widget>
+`);

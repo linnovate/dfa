@@ -1,0 +1,72 @@
+version: "3"
+
+services:
+
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./wordpress:/var/www/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - 8080:80
+    depends_on:
+      - wordpress
+      - daml_one
+    links:
+      - wordpress
+      - daml_one
+
+  daml_one:
+    image: digitalasset/daml-sdk:1.18.0
+    working_dir: /data
+    ports:
+      - 7575:7575
+      - 7500:7500
+      - 6865:6865
+    expose:
+      - 7575
+      - 6865
+    volumes:
+      - ./daml-one:/data
+    command: sh -c "daml start"
+
+  #daml_two:
+  #  image: digitalasset/daml-sdk:1.18.0
+  #  working_dir: /data
+  #  ports:
+  #    - 7576:7575
+  #  volumes:
+  #    - ./daml-two:/data
+    #command: sh -c "daml start"
+ 
+ # ui:
+    #image: node:alpine
+    #working_dir: /usr/src/app
+    #ports:
+    #  - 3000:3000
+    #volumes:
+    # - ./ui:/usr/src/app
+    # - ./daml-one/daml.js:/usr/src/app/daml.js
+    #command: sh -c "yarn install && yarn start"
+
+  wordpress:
+    image: wordpress:php7.4-fpm-alpine
+    environment:
+     - WORDPRESS_DB_NAME=wordpress
+     - WORDPRESS_DB_USER=root
+     - WORDPRESS_DB_PASSWORD=password
+    volumes:
+     - ./wordpress/wp-content:/var/www/html/wp-content
+     - ./wordpress/static:/var/www/html/static
+    depends_on:
+      - mysql
+    links:
+      - mysql
+
+  mysql:
+    image: mariadb
+    environment:
+     - MYSQL_ROOT_PASSWORD=password
+     - MYSQL_DATABASE=wordpress
+    volumes:
+     - ./data/mysql:/var/lib/mysql

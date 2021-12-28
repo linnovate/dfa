@@ -6,7 +6,7 @@ import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react'
 import Credentials, { computeCredentials } from '../Credentials';
 import Ledger from '@daml/ledger';
 import { User } from '@daml.js/dfa';
-import { DeploymentMode, deploymentMode, ledgerId, httpBaseUrl} from '../config';
+import { DeploymentMode, deploymentMode, ledgerId, httpBaseUrl } from '../config';
 import { useEffect } from 'react';
 
 type Props = {
@@ -16,26 +16,29 @@ type Props = {
 /**
  * React component for the login screen of the `App`.
  */
-const LoginScreen: React.FC<Props> = ({onLogin}) => {
+const LoginScreen: React.FC<Props> = ({ onLogin }) => {
+
+  const parties = ["Admin", "Zoolog", "Meteorologist", "Hamal"];
+  
   const [party, setParty] = React.useState('');
+  const [select, setSelect] = React.useState('');
+  
   const login = useCallback(async (credentials: Credentials) => {
     try {
-      const ledger = new Ledger({token: credentials.token, httpBaseUrl});
-      const parties = ['Admin', 'Zoolog', 'Meteorologist', 'Hamal'];
-      if (parties.indexOf(party) === -1) {
-        if (await ledger.fetchByKey(User.User, credentials.party) === null) {
-          await ledger.create(User.User, {username: party, requests:[]});
-        }
+      const ledger = new Ledger({ token: credentials.token, httpBaseUrl });
+      if (await ledger.fetchByKey(User.User, credentials.party) === null) {
+        await ledger.create(User.User, { username: credentials.party, parties });
       }
-      onLogin({party: party, token: credentials.token, ledgerId: credentials.ledgerId});
-    } catch(error) {
+      onLogin({ party: credentials.party, token: credentials.token, ledgerId: credentials.ledgerId });
+    } catch (error) {
       alert(`Unknown error:\n${error}`);
     }
-  }, [onLogin, party]);
+  }, [onLogin, party, select]);
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
-    const credentials = computeCredentials(party);
+    const username = (select === "User") ? party : select;
+    const credentials = computeCredentials(username);
     await login(credentials);
   }
 
@@ -55,28 +58,13 @@ const LoginScreen: React.FC<Props> = ({onLogin}) => {
     }
     url.search = '';
     window.history.replaceState(window.history.state, '', url.toString());
-    login({token, party, ledgerId});
+    login({ token, party, ledgerId });
   }, [login]);
 
-  const handleParties = () => {
-    const parties = ['Admin', 'Zoolog', 'Meteorologist', 'Hamal'];
-    if(parties.indexOf(party) === -1) {
-      return <Form.Input
-      fluid
-      icon='user'
-      iconPosition='left'
-      placeholder='Username'
-      value={party}
-      className='test-select-username-field'
-      onChange={e => setParty(e.currentTarget.value)}
-    />
-    }
-  }
-
   return (
-    <Grid className="login-from"  textAlign='center' style={{ height: '100vh' }} verticalAlign='middle'>
+    <Grid className="login-from" textAlign='center' style={{ height: '100vh' }} verticalAlign='middle'>
       <Grid.Column style={{ maxWidth: 450 }}>
-        <Header as='h1' textAlign='center' size='huge' style={{color: '#223668'}}>
+        <Header as='h1' textAlign='center' size='huge' style={{ color: '#223668' }}>
           <Header.Content>
             Distrubuted Flight Approval
           </Header.Content>
@@ -84,7 +72,7 @@ const LoginScreen: React.FC<Props> = ({onLogin}) => {
         <Form size='large' className='test-select-login-screen'>
           <Segment>
             {deploymentMode !== DeploymentMode.PROD_DABL
-            ? <>
+              ? <>
                 {/* FORM_BEGIN */}
                 <Form.Dropdown
                   fluid
@@ -92,26 +80,35 @@ const LoginScreen: React.FC<Props> = ({onLogin}) => {
                   selection
                   className='select-request-receiver'
                   placeholder="Select party"
-                  options={[{key: "User", text: "User", value: "User"},
-                  {key: "Admin", text: "Admin", value: "Admin"},
-                  {key: "Zoolog", text: "Zoolog", value: "Zoolog"},
-                  {key: "Meteorologist", text: "Meteorologist", value: "Meteorologist"},
-                  {key: "Hamal", text: "Hamal", value: "Hamal"},]}
-                  defaultValue={"User"}
-                  onChange={e => setParty(e.currentTarget.textContent ?? '')}
+                  options={[
+                  { key: "User", text: "User", value: "User" },
+                  { key: "Admin", text: "Admin", value: "Admin" },
+                  { key: "Zoolog", text: "Zoolog", value: "Zoolog" },
+                  { key: "Meteorologist", text: "Meteorologist", value: "Meteorologist" },
+                  { key: "Hamal", text: "Hamal", value: "Hamal" },]}
+                  onChange={e => setSelect(e.currentTarget.textContent ?? '')}
                 />
-                {handleParties()}
+                { select === "User" &&
+                  <Form.Input
+                    fluid
+                    icon='user'
+                    iconPosition='left'
+                    placeholder='Username'
+                    className='test-select-username-field'
+                    onChange={e => setParty(e.currentTarget.value)}
+                  />
+                }
                 <Button
                   primary
                   fluid
                   className='test-select-login-button'
                   onClick={handleLogin}
-                  disabled={party === "User" && party.length >= 3}>
+                  disabled={!select || select === "User" && !party}>
                   Log in
                 </Button>
                 {/* FORM_END */}
               </>
-            : <Button primary fluid onClick={handleDablLogin}>
+              : <Button primary fluid onClick={handleDablLogin}>
                 Log in with DABL
               </Button>
             }
