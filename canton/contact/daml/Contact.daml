@@ -1,0 +1,10 @@
+module Contact where
+
+import Message
+
+template Contact
+  with
+    myself : Party
+    other  : Party
+  where
+    signatory myself

@@ -1,0 +1,51 @@
+module Message where
+
+template Message
+  with
+    sender   : Party
+    receiver : Party
+    message  : Text
+  where
+    signatory sender
+    observer receiver
+
+    controller sender can
+      Retract: ()
+        do
+          pure ()
+
+    controller receiver can
+      nonconsuming Reply: () with
+          reply: Text
+        do
+          create Message with
+            sender = receiver
+            receiver = sender
+            message = reply
+          pure ()
+
+
+messaging = scenario do
+  alice <- getParty "Alice"
+  bob <- getParty "Bob"
+
+  submit alice do
+    create Message with
+      sender = alice
+      receiver = bob
+      message = "Hi Bob!"
+
+  submit bob do
+    create Message with
+      sender = bob
+      receiver = alice
+      message = "Hi Alice! How are you doing?"
+
+  anotherMsg <- submit alice do
+    create Message with
+      sender = alice
+      receiver = bob
+      message = "Another message"
+
+  submit alice do
+    exercise anotherMsg Retract

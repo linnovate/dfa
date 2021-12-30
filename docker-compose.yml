@@ -16,7 +16,21 @@ services:
       - wordpress
       - daml_one
 
-  daml_one:
+#  canton:
+#    image: digitalasset/canton-community:latest
+#    hostname: canton
+#    entrypoint: []
+#    tty: true
+#    command: sh -c "bin/canton -config /config/canton.conf --bootstrap /config/bootstrap.canton -Dcanton.participants.participant1.ledger-api.address=0.0.0.0"
+#    volumes:
+#      - ./canton:/config:ro
+#    ports:
+#      - "5011:5011"
+#      - "5012:5012"
+#      - "5018:5018"
+#      - "5019:5019"
+
+  daml-json-api-one:
     image: digitalasset/daml-sdk:1.18.0
     working_dir: /data
     ports:
@@ -34,11 +48,16 @@ services:
   #  image: digitalasset/daml-sdk:1.18.0
   #  working_dir: /data
   #  ports:
-  #    - 7576:7575
+  #    - 7575:7575
+  #    - 7500:7500
+  #    - 6865:6865
+  #  expose:
+  #    - 7575
+  #    - 6865
   #  volumes:
-  #    - ./daml-two:/data
-    #command: sh -c "daml start"
- 
+  #    - ./daml-one:/data
+  #  command: sh -c "daml start"
+
   ui:
     image: node:alpine
     working_dir: /usr/src/app
