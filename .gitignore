@@ -8,3 +8,8 @@ data
 wordpress/*
 !/wordpress/wp-content
 !/wordpress/static
+
+# Daml
+.daml
+daml.js/
+daml/*.log

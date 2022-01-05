@@ -12,11 +12,4 @@ dependencies:
 - daml-prim
 - daml-stdlib
 - daml-trigger
-sandbox-options:
-- --wall-clock-time
-- --ledgerid=dfa-sandbox
-start-navigator: false
-codegen:
-  js:
-    output-directory: daml.js
-    npm-scope: daml.js
+#start-navigator: false

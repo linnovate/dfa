@@ -8,6 +8,10 @@ The DFA is intended to model collaberative / multi-partner-approval based workfl
 
 ## Usage
 
+Use Makefile commands for development.
+
+Use docker-compose for production.
+
 Before you can run the application, you need to install the
 [Node](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) package manager for JavaScript and [Daml](https://docs.daml.com/getting-started/installation.html).
 

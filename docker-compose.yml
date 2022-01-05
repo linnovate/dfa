@@ -11,56 +11,39 @@ services:
       - 8080:80
     depends_on:
       - wordpress
-      - daml_one
+      - daml_json_api
     links:
       - wordpress
-      - daml_one
+      - daml_json_api
 
-#  canton:
-#    image: digitalasset/canton-community:latest
-#    hostname: canton
-#    entrypoint: []
-#    tty: true
-#    command: sh -c "bin/canton -config /config/canton.conf --bootstrap /config/bootstrap.canton -Dcanton.participants.participant1.ledger-api.address=0.0.0.0"
-#    volumes:
-#      - ./canton:/config:ro
-#    ports:
-#      - "5011:5011"
-#      - "5012:5012"
-#      - "5018:5018"
-#      - "5019:5019"
+  canton:
+    image: digitalasset/canton-community:latest
+    #hostname: canton
+    #entrypoint: []
+    tty: true
+    volumes:
+      - ./canton:/canton/app
+      - ./daml:/canton/daml
+    ports:
+      - ${LEDGER_PORT}:${LEDGER_PORT}
+      - 12021:12021
+    command: --config /canton/app/canton.conf --bootstrap /canton/app/init.canton
 
-  daml-json-api-one:
+  daml_json_api:
     image: digitalasset/daml-sdk:1.18.0
     working_dir: /data
     ports:
-      - 7575:7575
-      - 7500:7500
-      - 6865:6865
-    expose:
-      - 7575
-      - 6865
+      - ${JSON_API_PORT}:${JSON_API_PORT}
     volumes:
-      - ./daml-one:/data
-    command: sh -c "daml start"
-
-  #daml_two:
-  #  image: digitalasset/daml-sdk:1.18.0
-  #  working_dir: /data
-  #  ports:
-  #    - 7575:7575
-  #    - 7500:7500
-  #    - 6865:6865
-  #  expose:
-  #    - 7575
-  #    - 6865
-  #  volumes:
-  #    - ./daml-one:/data
-  #  command: sh -c "daml start"
+      - ./daml:/data
+    command: daml json-api --ledger-port ${LEDGER_PORT} --http-port ${JSON_API_PORT} --address 0.0.0.0 --ledger-host ${LEDGER_HOST} --allow-insecure-tokens
 
   ui:
     image: node:alpine
     working_dir: /usr/src/app
+    environment:
+      - LEDGER_ID=${LEDGER_ID}
+      - JSON_API_URL=${JSON_API_URL} 
     ports:
       - 3000:3000
     volumes:

@@ -1,13 +1,9 @@
-// Copyright (c) 2021 Digital Asset (Switzerland) GmbH and/or its affiliates. All rights reserved.
-// SPDX-License-Identifier: Apache-2.0
-
-import React, { useCallback } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react'
+import { useGlobalState } from "../contexts/GlobalState";
+import DamlJsonApi from '../services/DamlJsonApi';
 import Credentials, { computeCredentials } from '../Credentials';
-import Ledger from '@daml/ledger';
-import { User } from '@daml.js/dfa';
 import { DeploymentMode, deploymentMode, ledgerId, httpBaseUrl } from '../config';
-import { useEffect } from 'react';
 
 type Props = {
   onLogin: (credentials: Credentials) => void;
@@ -18,62 +14,73 @@ type Props = {
  */
 const LoginScreen: React.FC<Props> = ({ onLogin }) => {
 
+  // local states
+  const [party, setParty] = useState('');
+  const [select, setSelect] = useState('');
   const parties = ["Admin", "Zoolog", "Meteorologist", "Hamal"];
-  
-  const [party, setParty] = React.useState('');
-  const [select, setSelect] = React.useState('');
-  
-  const login = useCallback(async (credentials: Credentials) => {
-    try {
-      const ledger = new Ledger({ token: credentials.token, httpBaseUrl });
-      if (await ledger.fetchByKey(User.User, credentials.party) === null) {
-        await ledger.create(User.User, { username: credentials.party, parties });
-      }
-      onLogin({ party: credentials.party, token: credentials.token, ledgerId: credentials.ledgerId });
-    } catch (error) {
-      alert(`Unknown error:\n${error}`);
-    }
-  }, [onLogin, party, select]);
 
-  const handleLogin = async (event: React.FormEvent) => {
-    event.preventDefault();
-    const username = (select === "User") ? party : select;
-    const credentials = computeCredentials(username);
-    await login(credentials);
-  }
-
-  const handleDablLogin = () => {
+  // oauth2 handler
+  const oauth2Login = () => {
     window.location.assign(`https://login.projectdabl.com/auth/login?ledgerId=${ledgerId}`);
   }
 
-  useEffect(() => {
-    const url = new URL(window.location.toString());
-    const token = url.searchParams.get('token');
-    if (token === null) {
-      return;
-    }
+  // oauth2 callback handler
+  const url = new URL(window.location.toString());
+  const token = url.searchParams.get('token');
+  if (token) {
     const party = url.searchParams.get('party');
     if (party === null) {
       throw Error("When 'token' is passed via URL, 'party' must be passed too.");
     }
     url.search = '';
     window.history.replaceState(window.history.state, '', url.toString());
-    login({ token, party, ledgerId });
-  }, [login]);
+    onLogin({ token, party, ledgerId });
+  }
 
+  // login handler
+  const simpleLogin = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    // generate credentials
+    const username = (select === "User") ? party : select;
+    const credentials = computeCredentials(username);
+    DamlJsonApi.credentials(credentials);
+
+    // find user daml
+    let res = await DamlJsonApi.query(['User:User'], { username: DamlJsonApi.party });
+
+    // create user daml
+    if (res.result.length) {
+      res = res.result[0].contractId;
+    } else {
+      res = await DamlJsonApi.create('User:User', { username: DamlJsonApi.party, parties });
+      credentials.userId = res.result.contractId;
+    }
+
+    // save contractId
+    DamlJsonApi.credentials(credentials);
+    onLogin(credentials);
+  }
+
+  // template
   return (
     <Grid className="login-from" textAlign='center' style={{ height: '100vh' }} verticalAlign='middle'>
+
       <Grid.Column style={{ maxWidth: 450 }}>
+
         <Header as='h1' textAlign='center' size='huge' style={{ color: '#223668' }}>
           <Header.Content>
             Distrubuted Flight Approval
           </Header.Content>
         </Header>
+
         <Form size='large' className='test-select-login-screen'>
+
           <Segment>
+
             {deploymentMode !== DeploymentMode.PROD_DABL
               ? <>
-                {/* FORM_BEGIN */}
+
                 <Form.Dropdown
                   fluid
                   search
@@ -81,14 +88,15 @@ const LoginScreen: React.FC<Props> = ({ onLogin }) => {
                   className='select-request-receiver'
                   placeholder="Select party"
                   options={[
-                  { key: "User", text: "User", value: "User" },
-                  { key: "Admin", text: "Admin", value: "Admin" },
-                  { key: "Zoolog", text: "Zoolog", value: "Zoolog" },
-                  { key: "Meteorologist", text: "Meteorologist", value: "Meteorologist" },
-                  { key: "Hamal", text: "Hamal", value: "Hamal" },]}
+                    { key: "User", text: "User", value: "User" },
+                    { key: "Admin", text: "Admin", value: "Admin" },
+                    { key: "Zoolog", text: "Zoolog", value: "Zoolog" },
+                    { key: "Meteorologist", text: "Meteorologist", value: "Meteorologist" },
+                    { key: "Hamal", text: "Hamal", value: "Hamal" },]}
                   onChange={e => setSelect(e.currentTarget.textContent ?? '')}
                 />
-                { select === "User" &&
+
+                {select === "User" &&
                   <Form.Input
                     fluid
                     icon='user'
@@ -98,23 +106,30 @@ const LoginScreen: React.FC<Props> = ({ onLogin }) => {
                     onChange={e => setParty(e.currentTarget.value)}
                   />
                 }
+
                 <Button
                   primary
                   fluid
                   className='test-select-login-button'
-                  onClick={handleLogin}
+                  onClick={simpleLogin}
                   disabled={!select || select === "User" && !party}>
                   Log in
                 </Button>
-                {/* FORM_END */}
+
               </>
-              : <Button primary fluid onClick={handleDablLogin}>
+              :
+              <Button primary fluid onClick={oauth2Login}>
                 Log in with DABL
               </Button>
+
             }
+
           </Segment>
+
         </Form>
+
       </Grid.Column>
+
     </Grid>
   );
 };

@@ -19,8 +19,7 @@ export const deploymentMode: DeploymentMode =
 export const ledgerId: string =
   deploymentMode === DeploymentMode.PROD_DABL
     ? window.location.hostname.split('.')[0]
-    : process.env.REACT_APP_LEDGER_ID
-    ?? 'dfa-sandbox';
+    : process.env.LEDGER_ID;
 
 export const httpBaseUrl =
   deploymentMode === DeploymentMode.PROD_DABL

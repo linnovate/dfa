@@ -1,37 +1,55 @@
-import React from 'react';
+import React, { useState } from 'react'
 import { List, Header, Icon, Segment, Divider } from 'semantic-ui-react';
-import { User } from '@daml.js/dfa';
-import { useQuery } from '@daml/react';
+import { useGlobalState } from "../contexts/GlobalState";
+import DamlJsonApi from '../services/DamlJsonApi';
 
+/**
+ * React component for the `Users` of the `App`.
+ */
 const Users: React.FC = () => {
 
-    const results = useQuery(User.User);
+  // global states
+  const party = DamlJsonApi.party;
+  const [user, setUser] = useGlobalState('user');
 
-    const items = results.contracts
+  // local states
+  const [users, setUsers] = useState();
+
+  // load users
+  if (!users && party) {
+    DamlJsonApi.query(["User:User"]).then(res => {
+
+      const users = res.result
         .map(item => item.payload);
 
-    return (
-        <Segment  className="daml-section">
+      setUsers(users);
 
-            <Header as='h2'>
-                <Icon name='globe' />
-                <Header.Content>
-                    Users
-                </Header.Content>
-            </Header>
+    });
+  }
 
-            <Divider />
+  // template
+  return (
+    <Segment className="daml-section">
 
-            <List relaxed className="items">
-                {items && items.map((item, key) => (
-                    <Segment key={item.username}>
-                        <List.Item>Name: <strong>{item.username}</strong></List.Item>
-                    </Segment>
-                ))}
-            </List>
+      <Header as='h2'>
+        <Icon name='globe' />
+        <Header.Content>
+          Users
+        </Header.Content>
+      </Header>
 
-        </Segment>
-    );
+      <Divider />
+
+      <List relaxed className="items">
+        {party && users && users.map((item, key) => (
+          <Segment key={item.username}>
+            <List.Item>Name: <strong>{item.username}</strong></List.Item>
+          </Segment>
+        ))}
+      </List>
+
+    </Segment>
+  );
 }
 
 export default Users;

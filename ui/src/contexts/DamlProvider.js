@@ -7,17 +7,17 @@ import Credentials from '../Credentials';
 // Create a provider
 export default function DamlProvider(props) {
 
-    const credentials = JSON.parse(sessionStorage.getItem('Credentials') || '{}');
+  const credentials = JSON.parse(sessionStorage.getItem('Credentials') || '{}');
 
-    const [user, setUser] = useGlobalState('user');
+  const [user, setUser] = useGlobalState('user');
 
-    if (!user && credentials.token) {
-        setUser(credentials);
-    }
+  if (!user && credentials.token) {
+    setUser(credentials);
+  }
 
-    return ( <DamlLedger token = { credentials.token }
-        party = { credentials.party }
-        httpBaseUrl = { httpBaseUrl } > { props.children } </DamlLedger>
-    );
+  return (<DamlLedger token={credentials.token}
+    party={credentials.party}
+    httpBaseUrl={httpBaseUrl} > {props.children} </DamlLedger>
+  );
 
 };

@@ -1,58 +1,73 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Form, Button, Header, Icon, Segment, Divider } from 'semantic-ui-react';
-import { useParty, useLedger, useReload, useQuery } from '@daml/react';
-import { User } from '@daml.js/dfa';
+import { useGlobalState } from "../contexts/GlobalState";
+import DamlJsonApi from '../services/DamlJsonApi';
 
-type Props = {
-  update: Function;
-}
+/**
+ * React component for the `Create Member` of the `App`.
+ */
+const CreateMember: React.FC<Props> = () => {
 
-const CreateMember: React.FC<Props> = ({update}) => {
+  // global states
+  const party = DamlJsonApi.party;
+  const [, setMembers] = useGlobalState('members');
 
+  // local states
+  const [data, setData] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [users, setUsers] = useState();
+
+  // is allow
   const parties = ["Admin"];
-  
-  const party = useParty();
-  const ledger = useLedger();
-  const reload = useReload();
   const allowRequest = party && parties.includes(party);
 
-  const results = useQuery(User.User);
-
-  const users = results.contracts
-        .map(item => ({
+  // load users
+  useEffect(() => {
+    (async () => {
+      
+      if (!party) {
+        setUsers(null);
+      } else {
+        const res = await DamlJsonApi.query(["User:User"]);
+        const users = res.result.map(item => ({
           key: item.payload.username,
           text: item.payload.username,
           value: item.payload.username,
         }));
+        setUsers(users);
+      }
+      
+    })()
+  }, [party])
   
-  const [data, setData] = React.useState({});
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-  
+  // submit handler
   const submit = async (event: React.FormEvent) => {
-    try { 
-      event.preventDefault();
-      setIsSubmitting(true);
-      await ledger.create(User.GroupMember, { org: party, group: data.group, member: data.member });
-      reload();
-    } catch (error) {
-      alert(`Error sending message:\n${JSON.stringify(error)}`);
-    } finally {
-      setIsSubmitting(false);
-    }
+    event.preventDefault();
+    setIsSubmitting(true);
+    await DamlJsonApi.create('User:GroupMember', { org: 'Admin', group: data.group, member: data.member })
+      .catch(() => {
+        setIsSubmitting(false);
+      });
+    const res = await DamlJsonApi.query(["User:GroupMember"]);
+    setMembers(res.result);
+    setIsSubmitting(false);
   };
-  
+
+  // template
   return (
-    <Segment  className="daml-section">
+    <Segment className="daml-section">
 
       <Header as='h2'>
-          <Icon name='globe' />
-          <Header.Content>Create Members</Header.Content>
+        <Icon name='globe' />
+        <Header.Content>Create Members</Header.Content>
       </Header>
 
       <Divider />
 
-      {allowRequest && 
+      {allowRequest &&
+
         <Form className="create-request-form">
+
           <Form.Dropdown
             fluid
             search
@@ -60,11 +75,11 @@ const CreateMember: React.FC<Props> = ({update}) => {
             className='select-request-receiver'
             placeholder="Select group"
             options={[
-            { key: "User", text: "User", value: "User" },
-            { key: "Zoolog", text: "Zoolog", value: "Zoolog" },
-            { key: "Meteorologist", text: "Meteorologist", value: "Meteorologist" },
-            { key: "Hamal", text: "Hamal", value: "Hamal" },]}
-            onChange={e => setData({ ...data , group: e.currentTarget.textContent })}
+              { key: "User", text: "User", value: "User" },
+              { key: "Zoolog", text: "Zoolog", value: "Zoolog" },
+              { key: "Meteorologist", text: "Meteorologist", value: "Meteorologist" },
+              { key: "Hamal", text: "Hamal", value: "Hamal" },]}
+            onChange={e => setData({ ...data, group: e.currentTarget.textContent })}
           />
 
           <Form.Dropdown
@@ -73,10 +88,10 @@ const CreateMember: React.FC<Props> = ({update}) => {
             selection
             className='select-request-receiver'
             placeholder="Select group"
-            options={users}
-            onChange={e => setData({ ...data , member: e.currentTarget.textContent })}
+            options={users || []}
+            onChange={e => setData({ ...data, member: e.currentTarget.textContent })}
           />
-          
+
           <Button
             primary
             className='select-request-send-button'
@@ -84,7 +99,9 @@ const CreateMember: React.FC<Props> = ({update}) => {
             loading={isSubmitting}
             content="Send"
           />
+
         </Form>
+
       }
 
     </Segment>

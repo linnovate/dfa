@@ -1,18 +1,17 @@
 
-// ========================= Bases ========================= //
+// // ========================= Bases ========================= //
 
 import React from 'react';
 import ReactDOM from 'react-dom';
 import 'semantic-ui-css/semantic.min.css';
 import './index.css';
 
-// ======================= Providers ======================= //
+// // ======================= Providers ======================= //
 
 import { GlobalStateProvider } from "./contexts/GlobalState";
 import { BlocktreeProvider, AddComponent } from "./contexts/BlocktreeProvider";
-import DamlProvider from "./contexts/DamlProvider";
 
-// ====================== Components ======================= //
+// // ====================== Components ======================= //
 
 import UserWidget from './components/UserWidget';
 import AllRequests from './components/AllRequests';
@@ -42,7 +41,7 @@ const widgets = {
   Users,
 
   CreateMember,
-  
+
   Members,
 };
 
@@ -80,10 +79,8 @@ customElements.define('elementree-widget', ElementreeElement);
 
 // setup as Blocktree
 ReactDOM.render(
-  <GlobalStateProvider >
-    <DamlProvider>
-      <BlocktreeProvider />
-    </DamlProvider>
+  <GlobalStateProvider>
+    <BlocktreeProvider />
   </GlobalStateProvider>,
   document.createElement('div')
 );
@@ -106,4 +103,5 @@ root && (root.innerHTML = `
   <elementree-widget name='Users'></elementree-widget>
 
   <elementree-widget name='RequestsGraph'></elementree-widget>
+
 `);

@@ -1,12 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Form, Button, Header, Icon, Segment, Divider } from 'semantic-ui-react';
-import { useParty, useLedger, useReload} from '@daml/react';
-import { User } from '@daml.js/dfa';
+import { useGlobalState } from "../contexts/GlobalState";
+import DamlJsonApi from '../services/DamlJsonApi';
 import { ChooseMap } from './Maps';
-
-type Props = {
-  update: Function;
-}
 
 type Flight = {
   lat: string;
@@ -16,70 +12,77 @@ type Flight = {
   altitude: string;
 }
 
-const CreateRequest: React.FC<Props> = ({update}) => {
-  
+/**
+ * React component for the `Create Request` of the `App`.
+ */
+const CreateRequest: React.FC<Props> = () => {
+
+  // global states
+  const party = DamlJsonApi.party;
+  const [requests, setRequests] = useGlobalState('myRequests');
+
+  // local states
+  const [flight, setFlight] = useState<Flight>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showMap, setShowMap] = useState(true);
+
+  // is allow
   const parties = ["Zoolog", "Meteorologist", "Hamal"];
-  const party = useParty();
-  const ledger = useLedger();
-  const reload = useReload();
   const allowRequest = party && !parties.includes(party);
 
-  const [flight, setFlight] = React.useState<Flight>({});
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [showMap, setShowMap] = React.useState(true);
-  
+  // submit handler
   const submit = async (event: React.FormEvent) => {
-    try {
-      event.preventDefault();
-      setIsSubmitting(true);
-      await ledger.exerciseByKey(User.User.CreateRequest, party, { parties, flight });
-      reload();
-    } catch (error) {
-      alert(`Error sending message:\n${JSON.stringify(error)}`);
-    } finally {
-      setIsSubmitting(false);
-    }
+    event.preventDefault();
+    setIsSubmitting(true);
+    
+    const res = await DamlJsonApi.create('User:FlightRequest', { user: party, parties, flight, approvers: [], disapprovers: [] })
+      .catch(() => setIsSubmitting(false));
+
+    const resRequests = await DamlJsonApi.query(["User:FlightRequest"], { user: party });
+    setRequests(resRequests.result);
+    
+    setIsSubmitting(false);
   };
-  
+
+  // template
   return (
-    <Segment  className="daml-section">
+    <Segment className="daml-section">
 
       <Header as='h2'>
-          <Icon name='globe' />
-          <Header.Content>Create Request</Header.Content>
+        <Icon name='globe' />
+        <Header.Content>Create Request</Header.Content>
       </Header>
 
       <Divider />
 
-      {allowRequest && 
-        <Form className="create-request-form">
-            <Button
-              basic
-              color='blue'
-              icon
-              labelPosition='left'
-              onClick={() => {setShowMap(!showMap)}}
-            >
-              <Icon name='map' />
-              map
-            </Button>
+      {allowRequest &&
 
-          {
-          <div className="create-request-map" style={{width:"100%", height: showMap ? "400px" : "0px"}}>
-          {showMap && (<ChooseMap onSubmit={(lat:number,lng:number) => setFlight({ ...flight, lat: lat.toString(), lng: lng.toString() })}/>)}
-          </div>}
+        <Form className="create-request-form">
+
+          <Button basic color='blue' icon labelPosition='left' onClick={() => { setShowMap(!showMap) }} >
+            <Icon name='map' /> map
+          </Button>
+
+          <div className="create-request-map" style={{ width: "100%", height: showMap ? "400px" : "0px" }}>
+            {showMap &&
+              <ChooseMap onSubmit={(lat: number, lng: number) => setFlight({ ...flight, lat: lat.toString(), lng: lng.toString() })} />
+            }
+          </div>
+
           <Form.Input
             className='select-request-content'
             label="lat coordinates"
             value={flight.lat}
-            onChange={e=> setFlight({ ...flight, lat: e.currentTarget.value})}
+            onChange={e => setFlight({ ...flight, lat: e.currentTarget.value })}
           />
+
           <Form.Input
             className='select-request-content'
             label="lng coordinates"
             value={flight.lng}
-            onChange={e=> setFlight({ ...flight, lng: e.currentTarget.value})}
+            onChange={e => setFlight({ ...flight, lng: e.currentTarget.value })}
           />
+
           <Form.Input
             className='select-request-content'
             label="Altitude"
@@ -87,23 +90,27 @@ const CreateRequest: React.FC<Props> = ({update}) => {
             step='100'
             min='0'
             value={flight.altitude}
-            onChange={e=> setFlight({ ...flight, altitude: e.currentTarget.value})}
+            onChange={e => setFlight({ ...flight, altitude: e.currentTarget.value })}
           />
+
           <Divider className="Divider" />
+
           <Form.Input
             className='select-request-content'
             label="Start time"
             type="datetime-local"
             value={flight.timeStart}
-            onChange={e=> setFlight({ ...flight, timeStart: e.currentTarget.value})}
+            onChange={e => setFlight({ ...flight, timeStart: e.currentTarget.value })}
           />
+
           <Form.Input
             className='select-request-content'
             label="End time"
             type="datetime-local"
             value={flight.timeEnd}
-            onChange={e=> setFlight({ ...flight, timeEnd: e.currentTarget.value})}
+            onChange={e => setFlight({ ...flight, timeEnd: e.currentTarget.value })}
           />
+
           <Button
             primary
             className='select-request-send-button'
@@ -112,7 +119,9 @@ const CreateRequest: React.FC<Props> = ({update}) => {
             loading={isSubmitting}
             content="Send"
           />
+
         </Form>
+
       }
 
     </Segment>

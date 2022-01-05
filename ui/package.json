@@ -4,9 +4,6 @@
   "private": true,
   "@type": "module",
   "dependencies": {
-    "@daml.js/dfa": "file:./daml.js/dfa-0.1.0",
-    "@daml/ledger": "1.14.2",
-    "@daml/react": "1.14.2",
     "@daml/types": "1.14.2",
     "chart.js": "^3.6.2",
     "dotenv": "^8.2.0",

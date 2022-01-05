@@ -1,0 +1,18 @@
+nodes.local.start()
+
+import better.files._
+
+val damlDar = File(sys.props.get("create-daml-app-dir").getOrElse("daml")) / ".daml" / "dist" / "dfa-0.1.0.dar"
+
+// check that files exist where we expect them
+assert(damlDar.exists(), s"Daml dar $damlDar isn't built")
+
+// setup parties and connect participants to domain
+Seq(("Admin", participant1), ("Admin", participant2)).foreach {
+  case (party, participant) =>
+    participant.parties.enable(party)
+    participant.domains.connect_local(mydomain)
+}
+
+// upload dar file to participants
+participants.all.dars.upload(damlDar.pathAsString)

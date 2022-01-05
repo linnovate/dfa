@@ -3,8 +3,7 @@
 
 const { createProxyMiddleware } = require("http-proxy-middleware");
 
-const httpJsonDevUrl =
-  "http://localhost:" + process.env.REACT_APP_HTTP_JSON_PORT;
+const httpJsonDevUrl = process.env.JSON_API_URL;
 
 /**
  * @return {Boolean}
@@ -23,7 +22,7 @@ const filter = function (pathname, req) {
 };
 
 module.exports = function (app) {
-    
+
   app.use(
     createProxyMiddleware(filter, {
       target: httpJsonDevUrl,
