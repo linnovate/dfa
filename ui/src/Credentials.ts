@@ -4,6 +4,8 @@
 import { encode } from 'jwt-simple';
 import { ledgerId } from './config';
 
+export const LEDGER_ID: string = 'participant2';
+
 export const APPLICATION_ID: string = 'dfa';
 
 // NOTE: This is for testing purposes only.
@@ -20,8 +22,9 @@ export type Credentials = {
 function computeToken(party: string): string {
   const payload = {
     "https://daml.com/ledger-api": {
-      "ledgerId": ledgerId,
+      "ledgerId": LEDGER_ID,
       "applicationId": APPLICATION_ID,
+      "admin": true,
       "actAs": [party]
     }
   };

@@ -2,71 +2,146 @@ version: "3"
 
 services:
 
-  nginx:
-    image: nginx:alpine
-    volumes:
-      - ./wordpress:/var/www/html
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-    ports:
-      - 8080:80
-    depends_on:
-      - wordpress
-      - daml_json_api
-    links:
-      - wordpress
-      - daml_json_api
-
-  canton:
+##################################################################
+  ############################# Canton #############################
+##################################################################
+ 
+  canton_a:
     image: digitalasset/canton-community:latest
-    #hostname: canton
-    #entrypoint: []
     tty: true
+    network_mode: host
     volumes:
       - ./canton:/canton/app
       - ./daml:/canton/daml
+    environment:
+      - DOMAIN_PORT=${CANTON_DOMAIN_PORT}
+      - LEDGER_PORT=${LEDGER_PORT_A}
     ports:
-      - ${LEDGER_PORT}:${LEDGER_PORT}
-      - 12021:12021
+      - ${CANTON_DOMAIN_PORT}:${CANTON_DOMAIN_PORT}
+      - ${LEDGER_PORT_A}:${LEDGER_PORT_A}
     command: --config /canton/app/canton.conf --bootstrap /canton/app/init.canton
 
-  daml_json_api:
+  canton_b:
+    image: digitalasset/canton-community:latest
+    tty: true
+    network_mode: host
+    volumes:
+      - ./canton:/canton/app
+      - ./daml:/canton/daml
+    environment:
+      - DOMAIN_URL=${CANTON_DOMAIN_URL}
+      - LEDGER_PORT=${LEDGER_PORT_B}
+    ports:
+      - ${LEDGER_PORT_B}:${LEDGER_PORT_B}
+    command: --config /canton/app/canton_2.conf --bootstrap /canton/app/init_2.canton
+    depends_on:
+      - canton_a
+
+##################################################################
+  ########################### Navigator ############################
+##################################################################
+
+  navigator_a:
     image: digitalasset/daml-sdk:1.18.0
     working_dir: /data
+    network_mode: host
     ports:
-      - ${JSON_API_PORT}:${JSON_API_PORT}
+      - ${NAVIGATOR_PORT_A}:${NAVIGATOR_PORT_A}
     volumes:
       - ./daml:/data
-    command: daml json-api --ledger-port ${LEDGER_PORT} --http-port ${JSON_API_PORT} --address 0.0.0.0 --ledger-host ${LEDGER_HOST} --allow-insecure-tokens
-
-  ui:
-    image: node:alpine
-    working_dir: /usr/src/app
-    environment:
-      - LEDGER_ID=${LEDGER_ID}
-      - JSON_API_URL=${JSON_API_URL} 
-    ports:
-      - 3000:3000
-    volumes:
-     - ./ui:/usr/src/app
-    command: sh -c "yarn install && yarn start"
-
-  wordpress:
-    image: wordpress:php7.4-fpm-alpine
-    environment:
-     - WORDPRESS_DB_NAME=wordpress
-     - WORDPRESS_DB_USER=root
-     - WORDPRESS_DB_PASSWORD=password
-    volumes:
-     - ./wordpress:/var/www/html
+    command: daml ledger navigator --host localhost --port ${LEDGER_PORT_A} --port ${NAVIGATOR_PORT_A}
     depends_on:
-      - mysql
-    links:
-      - mysql
+      - canton_a
 
-  mysql:
-    image: mariadb
-    environment:
-     - MYSQL_ROOT_PASSWORD=password
-     - MYSQL_DATABASE=wordpress
+  navigator_b:
+    image: digitalasset/daml-sdk:1.18.0
+    working_dir: /data
+    network_mode: host
+    ports:
+      - ${NAVIGATOR_PORT_B}:${NAVIGATOR_PORT_B}
     volumes:
-     - ./data/mysql:/var/lib/mysql
+      - ./daml:/data
+    command: daml ledger navigator --host localhost --port ${LEDGER_PORT_B} --port ${NAVIGATOR_PORT_B}
+    depends_on:
+      - canton_b
+
+##################################################################
+  ############################ JsonApi #############################
+##################################################################
+
+  json_api_a:
+    image: digitalasset/daml-sdk:1.18.0
+    working_dir: /data
+    network_mode: host
+    ports:
+      - ${JSON_API_PORT_A}:${JSON_API_PORT_A}
+    volumes:
+      - ./daml:/data
+    command: daml json-api --ledger-host localhost --ledger-port ${LEDGER_PORT_A} --http-port ${JSON_API_PORT_A} --address 0.0.0.0 --allow-insecure-tokens
+    depends_on:
+      - canton_a
+
+  json_api_b:
+    image: digitalasset/daml-sdk:1.18.0
+    working_dir: /data
+    network_mode: host
+    ports:
+      - ${JSON_API_PORT_B}:${JSON_API_PORT_B}
+    volumes:
+      - ./daml:/data
+    command: daml json-api --ledger-host localhost --ledger-port ${LEDGER_PORT_B} --http-port ${JSON_API_PORT_B} --address 0.0.0.0 --allow-insecure-tokens
+    depends_on:
+      - canton_b
+
+##################################################################
+  ############################## UI ################################
+##################################################################
+
+#  ui:
+#    image: node:alpine
+#    working_dir: /usr/src/app
+#    environment:
+#      - LEDGER_ID=${LEDGER_ID_A}
+#      - JSON_API_URL=${JSON_API_URL_A} 
+#    ports:
+#      - 8000:8000
+#    volumes:
+#     - ./ui:/usr/src/app
+#    command: sh -c "yarn install && yarn start"
+
+#  nginx:
+#    image: nginx:alpine
+#    volumes:
+#      - ./wordpress:/var/www/html
+#      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+#    ports:
+#      - 8080:80
+#    depends_on:
+#      - wordpress
+#      - json_api_a
+#      - json_api_b
+#    links:
+#      - wordpress
+#      - json_api_a
+#      - json_api_b
+
+#  wordpress:
+#    image: wordpress:php7.4-fpm-alpine
+#    environment:
+#     - WORDPRESS_DB_NAME=wordpress
+#     - WORDPRESS_DB_USER=root
+#     - WORDPRESS_DB_PASSWORD=password
+#    volumes:
+#     - ./wordpress:/var/www/html
+#    depends_on:
+#      - mysql
+#    links:
+#      - mysql
+
+#  mysql:
+#    image: mariadb
+#    environment:
+#     - MYSQL_ROOT_PASSWORD=password
+#     - MYSQL_DATABASE=wordpress
+#    volumes:
+#     - ./data/mysql:/var/lib/mysql

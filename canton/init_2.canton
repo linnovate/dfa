@@ -1,15 +1,15 @@
 nodes.local.start()
 
-val myself = participant1;
+val myself = participant2
 
 // setup parties and connect participants to domain
-myself.parties.enable("Admin")
-myself.parties.enable("Hamal") 
-myself.parties.enable("Zoolog") 
-myself.parties.enable("Meteorologist")
+myself.parties.enable("User")
+
+println("CONNECT URL:")
+println(sys.env.getOrElse("DOMAIN_URL", ""))
 
 // setup parties and connect participants to domain
-myself.domains.connect_local(mydomain)
+myself.domains.connect("mydomain", sys.env.getOrElse("DOMAIN_URL", ""))
 
 // upload dar file to participants
 participants.all.dars.upload(sys.env.getOrElse("DAR_PATH", "/canton/daml/.daml/dist/dfa-0.1.0.dar"))

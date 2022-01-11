@@ -4,16 +4,17 @@
 module User where
 
 -- lookupByKey @GroupMember (org, group, approver)
+--     observer org, group, member
 
 template GroupMember
   with
     org: Party
-    group: Party
+    group: Text
     member: Party
   where
     signatory org
-    observer org, group, member
-    key (org, group, member) : (Party, Party, Party)
+    observer member
+    key (org, group, member) : (Party, Text, Party)
     maintainer key._1
 
 data Flight = Flight {
