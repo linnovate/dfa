@@ -5,7 +5,7 @@ val myself = participant1;
 // setup parties and connect participants to domain
 myself.parties.enable("Admin")
 myself.parties.enable("Hamal") 
-myself.parties.enable("Zoolog") 
+myself.parties.enable("Zoolog")
 myself.parties.enable("Meteorologist")
 
 // setup parties and connect participants to domain

@@ -6,8 +6,8 @@ LEDGER_PORT_B := 1001
 CANTON_DOMAIN_PORT := 2000
 CANTON_DOMAIN_URL := http://127.0.0.1:2000
 
-NAVIGATOR_PORT_A := 3000
-NAVIGATOR_PORT_B := 3001
+NAVIGATOR_PORT_A := 4500
+NAVIGATOR_PORT_B := 4501
 
 JSON_API_PORT_A := 4000
 JSON_API_PORT_B := 4001
@@ -162,7 +162,7 @@ ui_start:
     --network host \
 	-w /usr/src/app \
 	-v ${PWD}/ui:/usr/src/app \
-	-p 8000:8000 \
+	-p 3001:3000 \
 	-e LEDGER_ID=${AUTH_LEDGER_ID_A} \
 	-e JSON_API_URL=${JSON_API_URL_A} \
 	node:alpine \
@@ -170,10 +170,8 @@ ui_start:
 
 ui_build:
 	docker run --rm -it \
-    --network host \
 	-w /usr/src/app \
 	-v ${PWD}/ui:/usr/src/app \
-	-p 8000:8000 \
 	-e LEDGER_ID=${AUTH_LEDGER_ID_A} \
 	-e JSON_API_URL=${JSON_API_URL_A} \
 	node:alpine \

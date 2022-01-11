@@ -104,7 +104,7 @@ services:
 #      - LEDGER_ID=${LEDGER_ID_A}
 #      - JSON_API_URL=${JSON_API_URL_A} 
 #    ports:
-#      - 8000:8000
+#      - 8000:5000
 #    volumes:
 #     - ./ui:/usr/src/app
 #    command: sh -c "yarn install && yarn start"
