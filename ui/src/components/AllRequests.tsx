@@ -13,24 +13,24 @@ const AllRequests: React.FC = () => {
   const [user, setUser] = useGlobalState('user');
 
   // local states
-  const [requests, setRequests] = useState(null);
+  const [requests, setRequests] = useState([]);
   
   // load requests
   useEffect(() => {
     (async () => {
       
       if (!party) {
-        setRequests(null);
+        setRequests([]);
       } else {
       
         const res = await DamlJsonApi.query(["User:FlightRequest"]);
         const resCompleted = await DamlJsonApi.query(["User:CompletedRequest"])
     
-        const itemsRequest = res.result.map(item => item.payload).reverse();
-        const itemsCompleted = resCompleted.result.map(item => item.payload).reverse();
+        const itemsRequest = res.result.map((item: any) => item.payload).reverse();
+        const itemsCompleted = resCompleted.result.map((item: any) => item.payload).reverse();
     
-        const items = [...itemsRequest, ...itemsCompleted];
-        items.sort((a, b) => new Date(a.flight.time).getTime() - new Date(b.flight.time).getTime())
+        const items: any = [...itemsRequest, ...itemsCompleted];
+        items.sort((a: any, b: any) => new Date(a.flight.time).getTime() - new Date(b.flight.time).getTime())
     
         setRequests(items);
       }
@@ -50,7 +50,7 @@ const AllRequests: React.FC = () => {
       <Divider />
 
       <List relaxed className="items">
-        { requests && requests.map((item, key) => (
+        { requests.map((item: any, key) => (
           <Segment key={item.user + item.flight.timeStart + item.flight.timeEnd}>
             {(item.approvers.length === item.parties.length) ?
               <Label color='green' ribbon className="label">

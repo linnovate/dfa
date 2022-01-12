@@ -6,33 +6,33 @@ import DamlJsonApi from '../services/DamlJsonApi';
 /**
  * React component for the `Create Member` of the `App`.
  */
-const CreateMember: React.FC<Props> = () => {
+const CreateMember: React.FC = () => {
 
   // global states
   const party = DamlJsonApi.party;
   const [, setMembers] = useGlobalState('members');
 
   // local states
-  const [data, setData] = useState({});
+  const [data, setData] = useState({ group: '', member: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [users, setUsers] = useState();
+  const [users, setUsers] = useState([]);
 
   // is allow
   const parties = ["Admin"];
-  const allowRequest = party && parties.includes(party);
+  const allowRequest = true;// party && parties.includes(party);
 
   // load users
   useEffect(() => {
     (async () => {
       
       if (!party) {
-        setUsers(null);
+        setUsers([]);
       } else {
-        const res = await DamlJsonApi.query(["User:User"]);
-        const users = res.result.map(item => ({
-          key: item.payload.username,
-          text: item.payload.username,
-          value: item.payload.username,
+        const res = await DamlJsonApi.getParteis();
+        const users = res.result.map((item: any) => ({
+          key: item.identifier,
+          text: item.displayName,
+          value: item.displayName,
         }));
         setUsers(users);
       }
@@ -44,7 +44,7 @@ const CreateMember: React.FC<Props> = () => {
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     setIsSubmitting(true);
-    await DamlJsonApi.create('User:GroupMember', { org: 'Admin', group: data.group, member: data.member })
+    await DamlJsonApi.create('User:GroupMember', { org: party, group: data.group, member: data.member })
       .catch(() => {
         setIsSubmitting(false);
       });

@@ -1,3 +1,5 @@
+import { encode } from 'jwt-simple';
+
 /**
  * Class representing a DamlJsonApi (https://docs.daml.com/json-api/index.html).
  *
@@ -12,70 +14,79 @@ class DamlJsonApi {
   baseUrl;
 
   /**
-   * Holds the user contract Id
-   * @var {srting} userId.
-   */
-  userId;
-
-  /**
    * Holds the credentials token
    * @var {srting} token.
    */
   token;
 
   /**
-   * Holds the Ledger Id
-   * @var {srting} ledgerId.
-   */
-  ledgerId;
-
-  /**
    * Holds the party name
    * @var {srting} party.
    */
   party;
-
+  
+  /**
+   * Holds the parteis list
+   * @var {srting} parteis.
+   */
+  parteis;
+  
   /**
    * Represents a DamlJsonApi.
    * @constructor
   */
   constructor(baseUrl = '/v1') {
     this.baseUrl = baseUrl;
-
-    if (!this.credentials().token) {
-      // load credentials
-      const credentials = JSON.parse(sessionStorage.getItem('Credentials') || '{}');
-      // set credentials
-      this.credentials(credentials)
-    }
+    this.token = sessionStorage.getItem('token');
+    this.party= sessionStorage.getItem('party');
   }
 
   /**
-   * Get/Set credentials
-   * @function credentials
-   * @param {null|object} credentials
-   * @return {object} { token, ledgerId, party }
+   * create credentials to Daml service
+   * @function createCredentials
+   * @param {string} party
+   * @return {promise} the response
    */
-  credentials(credentials) {
-
-    // set new credentials
-    if (credentials) {
-      sessionStorage.setItem('Credentials', JSON.stringify(credentials));
-      this.token = credentials.token;
-      this.ledgerId = credentials.ledgerId;
-      this.party = credentials.party;
-      this.userId = credentials.userId;
+  async createCredentials(party) {
+    // select params
+    const url = new URL(window.location.toString());
+    const ledgerId = url.searchParams.get('ledgerId')
+    const applicationId = url.searchParams.get('applicationId')
+    if (!ledgerId || !applicationId) {
+      alert("'ledgerId' and 'applicationId' must appear in URL parameters.");
     }
 
-    return {
-      token: this.token,
-      ledgerId: this.ledgerId,
-      party: this.party,
-      userId: this.userId,
+    // create payload
+    const payload = {
+      "https://daml.com/ledger-api": {
+        "ledgerId": ledgerId,
+        "applicationId": applicationId,
+        "actAs": [party]
+      }
     }
+    
+    // generate token
+    const SECRET_KEY = 'secret';
+    const token = encode(payload, SECRET_KEY, 'HS256');
 
+    // save local
+    sessionStorage.setItem('token', token);
+    sessionStorage.setItem('party', party);
+    this.token = token;
+    this.party= party;
   }
-
+  
+  /**
+   * Logout from Daml service
+   * @function logout
+   */
+  logout() {
+    this.token = null;
+    this.party = null;
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("party");
+  }
+  
   /**
    * Basic Daml jsonApi post
    * @function post
@@ -94,49 +105,64 @@ class DamlJsonApi {
       },
       body: JSON.stringify(body || ''),
     })
-      // convert to json
-      .then((res) => {
-        return res.json()
-      })
-      // status handler
-      .then((res) => {
-        if (res.status < 200 && res.status > 299) {
-          throw res.errors;
-        }
-        return res;
-      })
-      // catch handler
-      .catch((error) => {
-        console.log(error)
-        // alert(`Error sending message:\n${JSON.stringify(error)}`);
-      });
+    .then((res) => res.json())
+    .then((res) => {
+      if (res.status < 200 && res.status > 299) {
+        throw res.errors;
+      }
+      return res;
+    })
+    .catch((error) => console.log(error) /* && alert(`Error sending message:\n${JSON.stringify(error)}`) */);
 
   }
 
   /**
-   * Login to Daml service
-   * @function login
+   * Basic Daml jsonApi get
+   * @function get
    * @param {string} path
    * @return {promise} the response
    */
-  login(payload) {
-    return this.post('/auth/login', payload)
-      .then(res =>
-        this.credentials(res)
-      );
+  get(path) {
+
+    // fetch with Authorization header
+    return fetch(`${this.baseUrl}${path}`, {
+      method: 'get',
+      headers: {
+        "Authorization": `Bearer ${this.token}`,
+        "Content-Type": "application/json"
+      },
+    })
+    .then((res) => res.json())
+    .then((res) => {
+      if (res.status < 200 && res.status > 299) {
+        throw res.errors;
+      }
+      return res;
+    })
+    .catch((error) => console.log(error) /* && alert(`Error sending message:\n${JSON.stringify(error)}`) */);
+
   }
 
   /**
-   * Logout from Daml service
-   * @function logout
+   * Get the Daml parteis
+   * @function getParteis
+   * @return {promise} the response
    */
-  logout() {
-    this.token = null;
-    this.ledgerId = null;
-    this.party = null;
-    sessionStorage.removeItem("Credentials");
+  async getParteis() {
+    return this.parteis || (this.parteis = await this.get('/parties'));
   }
 
+  /**
+   * Add a Daml party
+   * @function addParty
+   * @param {string} party
+   * @param {string} displayName
+   * @return {promise} the response
+   */
+  async addParty(identifierHint, displayName) {
+    return this.post('/parties/allocate', { identifierHint, displayName });
+  }
+  
   /**
    * Create a Daml contract
    * @function create

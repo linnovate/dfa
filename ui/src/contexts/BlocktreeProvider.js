@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import ReactDOM from 'react-dom';
 
 // AddComponent instance;
-let AddComponent: function;
+let AddComponent;
 
 // Create a provider for components to consume and subscribe to changes
 export const BlocktreeProvider = (props) => {

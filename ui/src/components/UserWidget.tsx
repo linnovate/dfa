@@ -23,8 +23,8 @@ const UserWidget: React.FC<Props> = ({ logoutLink, requestLink, approvalLink }) 
   const [showLogin, setShowLogin] = useState(false);
 
   // login handler
-  const onLogin = async (credentials: object) => {
-    setUser(credentials);
+  const onLogin = async () => {
+    setUser({});
     // reset data
     setShowLogin(false);
   }

@@ -14,8 +14,8 @@ JSON_API_PORT_B := 4001
 JSON_API_URL_A := http://127.0.0.1:4000
 JSON_API_URL_B := http://127.0.0.1:4001
 
-AUTH_LEDGER_ID_A := participant1
-AUTH_LEDGER_ID_B := participant2
+LEDGER_ID_A := participant1
+LEDGER_ID_B := participant2
 
 commands := "\
 	\nMake commands: \
@@ -40,8 +40,8 @@ commands := "\
 	\n   JSON_API_PORT_B: ${JSON_API_PORT_B} \
 	\n   JSON_API_URL_A: ${JSON_API_URL_A} \
 	\n   JSON_API_URL_B: ${JSON_API_URL_B} \
-	\n   AUTH_LEDGER_ID_A: ${AUTH_LEDGER_ID_A} \
-	\n   AUTH_LEDGER_ID_B: ${AUTH_LEDGER_ID_B} \
+	\n   LEDGER_ID_A: ${LEDGER_ID_A} \
+	\n   LEDGER_ID_B: ${LEDGER_ID_B} \
 	\n"
 
 default:
@@ -159,11 +159,10 @@ json_api_b:
 
 ui_start:
 	docker run --rm -it \
-    --network host \
 	-w /usr/src/app \
 	-v ${PWD}/ui:/usr/src/app \
-	-p 3001:3000 \
-	-e LEDGER_ID=${AUTH_LEDGER_ID_A} \
+	-p 3000:3000 \
+	-e LEDGER_ID=${LEDGER_ID_A} \
 	-e JSON_API_URL=${JSON_API_URL_A} \
 	node:alpine \
 	sh -c "yarn install && yarn start"
@@ -172,7 +171,7 @@ ui_build:
 	docker run --rm -it \
 	-w /usr/src/app \
 	-v ${PWD}/ui:/usr/src/app \
-	-e LEDGER_ID=${AUTH_LEDGER_ID_A} \
+	-e LEDGER_ID=${LEDGER_ID_A} \
 	-e JSON_API_URL=${JSON_API_URL_A} \
 	node:alpine \
 	sh -c "yarn install && yarn build"

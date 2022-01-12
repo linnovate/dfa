@@ -1,47 +1,39 @@
 
-// // ========================= Bases ========================= //
+// ========================= Bases ========================= //
 
 import React from 'react';
 import ReactDOM from 'react-dom';
 import 'semantic-ui-css/semantic.min.css';
 import './index.css';
 
-// // ======================= Providers ======================= //
+// ======================= Providers ======================= //
 
 import { GlobalStateProvider } from "./contexts/GlobalState";
 import { BlocktreeProvider, AddComponent } from "./contexts/BlocktreeProvider";
 
-// // ====================== Components ======================= //
+// ====================== Components ======================= //
 
 import UserWidget from './components/UserWidget';
-import AllRequests from './components/AllRequests';
 import CreateRequest from './components/CreateRequest';
-import MyApprovedRequests from './components/MyApprovedRequests';
+import AllRequests from './components/AllRequests';
 import MyRequests from './components/MyRequests';
+import MyApprovedRequests from './components/MyApprovedRequests';
 import RequestsForApproval from './components/RequestsForApproval';
 import RequestsGraph from './components/RequestsGraph';
 import Users from './components/Users';
-
 import CreateMember from './components/CreateMember';
 import Members from './components/Members';
 
 const widgets = {
   UserWidget,
-
   CreateRequest,
   AllRequests,
-
-  RequestsGraph,
-
   MyRequests,
   MyApprovedRequests,
-
   RequestsForApproval,
-
+  RequestsGraph,
   Users,
-
   CreateMember,
-
   Members,
 };
 
@@ -97,11 +89,12 @@ root && (root.innerHTML = `
   <elementree-widget name='MyRequests'></elementree-widget>
 
   <elementree-widget name='MyApprovedRequests'></elementree-widget>
-  <elementree-widget name='RequestsForApproval'></elementree-widget>
 
-  <elementree-widget name='AllRequests'></elementree-widget>
-  <elementree-widget name='Users'></elementree-widget>
+  <elementree-widget name='RequestsForApproval'></elementree-widget>
 
   <elementree-widget name='RequestsGraph'></elementree-widget>
 
+  <elementree-widget name='AllRequests'></elementree-widget>
+
+  <elementree-widget name='Users'></elementree-widget>
 `);
