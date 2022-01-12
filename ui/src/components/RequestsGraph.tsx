@@ -33,7 +33,6 @@ const RequestsGraph: React.FC = () => {
         const itemsRequest = res.result.map(item => item.payload)
         const itemsCompleted = resCompleted.result.map(item => item.payload)
         const items = [...itemsRequest, ...itemsCompleted];
-        items.sort((a, b) => new Date(a.flight.time).getTime() - new Date(b.flight.time).getTime())
         setItems(items);
       }
       
@@ -42,20 +41,27 @@ const RequestsGraph: React.FC = () => {
   }, [party, myRequests])
 
   // create datasets
+  let timeStart, timeEnd;
+  let labels = [];
   let datasets = [];
   if (items) {
     datasets = items.map(item => {
+      timeStart = new Date(item.flight.timeStart).toLocaleString();
+      timeEnd = new Date(item.flight.timeEnd).toLocaleString();
+      
+      labels.includes(timeStart) || labels.push(timeStart)
+      labels.includes(timeEnd) || labels.push(timeEnd)
       const color1 = Math.random() * 200 + 55;
       const color2 = Math.random() * 200 + 55;
       const color3 = Math.random() * 200 + 55;
       return {
         data: [{
-          x: item.flight.timeStart,
+          x: timeStart,
           y: item.flight.altitude,
           r: 13,
           backgroundColor: `rgba(${color1}, ${color2}, ${color3}, 1)`,
         }, {
-          x: item.flight.timeEnd,
+          x: timeEnd,
           y: item.flight.altitude,
           r: 13,
           backgroundColor: `rgba(${color1}, ${color2}, ${color3}, 1)`,
@@ -67,14 +73,31 @@ const RequestsGraph: React.FC = () => {
       }
     });
   }
+
+  labels.sort((a, b) => new Date(a).getTime() - new Date(b).getTime())
   
   useEffect(() => {
     let myChart;
     if (canvasRef.current) {
       myChart = new Chart(canvasRef.current, {
         type: 'line',
-        data: { 
+        data: {
+          labels,
           datasets
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              display: true,
+              title: {
+                display: true,
+                text: 'altitude'
+              },
+              suggestedMin: 0,
+              suggestedMax: 2000
+            }
+          }
         },
       });
     }
