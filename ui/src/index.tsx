@@ -20,7 +20,7 @@ import MyRequests from './components/MyRequests';
 import MyApprovedRequests from './components/MyApprovedRequests';
 import RequestsForApproval from './components/RequestsForApproval';
 import RequestsGraph from './components/RequestsGraph';
-import Users from './components/Users';
+import Parteis from './components/Parteis';
 import CreateMember from './components/CreateMember';
 import Members from './components/Members';
 
@@ -32,7 +32,7 @@ const widgets = {
   MyApprovedRequests,
   RequestsForApproval,
   RequestsGraph,
-  Users,
+  Parteis,
   CreateMember,
   Members,
 };
@@ -96,5 +96,5 @@ root && (root.innerHTML = `
 
   <elementree-widget name='AllRequests'></elementree-widget>
 
-  <elementree-widget name='Users'></elementree-widget>
+  <elementree-widget name='Parteis'></elementree-widget>
 `);

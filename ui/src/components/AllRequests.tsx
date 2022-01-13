@@ -10,7 +10,7 @@ const AllRequests: React.FC = () => {
 
   // global states
   const party = DamlJsonApi.party;
-  const [user, setUser] = useGlobalState('user');
+  const [user, setUser] = useGlobalState('user'); // enable context recycling
 
   // local states
   const [requests, setRequests] = useState([]);
@@ -26,11 +26,11 @@ const AllRequests: React.FC = () => {
         const res = await DamlJsonApi.query(["User:FlightRequest"]);
         const resCompleted = await DamlJsonApi.query(["User:CompletedRequest"])
     
-        const itemsRequest = res.result.map((item: any) => item.payload).reverse();
-        const itemsCompleted = resCompleted.result.map((item: any) => item.payload).reverse();
+        const itemsRequest = res.result.map(item => item.payload).reverse();
+        const itemsCompleted = resCompleted.result.map(item => item.payload).reverse();
     
-        const items: any = [...itemsRequest, ...itemsCompleted];
-        items.sort((a: any, b: any) => new Date(a.flight.time).getTime() - new Date(b.flight.time).getTime())
+        const items = [...itemsRequest, ...itemsCompleted];
+        items.sort((a, b) => new Date(a.flight.time).getTime() - new Date(b.flight.time).getTime())
     
         setRequests(items);
       }
@@ -63,9 +63,7 @@ const AllRequests: React.FC = () => {
             }
             <List.Item>Info: <strong>lat: {item.flight.lat}, lng: {item.flight.lng}, altitude: {item.flight.altitude}</strong></List.Item>
             <List.Item>Time: <strong>{item.flight.timeStart} --> {item.flight.timeEnd}</strong></List.Item>
-            <List.Item>Approvers: <strong>{item.approvers.join(', ') || '---'}</strong></List.Item>
-            <List.Item>Disapprovers: <strong>{item.disapprovers.join(', ') || '---'}</strong></List.Item>
-            <List.Item>User: <strong>{item.user}</strong></List.Item>
+            <List.Item>User: <strong>{item.user.split("::")[0]}</strong></List.Item>
           </Segment>
         ))}
       </List>
@@ -75,3 +73,6 @@ const AllRequests: React.FC = () => {
 }
 
 export default AllRequests;
+
+// <List.Item>Approvers: <strong>{item.approvers.join(', ') || '---'}</strong></List.Item>
+// <List.Item>Disapprovers: <strong>{item.disapprovers.join(', ') || '---'}</strong></List.Item>

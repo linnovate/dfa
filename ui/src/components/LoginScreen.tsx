@@ -18,7 +18,6 @@ const LoginScreen: React.FC<Props> = ({ onLogin }) => {
   // local states
   const [party, setParty] = useState('');
   const [select, setSelect] = useState('');
-  const parties = ["Admin", "Zoolog", "Meteorologist", "Hamal"];
 
   // oauth2 handler
   const oauth2Login = () => {
@@ -42,11 +41,9 @@ const LoginScreen: React.FC<Props> = ({ onLogin }) => {
   // login handler
   const simpleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
-
     // create daml credentials
     const username = (select === "User") ? party : select;
     DamlJsonApi.createCredentials(username);
-
     onLogin();
   }
 

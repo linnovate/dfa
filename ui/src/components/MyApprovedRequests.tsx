@@ -10,7 +10,7 @@ const MyApprovedRequests: React.FC = () => {
 
   // global states
   const party = DamlJsonApi.party;
-  const [user, setUser] = useGlobalState('user');
+  const [user, setUser] = useGlobalState('user'); // enable context recycling
 
   // local states
   const [requests, setRequests] = useState();

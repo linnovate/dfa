@@ -10,7 +10,7 @@ const MyRequests: React.FC = () => {
 
   // global states
   const party = DamlJsonApi.party;
-  const [requests, setRequests] = useGlobalState('myRequests');
+  const [requests, setRequests] = useGlobalState('myRequests'); // enable context recycling
 
   // filter requests
   let items;
@@ -57,8 +57,8 @@ const MyRequests: React.FC = () => {
             <List>
               <List.Item>Info: <strong>lat: {item.flight.lat}, lng: {item.flight.lng}, altitude: {item.flight.altitude}</strong></List.Item>
               <List.Item>Time: <strong>{item.flight.timeStart} --> {item.flight.timeEnd}</strong></List.Item>
-              <List.Item>Approvers: <strong>{item.approvers.join(', ') || '---'}</strong></List.Item>
-              <List.Item>Disapprovers: <strong>{item.disapprovers.join(', ') || '---'}</strong></List.Item>
+              <List.Item>Approvers: <strong>{item.approvers.map(i=>i.split("::")[0]).join(', ') || '---'}</strong></List.Item>
+              <List.Item>Disapprovers: <strong>{item.disapprovers.map(i=>i.split("::")[0]).join(', ') || '---'}</strong></List.Item>
             </List>
           </Segment>
         ))}

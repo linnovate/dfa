@@ -19,23 +19,24 @@ const CreateRequest: React.FC<Props> = () => {
 
   // global states
   const party = DamlJsonApi.party;
-  const [requests, setRequests] = useGlobalState('myRequests');
+  const [requests, setRequests] = useGlobalState('myRequests'); // enable context recycling
 
   // local states
   const [flight, setFlight] = useState<Flight>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showMap, setShowMap] = useState(true);
 
-  // is allow
-  const parties = ["Zoolog", "Meteorologist", "Hamal"];
-  const allowRequest = party && !parties.includes(party);
-
   // submit handler
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     setIsSubmitting(true);
     
-    const res = await DamlJsonApi.create('User:FlightRequest', { user: party, parties, flight, approvers: [], disapprovers: [] })
+    const parteis = await DamlJsonApi.getParteis();
+    const observers = parteis
+      .filter(i => ["Zoolog", "Meteorologist", "Hamal"].includes(i.displayName))
+      .map(i => i.identifier);
+    
+    const res = await DamlJsonApi.create('User:FlightRequest', { user: party, parties: observers, flight, approvers: [], disapprovers: [] })
       .catch(() => setIsSubmitting(false));
 
     const resRequests = await DamlJsonApi.query(["User:FlightRequest"], { user: party });
@@ -55,7 +56,7 @@ const CreateRequest: React.FC<Props> = () => {
 
       <Divider />
 
-      {allowRequest &&
+      {party &&
 
         <Form className="create-request-form">
 

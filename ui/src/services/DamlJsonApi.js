@@ -24,7 +24,7 @@ class DamlJsonApi {
    * @var {srting} party.
    */
   party;
-  
+    
   /**
    * Holds the parteis list
    * @var {srting} parteis.
@@ -36,7 +36,12 @@ class DamlJsonApi {
    * @constructor
   */
   constructor(baseUrl = '/v1') {
-    this.baseUrl = baseUrl;
+    // select params
+    const url = new URL(window.location.toString());
+    const baseUrlParam = url.searchParams.get('baseUrl');
+
+    // initialization variables
+    this.baseUrl = baseUrlParam || baseUrl;
     this.token = sessionStorage.getItem('token');
     this.party= sessionStorage.getItem('party');
   }
@@ -45,15 +50,16 @@ class DamlJsonApi {
    * create credentials to Daml service
    * @function createCredentials
    * @param {string} party
-   * @return {promise} the response
    */
   async createCredentials(party) {
+    
     // select params
     const url = new URL(window.location.toString());
     const ledgerId = url.searchParams.get('ledgerId')
     const applicationId = url.searchParams.get('applicationId')
     if (!ledgerId || !applicationId) {
       alert("'ledgerId' and 'applicationId' must appear in URL parameters.");
+      return;
     }
 
     // create payload
@@ -61,8 +67,12 @@ class DamlJsonApi {
       "https://daml.com/ledger-api": {
         "ledgerId": ledgerId,
         "applicationId": applicationId,
+        //"participantId": null,
+        //"admin": true,
+        //"readAs": ["Bob"]
         "actAs": [party]
-      }
+      },
+      // "exp": 1300819380
     }
     
     // generate token
@@ -73,7 +83,7 @@ class DamlJsonApi {
     sessionStorage.setItem('token', token);
     sessionStorage.setItem('party', party);
     this.token = token;
-    this.party= party;
+    this.party = party;
   }
   
   /**
@@ -149,7 +159,11 @@ class DamlJsonApi {
    * @return {promise} the response
    */
   async getParteis() {
-    return this.parteis || (this.parteis = await this.get('/parties'));
+    if (this.parteis) {
+      return this.parteis;
+    }
+    const res = await this.get('/parties');
+    return this.parteis = res.result;
   }
 
   /**

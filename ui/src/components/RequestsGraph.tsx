@@ -13,8 +13,7 @@ const RequestsGraph: React.FC = () => {
 
   // global states
   const party = DamlJsonApi.party;
-  const [user, setUser] = useGlobalState('user');
-  const [myRequests,] = useGlobalState('myRequests');
+  const [myRequests,] = useGlobalState('myRequests'); // enable context recycling
 
   // local states
   const [items, setItems] = useState(null);
@@ -66,7 +65,7 @@ const RequestsGraph: React.FC = () => {
           r: 13,
           backgroundColor: `rgba(${color1}, ${color2}, ${color3}, 1)`,
         }],
-        label: item.user,
+        label: item.user.split("::")[0],
         borderColor: `rgba(${color1}, ${color2}, ${color3}, 1)`,
         backgroundColor: `rgba(${color1}, ${color2}, ${color3}, 0.5)`,
         tension: 0.1

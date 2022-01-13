@@ -10,14 +10,14 @@ const Members: React.FC = () => {
 
   // global states
   const party = DamlJsonApi.party;
-  const [members, setMembers] = useGlobalState('members');
+  const [members, setMembers] = useGlobalState('members'); // enable context recycling
 
   // convert members list to groups
   let groups = {};
   if (members) {
     members.forEach(item => {
       groups[item.payload.group] || (groups[item.payload.group] = []);
-      groups[item.payload.group].push(item.payload.member);
+      groups[item.payload.group].push(item.payload.member.split("::")[0]);
     });
   }
 

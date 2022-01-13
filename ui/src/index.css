@@ -85,6 +85,13 @@ elementree-widget {
   margin: 0;
 }
 
+.form.create-request-form .field .text {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  width: 100%;
+  white-space: nowrap;
+}
+
 .form.create-request-form .Divider {
   width: 100%;
 }

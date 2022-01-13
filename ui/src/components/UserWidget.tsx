@@ -42,7 +42,7 @@ const UserWidget: React.FC<Props> = ({ logoutLink, requestLink, approvalLink }) 
       <Menu.Menu position='right' className='test-select-main-menu'>
 
         {party &&
-          <Menu.Item position='right'>You are logged in as {party}.</Menu.Item>
+          <Menu.Item position='right'>You are logged in as {party.split("::")[0]}.</Menu.Item>
         }
         {party &&
           <Menu.Item
@@ -51,6 +51,7 @@ const UserWidget: React.FC<Props> = ({ logoutLink, requestLink, approvalLink }) 
             className='test-select-log-out'
             onClick={onLogout}
             icon='log out'
+            title='log out'
           />
         }
         {!party &&
@@ -60,6 +61,7 @@ const UserWidget: React.FC<Props> = ({ logoutLink, requestLink, approvalLink }) 
             className='test-select-sign-in'
             onClick={() => setShowLogin(!showLogin)}
             icon='sign in'
+            title='sign in'
           />
         }
 

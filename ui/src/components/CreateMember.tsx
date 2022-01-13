@@ -10,7 +10,7 @@ const CreateMember: React.FC = () => {
 
   // global states
   const party = DamlJsonApi.party;
-  const [, setMembers] = useGlobalState('members');
+  const [, setMembers] = useGlobalState('members'); // enable context recycling
 
   // local states
   const [data, setData] = useState({ group: '', member: '' });
@@ -28,11 +28,11 @@ const CreateMember: React.FC = () => {
       if (!party) {
         setUsers([]);
       } else {
-        const res = await DamlJsonApi.getParteis();
-        const users = res.result.map((item: any) => ({
+        const parteis = await DamlJsonApi.getParteis();
+        const users = parteis.map((item: any) => ({
           key: item.identifier,
-          text: item.displayName,
-          value: item.displayName,
+          text: item.identifier,
+          value: item.identifier,
         }));
         setUsers(users);
       }
@@ -64,7 +64,7 @@ const CreateMember: React.FC = () => {
 
       <Divider />
 
-      {allowRequest &&
+      {party && allowRequest &&
 
         <Form className="create-request-form">
 
