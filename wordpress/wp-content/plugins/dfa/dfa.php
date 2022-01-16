@@ -12,23 +12,21 @@
  */
 
 if (!defined('ABSPATH')) {
-	exit('Press Enter to proceed...');
+  exit('Press Enter to proceed...');
 }
 
-include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+include_once(ABSPATH . 'wp-admin/includes/plugin.php');
 
-if( !is_plugin_active('blocktree/blocktree.php') || !is_plugin_active('elementor/elementor.php') ) {
-  
-  add_action( 'admin_notices', function() {
-	printf('<div class="notice notice-error"><p>
+if (!is_plugin_active('blocktree/blocktree.php') || !is_plugin_active('elementor/elementor.php')) {
+
+  add_action('admin_notices', function () {
+    printf('<div class="notice notice-error"><p>
 		<strong>Dfa</strong> plugin is <strong>deactivate</strong> (elementree & elementor plugins is Required) !
 	<p></div>');
   });
 
-  deactivate_plugins( plugin_basename( __FILE__ ) );
-
+  deactivate_plugins(plugin_basename(__FILE__));
 } else {
 
   require __DIR__ . '/plugin.php';
-  
 }

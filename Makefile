@@ -162,7 +162,6 @@ ui_start:
 	-w /usr/src/app \
 	-v ${PWD}/ui:/usr/src/app \
 	-p 3000:3000 \
-	-e LEDGER_ID=${LEDGER_ID_A} \
 	-e JSON_API_URL=${JSON_API_URL_A} \
 	node:alpine \
 	sh -c "yarn install && yarn start"
@@ -171,7 +170,6 @@ ui_build:
 	docker run --rm -it \
 	-w /usr/src/app \
 	-v ${PWD}/ui:/usr/src/app \
-	-e LEDGER_ID=${LEDGER_ID_A} \
 	-e JSON_API_URL=${JSON_API_URL_A} \
 	node:alpine \
 	sh -c "yarn install && yarn build"

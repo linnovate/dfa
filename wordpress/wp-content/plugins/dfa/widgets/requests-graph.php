@@ -23,7 +23,6 @@ class Widget_RequestsGraph extends AbstractWidget
 
 	protected function _register_controls()
 	{
-
 	}
 }
 

@@ -44,9 +44,9 @@ class Plugin
     $hash = uniqid(rand(), TRUE);
 
     return "<div id='$hash'></div>
-				<script>
-					window['$handler_key']('$component_name', document.getElementById('$hash'), $settings);
-				</script>";
+            <script>
+              window['$handler_key']('$component_name', document.getElementById('$hash'), $settings);
+            </script>";
 
     // return "<textarea data-blocktree
     // 		 data-component-name='$component_name'
@@ -77,7 +77,7 @@ class Plugin
       }
     }
 
-    //wp_enqueue_script('blocktree-widgets', plugin_dir_url(__FILE__) . '/blocktree-widgets-example.js');
+    // wp_enqueue_script('blocktree-widgets', plugin_dir_url(__FILE__) . '/blocktree-widgets-example.js');
     //wp_enqueue_script('blocktree-wp', plugin_dir_url(__FILE__) . '/blocktree-wp.js');
   }
 

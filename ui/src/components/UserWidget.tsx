@@ -4,16 +4,10 @@ import { useGlobalState } from "../contexts/GlobalState";
 import DamlJsonApi from '../services/DamlJsonApi';
 import LoginScreen from './LoginScreen';
 
-type Props = {
-  logoutLink: string,
-  requestLink: string,
-  approvalLink: string
-}
-
 /**
  * React component for the `User Widget` of the `App`.
  */
-const UserWidget: React.FC<Props> = ({ logoutLink, requestLink, approvalLink }) => {
+const UserWidget: React.FC = () => {
 
   // global states
   const party = DamlJsonApi.party;

@@ -75,9 +75,9 @@ class Settings
    */
   public function sources_form_element()
   {
-    $value = esc_textarea(get_option('blocktree_sources'));
+    $value = get_option('blocktree_sources');
     ?>
-    <textarea style="width: 100%" name="blocktree_sources" id="sources" rows="4"><?php echo $value; ?></textarea>
+      <textarea style="width: 100%" name="blocktree_sources" id="sources" rows="4"><?php echo esc_textarea( $value ); ?></textarea>
     <?php
   }
 
@@ -86,9 +86,9 @@ class Settings
    */
   public function handler_key_form_element()
   {
-    $value = esc_attr(get_option('blocktree_handler_key'));
+    $value = get_option('blocktree_handler_key');
     ?>
-    <input style="width: 100%" name="blocktree_handler_key" id="blocktree_handler_key" value="<?php echo $value; ?>" />
+      <input style="width: 100%" name="blocktree_handler_key" id="blocktree_handler_key" value="<?php echo esc_attr( $value ); ?>" />
     <?php
   }
 
@@ -109,16 +109,16 @@ class Settings
   public function blocktree_config_form()
   {
     ?>
-    <div>
-      <h1>Blocktree Settings</h1>
-      <form method="post" action="options.php">
-        <?php
-        settings_fields("blocktree");
-        do_settings_sections("blocktree");
-        submit_button();
-        ?>
-      </form>
-    </div>
+      <div>
+        <h1>Blocktree Settings</h1>
+        <form method="post" action="options.php">
+          <?php
+          settings_fields("blocktree");
+          do_settings_sections("blocktree");
+          submit_button();
+          ?>
+        </form>
+      </div>
     <?php
   }
 }
