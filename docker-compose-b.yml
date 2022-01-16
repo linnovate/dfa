@@ -6,107 +6,106 @@ services:
   ############################# Canton #############################
 ##################################################################
  
-  cantonA:
+  cantonB:
     image: digitalasset/canton-community:latest
     tty: true
     volumes:
       - ./canton:/canton/app
       - ./daml:/canton/daml
     environment:
-      - DOMAIN_PORT=${CANTON_DOMAIN_PORT}
-      - LEDGER_PORT=${LEDGER_PORT_A}
+      - DOMAIN_URL=${CANTON_DOMAIN_URL}
+      - LEDGER_PORT=${LEDGER_PORT_B}
     ports:
-      - ${CANTON_DOMAIN_PORT}:${CANTON_DOMAIN_PORT}
-      - ${LEDGER_PORT_A}:${LEDGER_PORT_A}
-    command: --config /canton/app/canton.conf --bootstrap /canton/app/init.canton
+      - ${LEDGER_PORT_B}:${LEDGER_PORT_B}
+    command: --config /canton/app/canton_2.conf --bootstrap /canton/app/init_2.canton
 
 ##################################################################
   ########################### Navigator ############################
 ##################################################################
 
-  navigatorA:
+  navigatorB:
     image: digitalasset/daml-sdk:1.18.0
     working_dir: /data
     ports:
-      - ${NAVIGATOR_PORT_A}:${NAVIGATOR_PORT_A}
+      - ${NAVIGATOR_PORT_B}:${NAVIGATOR_PORT_B}
     volumes:
       - ./daml:/data
-    command: daml ledger navigator --host cantonA --port ${LEDGER_PORT_A} --port ${NAVIGATOR_PORT_A}
+    command: daml ledger navigator --host cantonB --port ${LEDGER_PORT_B} --port ${NAVIGATOR_PORT_B}
     depends_on:
-      - cantonA
+      - cantonB
     links:
-      - cantonA
+      - cantonB
 
 ##################################################################
   ############################ JsonApi #############################
 ##################################################################
 
-  jsonApiA:
+  jsonApiB:
     image: digitalasset/daml-sdk:1.18.0
     working_dir: /data
     ports:
-      - ${JSON_API_PORT_A}:${JSON_API_PORT_A}
+      - ${JSON_API_PORT_B}:${JSON_API_PORT_B}
     volumes:
       - ./daml:/data
-    command: daml json-api --ledger-host cantonA --ledger-port ${LEDGER_PORT_A} --http-port ${JSON_API_PORT_A} --address 0.0.0.0 --allow-insecure-tokens
+    command: daml json-api --ledger-host cantonB --ledger-port ${LEDGER_PORT_B} --http-port ${JSON_API_PORT_B} --address 0.0.0.0 --allow-insecure-tokens
     depends_on:
-      - cantonA
+      - cantonB
     links:
-      - cantonA
+      - cantonB
 
 ##################################################################
   ############################# React ##############################
 ##################################################################
 
-#  reactA:
+#  reactB:
 #    image: node:alpine
 #    working_dir: /usr/src/app
 #    environment:
 #      - JSON_API_URL=${JSON_API_URL_A} 
 #    ports:
-#      - ${REACT_PORT_A}:3000
+#      - ${REACT_PORT_B}:3000
 #    volumes:
 #     - ./ui:/usr/src/app
 #    command: sh -c "yarn install && yarn start"
 #    links:
-#      - jsonApiA
+#      - jsonApiB
 
 ##################################################################
   ########################### Wordpress ############################
 ##################################################################
 
-  nginxA:
+  nginxB:
     image: nginx:alpine
     volumes:
       - ./wordpress:/var/www/html
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx_b.conf:/etc/nginx/conf.d/default.conf
     ports:
-      - ${NGINX_PORT_A}:80
+      - ${NGINX_PORT_B}:80
     depends_on:
-      - wordpressA
-      - jsonApiA
+      - wordpressB
+      - jsonApiB
     links:
-      - wordpressA
-      - jsonApiA
+      - wordpressB
+      - jsonApiB
 
-  wordpressA:
+  wordpressB:
     image: wordpress:php7.4-fpm-alpine
     environment:
-     - WORDPRESS_DB_HOST=mysqlA
+     - WORDPRESS_DB_HOST=mysqlB
      - WORDPRESS_DB_NAME=wordpress
      - WORDPRESS_DB_USER=root
      - WORDPRESS_DB_PASSWORD=password
     volumes:
      - ./wordpress:/var/www/html
     depends_on:
-      - mysqlA
+      - mysqlB
     links:
-      - mysqlA
+      - mysqlB
 
-  mysqlA:
+  mysqlB:
     image: mariadb
     environment:
      - MYSQL_ROOT_PASSWORD=password
      - MYSQL_DATABASE=wordpress
     volumes:
-     - ./data/mysqlA:/var/lib/mysql
+     - ./data/mysqlB:/var/lib/mysql

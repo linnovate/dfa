@@ -14,8 +14,7 @@ JSON_API_PORT_B := 4001
 JSON_API_URL_A := http://127.0.0.1:4000
 JSON_API_URL_B := http://127.0.0.1:4001
 
-LEDGER_ID_A := participant1
-LEDGER_ID_B := participant2
+LEDGER_ID := participant1
 
 commands := "\
 	\nMake commands: \
@@ -40,8 +39,7 @@ commands := "\
 	\n   JSON_API_PORT_B: ${JSON_API_PORT_B} \
 	\n   JSON_API_URL_A: ${JSON_API_URL_A} \
 	\n   JSON_API_URL_B: ${JSON_API_URL_B} \
-	\n   LEDGER_ID_A: ${LEDGER_ID_A} \
-	\n   LEDGER_ID_B: ${LEDGER_ID_B} \
+	\n   LEDGER_ID: ${LEDGER_ID} \
 	\n"
 
 default:

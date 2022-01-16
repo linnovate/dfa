@@ -79,6 +79,8 @@ ReactDOM.render(
 
 // ========================= Test ========================== //
 
+const root = document.getElementById('root');
+
 root && (root.innerHTML = `
   <elementree-widget name='UserWidget'></elementree-widget>
 
