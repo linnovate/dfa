@@ -4,7 +4,10 @@ import { useGlobalState } from "../contexts/GlobalState";
 import DamlJsonApi from '../services/DamlJsonApi';
 
 import { Chart, ArcElement, LineElement, BarElement, PointElement, BarController, BubbleController, DoughnutController, LineController, PieController, PolarAreaController, RadarController, ScatterController, CategoryScale, LinearScale, LogarithmicScale, RadialLinearScale, TimeScale, TimeSeriesScale, Decimation, Filler, Legend, Title, Tooltip, SubTitle } from 'chart.js';
-Chart.register( ArcElement, LineElement, BarElement, PointElement, BarController, BubbleController, DoughnutController, LineController, PieController, PolarAreaController, RadarController, ScatterController, CategoryScale, LinearScale, LogarithmicScale, RadialLinearScale, TimeScale, TimeSeriesScale, Decimation, Filler, Legend, Title, Tooltip, SubTitle );
+Chart.register(ArcElement, LineElement, BarElement, PointElement, BarController, BubbleController, DoughnutController, LineController, PieController, PolarAreaController, RadarController, ScatterController, CategoryScale, LinearScale, LogarithmicScale, RadialLinearScale, TimeScale, TimeSeriesScale, Decimation, Filler, Legend, Title, Tooltip, SubTitle);
+
+const list = [];
+let ws;
 
 /**
  * React component for the `Requests Graph` of the `App`.
@@ -13,31 +16,30 @@ const RequestsGraph: React.FC = () => {
 
   // global states
   const party = DamlJsonApi.party;
-  const [myRequests,] = useGlobalState('myRequests'); // enable context recycling
+  const [user, setUser] = useGlobalState('user'); // enable context recycling
 
   // local states
-  const [items, setItems] = useState(null);
+  const [items, setItems] = useState();
   const canvasRef = useRef();
-  
-  // load requests
+
+  // load items
   useEffect(() => {
     (async () => {
-      
+
       if (!party) {
+        ws?.close();
         setItems(null);
       } else {
-        const res = await DamlJsonApi.query(["User:FlightRequest"]);
-        const resCompleted = await DamlJsonApi.query(["User:CompletedRequest"])
-    
-        const itemsRequest = res.result.map(item => item.payload)
-        const itemsCompleted = resCompleted.result.map(item => item.payload)
-        const items = [...itemsRequest, ...itemsCompleted];
-        setItems(items);
+        // setup listener 
+        ws = DamlJsonApi.querySocket(["User:FlightRequest"], { user: party });
+        ws.addEventListener("message", (event) => {
+          const isUpdate = DamlJsonApi.messageHandler(event, list);
+          isUpdate && setItems([...list]);
+        });
       }
-      
+
     })()
-    
-  }, [party, myRequests])
+  }, [party])
 
   // create datasets
   let timeStart, timeEnd;
@@ -45,9 +47,10 @@ const RequestsGraph: React.FC = () => {
   let datasets = [];
   if (items) {
     datasets = items.map(item => {
-      timeStart = new Date(item.flight.timeStart).toLocaleString();
-      timeEnd = new Date(item.flight.timeEnd).toLocaleString();
-      
+      const flight = item.payload.flight;
+      timeStart = new Date(flight.timeStart).toLocaleString();
+      timeEnd = new Date(flight.timeEnd).toLocaleString();
+
       labels.includes(timeStart) || labels.push(timeStart)
       labels.includes(timeEnd) || labels.push(timeEnd)
       const color1 = Math.random() * 200 + 55;
@@ -56,16 +59,16 @@ const RequestsGraph: React.FC = () => {
       return {
         data: [{
           x: timeStart,
-          y: item.flight.altitude,
+          y: flight.altitude,
           r: 13,
           backgroundColor: `rgba(${color1}, ${color2}, ${color3}, 1)`,
         }, {
           x: timeEnd,
-          y: item.flight.altitude,
+          y: flight.altitude,
           r: 13,
           backgroundColor: `rgba(${color1}, ${color2}, ${color3}, 1)`,
         }],
-        label: item.user.split("::")[0],
+        label: item.payload.user.split("::")[0],
         borderColor: `rgba(${color1}, ${color2}, ${color3}, 1)`,
         backgroundColor: `rgba(${color1}, ${color2}, ${color3}, 0.5)`,
         tension: 0.1
@@ -74,7 +77,7 @@ const RequestsGraph: React.FC = () => {
   }
 
   labels.sort((a, b) => new Date(a).getTime() - new Date(b).getTime())
-  
+
   useEffect(() => {
     let myChart;
     if (canvasRef.current) {
@@ -100,26 +103,26 @@ const RequestsGraph: React.FC = () => {
         },
       });
     }
-  
+
     return () => {
       myChart && myChart.destroy();
     };
-  },[datasets]);
-  
+  }, [datasets]);
+
   // template
   return (
-      <Segment className="daml-section">
+    <Segment className="daml-section">
 
-          <Header as='h2'>
-              <Icon name='globe' />
-              <Header.Content>Requests Graph</Header.Content>
-          </Header>
+      <Header as='h2'>
+        <Icon name='globe' />
+        <Header.Content>Requests Graph</Header.Content>
+      </Header>
 
-          <Divider />
+      <Divider />
 
-          { items && <canvas ref={canvasRef}></canvas> }
+      {items && <canvas ref={canvasRef}></canvas>}
 
-      </Segment>
+    </Segment>
   );
 }
 

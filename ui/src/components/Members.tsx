@@ -3,6 +3,9 @@ import { List, Header, Icon, Segment, Divider } from 'semantic-ui-react';
 import { useGlobalState } from "../contexts/GlobalState";
 import DamlJsonApi from '../services/DamlJsonApi';
 
+const list = [];
+let ws;
+
 /**
  * React component for the `Members` of the `App`.
  */
@@ -10,31 +13,38 @@ const Members: React.FC = () => {
 
   // global states
   const party = DamlJsonApi.party;
-  const [members, setMembers] = useGlobalState('members'); // enable context recycling
+  const [user, setUser] = useGlobalState('user'); // enable context recycling
+
+  // local states
+  const [items, setItems] = useState();
 
   // convert members list to groups
   let groups = {};
-  if (members) {
-    members.forEach(item => {
+  if (items) {
+    items.forEach(item => {
       groups[item.payload.group] || (groups[item.payload.group] = []);
       groups[item.payload.group].push(item.payload.member.split("::")[0]);
     });
   }
 
-  // load members
+  // load items
   useEffect(() => {
     (async () => {
-      
+
       if (!party) {
-        setMembers(null);
+        ws?.close();
+        setItems(null);
       } else {
-        const res = await DamlJsonApi.query(["User:GroupMember"]);
-        setMembers(res.result);
+        ws = DamlJsonApi.querySocket(["User:GroupMember"]);
+        ws.addEventListener("message", (event) => {
+          const isUpdate = DamlJsonApi.messageHandler(event, list);
+          isUpdate && setItems([...list]);
+        });
       }
-      
+
     })()
   }, [party])
-  
+
   // template
   return (
     <Segment className="daml-section">

@@ -12,6 +12,8 @@ type Flight = {
   altitude: string;
 }
 
+const observers = ["Zoolog", "Meteorologist", "Hamal"];
+
 /**
  * React component for the `Create Request` of the `App`.
  */
@@ -19,7 +21,7 @@ const CreateRequest: React.FC<Props> = () => {
 
   // global states
   const party = DamlJsonApi.party;
-  const [requests, setRequests] = useGlobalState('myRequests'); // enable context recycling
+  const [user, setUser] = useGlobalState('user'); // enable context recycling
 
   // local states
   const [flight, setFlight] = useState<Flight>({});
@@ -30,18 +32,15 @@ const CreateRequest: React.FC<Props> = () => {
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
     setIsSubmitting(true);
-    
-    const parteis = await DamlJsonApi.getParteis();
-    const observers = parteis
-      .filter(i => ["Zoolog", "Meteorologist", "Hamal"].includes(i.displayName))
-      .map(i => i.identifier);
-    
-    const res = await DamlJsonApi.create('User:FlightRequest', { user: party, parties: observers, flight, approvers: [], disapprovers: [] })
+
+    // select observers identifier
+    const allParteis = await DamlJsonApi.getParteis();
+    const parties = allParteis.filter(i => observers.includes(i.displayName)).map(i => i.identifier);
+
+    // create a FlightRequest
+    const res = await DamlJsonApi.create('User:FlightRequest', { user: party, parties, flight, approvers: [], disapprovers: [] })
       .catch(() => setIsSubmitting(false));
 
-    const resRequests = await DamlJsonApi.query(["User:FlightRequest"], { user: party });
-    setRequests(resRequests.result);
-    
     setIsSubmitting(false);
   };
 

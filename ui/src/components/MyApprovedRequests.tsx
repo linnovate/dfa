@@ -3,6 +3,9 @@ import { List, Header, Icon, Segment, Divider } from 'semantic-ui-react';
 import { useGlobalState } from "../contexts/GlobalState";
 import DamlJsonApi from '../services/DamlJsonApi';
 
+const list = [];
+let ws;
+
 /**
  * React component for the `My Approved Requests` of the `App`.
  */
@@ -13,20 +16,30 @@ const MyApprovedRequests: React.FC = () => {
   const [user, setUser] = useGlobalState('user'); // enable context recycling
 
   // local states
-  const [requests, setRequests] = useState();
+  const [items, setItems] = useState();
 
-  // load requests
+  // filter items
+  let itemsDiplays;
+  if (items) {
+    itemsDiplays = items.map(item => ({ ...item.payload, contractId: item.contractId })).reverse();
+  }
+
+  // load items
   useEffect(() => {
     (async () => {
-      
+
       if (!party) {
-        setRequests(null);
+        ws?.close();
+        setItems(null);
       } else {
-        const res = await DamlJsonApi.query(["User:CompletedRequest"], { user: party });
-        const requests = res.result.map(item => item.payload).reverse();
-        setRequests(requests);
+        // setup listener 
+        ws = DamlJsonApi.querySocket(["User:CompletedRequest"], { user: party });
+        ws.addEventListener("message", (event) => {
+          const isUpdate = DamlJsonApi.messageHandler(event, list);
+          isUpdate && setItems([...list]);
+        });
       }
-      
+
     })()
   }, [party])
 
@@ -42,9 +55,10 @@ const MyApprovedRequests: React.FC = () => {
       <Divider />
 
       <List relaxed className="items">
-        { requests && requests.map((item, key) => (
-          <Segment key={item.user + item.flight.timeStart + item.flight.timeEnd}>
-            <List.Item><strong>{item.flight.timeStart} --> {item.flight.timeEnd}, lat: {item.flight.lat}, lng: {item.flight.lng}, altitude: {item.flight.altitude}</strong></List.Item>
+        {itemsDiplays && itemsDiplays.map((item, key) => (
+          <Segment key={item.contractId}>
+            <List.Item>Time: <strong>{new Date(item.flight.timeStart).toLocaleString()} -> {new Date(item.flight.timeEnd).toLocaleString()}</strong></List.Item>
+            <List.Item>Info: <strong>lat: {item.flight.lat} | lng: {item.flight.lng} | altitude: {item.flight.altitude}</strong></List.Item>
           </Segment>
         ))}
       </List>

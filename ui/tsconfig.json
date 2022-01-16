@@ -22,6 +22,9 @@
     "emitDecoratorMetadata": true,
     "noFallthroughCasesInSwitch": true
   },
+  "rules": {
+    "no-unused-vars": "off"
+  },
   "include": [
     "src"
   ],

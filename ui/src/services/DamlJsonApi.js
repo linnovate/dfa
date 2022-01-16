@@ -24,18 +24,18 @@ class DamlJsonApi {
    * @var {srting} party.
    */
   party;
-    
+
   /**
    * Holds the parteis list
    * @var {srting} parteis.
    */
   parteis;
-  
+
   /**
    * Represents a DamlJsonApi.
    * @constructor
   */
-  constructor(baseUrl = '/v1') {
+  constructor(baseUrl = `${window.location.host}/v1`) {
     // select params
     const url = new URL(window.location.toString());
     const baseUrlParam = url.searchParams.get('baseUrl');
@@ -43,7 +43,7 @@ class DamlJsonApi {
     // initialization variables
     this.baseUrl = baseUrlParam || baseUrl;
     this.token = sessionStorage.getItem('token');
-    this.party= sessionStorage.getItem('party');
+    this.party = sessionStorage.getItem('party');
   }
 
   /**
@@ -52,7 +52,7 @@ class DamlJsonApi {
    * @param {string} party
    */
   async createCredentials(party) {
-    
+
     // select params
     const url = new URL(window.location.toString());
     const ledgerId = url.searchParams.get('ledgerId')
@@ -74,7 +74,7 @@ class DamlJsonApi {
       },
       // "exp": 1300819380
     }
-    
+
     // generate token
     const SECRET_KEY = 'secret';
     const token = encode(payload, SECRET_KEY, 'HS256');
@@ -85,7 +85,7 @@ class DamlJsonApi {
     this.token = token;
     this.party = party;
   }
-  
+
   /**
    * Logout from Daml service
    * @function logout
@@ -96,7 +96,7 @@ class DamlJsonApi {
     sessionStorage.removeItem("token");
     sessionStorage.removeItem("party");
   }
-  
+
   /**
    * Basic Daml jsonApi post
    * @function post
@@ -107,22 +107,23 @@ class DamlJsonApi {
   post(path, body) {
 
     // fetch with Authorization header
-    return fetch(`${this.baseUrl}${path}`, {
+    return fetch(`//${this.baseUrl}${path}`, {
       method: 'post',
+      //mode: 'no-cors',
       headers: {
         "Authorization": `Bearer ${this.token}`,
         "Content-Type": "application/json"
       },
       body: JSON.stringify(body || ''),
     })
-    .then((res) => res.json())
-    .then((res) => {
-      if (res.status < 200 && res.status > 299) {
-        throw res.errors;
-      }
-      return res;
-    })
-    .catch((error) => console.log(error) /* && alert(`Error sending message:\n${JSON.stringify(error)}`) */);
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.status < 200 && res.status > 299) {
+          throw res.errors;
+        }
+        return res;
+      })
+      .catch((error) => console.log(error) /* && alert(`Error sending message:\n${JSON.stringify(error)}`) */);
 
   }
 
@@ -135,21 +136,22 @@ class DamlJsonApi {
   get(path) {
 
     // fetch with Authorization header
-    return fetch(`${this.baseUrl}${path}`, {
+    return fetch(`//${this.baseUrl}${path}`, {
       method: 'get',
+      //mode: 'no-cors',
       headers: {
         "Authorization": `Bearer ${this.token}`,
         "Content-Type": "application/json"
       },
     })
-    .then((res) => res.json())
-    .then((res) => {
-      if (res.status < 200 && res.status > 299) {
-        throw res.errors;
-      }
-      return res;
-    })
-    .catch((error) => console.log(error) /* && alert(`Error sending message:\n${JSON.stringify(error)}`) */);
+      .then((res) => res.json())
+      .then((res) => {
+        if (res.status < 200 && res.status > 299) {
+          throw res.errors;
+        }
+        return res;
+      })
+      .catch((error) => console.log(error) /* && alert(`Error sending message:\n${JSON.stringify(error)}`) */);
 
   }
 
@@ -176,7 +178,7 @@ class DamlJsonApi {
   async addParty(identifierHint, displayName) {
     return this.post('/parties/allocate', { identifierHint, displayName });
   }
-  
+
   /**
    * Create a Daml contract
    * @function create
@@ -213,6 +215,62 @@ class DamlJsonApi {
     return this.post('/query', { templateIds, query, readers });
   }
 
+  /**
+   * Create query socket of Daml query
+   * @function querySocket
+   * @param {array} templateIds
+   * @param {null|object} query
+   * @param {null|array} readers
+   * @return {promise} the response
+   */
+  querySocket(templateIds, query, readers) {
+
+    // create service
+    const ws = new WebSocket(
+      `ws://${this.baseUrl}/stream/query`,
+      [`jwt.token.${this.token}`, 'daml.ws.auth']
+    );
+
+    // send query
+    ws.addEventListener("open", () => {
+      ws.send(JSON.stringify({ templateIds, query, readers }));
+    });
+
+    // add listener
+    //ws.addEventListener("message", (event) => {
+    //  console.log( JSON.parse(event.data) )
+    //);
+
+    return ws;
+  }
+
+  /**
+   * Message Handler of Daml query socket
+   * @function querySocket
+   * @param {object} event
+   * @param {null|array} list
+   * @return {list} the list
+   */
+  messageHandler(event, list) {
+
+    let isUpdate = false;
+
+    // selete events
+    const data = JSON.parse(event.data);
+
+    // add/remove by the events
+    data.events.forEach(item => {
+      if (item.archived) {
+        const index = list.findIndex(i => i.contractId == item.archived.contractId)
+        list.splice(index, 1);
+      } else if (item.created) {
+        list.push(item.created);
+      }
+      isUpdate = true;
+    });
+
+    return isUpdate;
+  }
 }
 
 // create a singleton instance of DamlJsonApi

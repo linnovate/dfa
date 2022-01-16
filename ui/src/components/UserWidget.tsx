@@ -17,7 +17,7 @@ const UserWidget: React.FC<Props> = ({ logoutLink, requestLink, approvalLink }) 
 
   // global states
   const party = DamlJsonApi.party;
-  const [, setUser] = useGlobalState('user');
+  const [user, setUser] = useGlobalState('user');
 
   // local states
   const [showLogin, setShowLogin] = useState(false);

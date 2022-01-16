@@ -10,36 +10,33 @@ const CreateMember: React.FC = () => {
 
   // global states
   const party = DamlJsonApi.party;
-  const [, setMembers] = useGlobalState('members'); // enable context recycling
+  const [user, setUser] = useGlobalState('user'); // enable context recycling
 
   // local states
   const [data, setData] = useState({ group: '', member: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [users, setUsers] = useState([]);
 
-  // is allow
-  const parties = ["Admin"];
-  const allowRequest = true;// party && parties.includes(party);
-
   // load users
   useEffect(() => {
     (async () => {
-      
+
       if (!party) {
         setUsers([]);
       } else {
+        // get daml parteis
         const parteis = await DamlJsonApi.getParteis();
-        const users = parteis.map((item: any) => ({
+        const users = parteis.map(item => ({
           key: item.identifier,
           text: item.identifier,
           value: item.identifier,
         }));
         setUsers(users);
       }
-      
+
     })()
   }, [party])
-  
+
   // submit handler
   const submit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -48,8 +45,6 @@ const CreateMember: React.FC = () => {
       .catch(() => {
         setIsSubmitting(false);
       });
-    const res = await DamlJsonApi.query(["User:GroupMember"]);
-    setMembers(res.result);
     setIsSubmitting(false);
   };
 
@@ -64,7 +59,7 @@ const CreateMember: React.FC = () => {
 
       <Divider />
 
-      {party && allowRequest &&
+      {party &&
 
         <Form className="create-request-form">
 

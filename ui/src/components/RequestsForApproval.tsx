@@ -1,9 +1,12 @@
-import React, { useState, useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 import { List, Button, Header, Icon, Segment, Divider, Label } from 'semantic-ui-react';
 import { useGlobalState } from "../contexts/GlobalState";
 import DamlJsonApi from '../services/DamlJsonApi';
 import { ContractId } from '@daml/types';
 import { PinMap } from './Maps';
+
+const list = [];
+let ws;
 
 /**
  * React component for the `Requests For Approval` of the `App`.
@@ -15,48 +18,47 @@ const RequestsForApproval: React.FC = () => {
   const [user, setUser] = useGlobalState('user'); // enable context recycling
 
   // local states
-  const [requests, setRequests] = useState([]);
+  const [items, setItems] = useState();
   const [showMap, setShowMap] = React.useState(false);
 
-  // load requests
+  // filter items
+  let itemsDiplays;
+  if (items) {
+    itemsDiplays = items
+      .filter(item =>
+        (item.payload.parties.includes(party)) && //  || item.signatories.includes(party)
+        !(item.payload.approvers.includes(party) || item.payload.disapprovers.includes(party))
+      )
+      .map(item => ({ ...item.payload, contractId: item.contractId }));
+  }
+
+  // load items
   useEffect(() => {
     (async () => {
-      
-      if (!party) {
-        setRequests([]);
-      } else {
-      
-        const res = await DamlJsonApi.query(["User:FlightRequest"]);
-    
-        const items = res.result
-          .filter(item =>
-            (item.payload.parties.includes(party)) && //  || item.signatories.includes(party)
-            !(item.payload.approvers.includes(party) || item.payload.disapprovers.includes(party))
-          )
-          .map(item => ({ ...item.payload, contractId: item.contractId }));
 
-        setRequests(items);
+      if (!party) {
+        ws?.close();
+        setItems(null);
+      } else {
+        // setup listener 
+        ws = DamlJsonApi.querySocket(["User:FlightRequest"]);
+        ws.addEventListener("message", (event) => {
+          const isUpdate = DamlJsonApi.messageHandler(event, list);
+          isUpdate && setItems([...list]);
+        });
       }
-      
+
     })()
   }, [party])
 
   // approve handler
   async function approveRequest(contractId: ContractId<User.FlightRequest>) {
     await DamlJsonApi.exercise('User:FlightRequest', contractId, 'Approved', { approver: party });
-    const index = requests.findIndex(i => i.contractId == contractId)
-    const updatedRequests = [...requests];
-    updatedRequests.splice(index, 1);
-    setRequests(updatedRequests);
   };
 
   // disapprove handler
   async function disapproveRequest(contractId: ContractId<User.FlightRequest>) {
     await DamlJsonApi.exercise('User:FlightRequest', contractId, 'Disapproved', { disapprover: party });
-    const index = requests.findIndex(i => i.contractId == contractId)
-    const updatedRequests = [...requests];
-    updatedRequests.splice(index, 1);
-    setRequests(updatedRequests);
   };
 
   // template
@@ -73,9 +75,9 @@ const RequestsForApproval: React.FC = () => {
       <Divider />
 
       <List relaxed className="items">
-        {requests && requests.map((item, key) => (
+        {itemsDiplays && itemsDiplays.map((item, key) => (
           <Segment key={item.contractId}>
-            <Label as='a' color='teal' ribbon='left'>
+            <Label as='a' color='teal' ribbon={true}>
               Review
             </Label>
             {

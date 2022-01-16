@@ -18,17 +18,17 @@ const Parteis: React.FC = () => {
   // load users
   useEffect(() => {
     (async () => {
-      
+
       if (!party) {
         setParteis(null);
       } else {
         const parteis = await DamlJsonApi.getParteis();
         setParteis(parteis);
       }
-      
+
     })()
   }, [party])
-  
+
   // template
   return (
     <Segment className="daml-section">

@@ -3,6 +3,10 @@ import { List, Header, Icon, Segment, Divider, Label } from 'semantic-ui-react';
 import { useGlobalState } from "../contexts/GlobalState";
 import DamlJsonApi from '../services/DamlJsonApi';
 
+const list = [];
+let ws1;
+let ws2;
+
 /**
  * React component for the `All Requests` of the `App`.
  */
@@ -13,31 +17,43 @@ const AllRequests: React.FC = () => {
   const [user, setUser] = useGlobalState('user'); // enable context recycling
 
   // local states
-  const [requests, setRequests] = useState([]);
-  
+  const [items, setItems] = useState();
+
+  // filter items
+  let itemsDiplays;
+  if (items) {
+    itemsDiplays = items.map(item => ({ ...item.payload, contractId: item.contractId }));
+    itemsDiplays.sort((a, b) => new Date(a.flight.time).getTime() - new Date(b.flight.time).getTime());
+  }
+
   // load requests
   useEffect(() => {
     (async () => {
-      
+
       if (!party) {
-        setRequests([]);
+        ws1?.close();
+        ws2?.close();
+        setItems();
       } else {
-      
-        const res = await DamlJsonApi.query(["User:FlightRequest"]);
-        const resCompleted = await DamlJsonApi.query(["User:CompletedRequest"])
-    
-        const itemsRequest = res.result.map(item => item.payload).reverse();
-        const itemsCompleted = resCompleted.result.map(item => item.payload).reverse();
-    
-        const items = [...itemsRequest, ...itemsCompleted];
-        items.sort((a, b) => new Date(a.flight.time).getTime() - new Date(b.flight.time).getTime())
-    
-        setRequests(items);
+
+        // setup FlightRequest listener
+        ws1 = DamlJsonApi.querySocket(["User:FlightRequest"]);
+        ws1.addEventListener("message", (event) => {
+          const isUpdate = DamlJsonApi.messageHandler(event, list);
+          isUpdate && setItems([...list]);
+        });
+
+        // setup CompletedRequest listener
+        ws2 = DamlJsonApi.querySocket(["User:CompletedRequest"]);
+        ws2.addEventListener("message", (event) => {
+          const isUpdate = DamlJsonApi.messageHandler(event, list);
+          isUpdate && setItems([...list]);
+        });
       }
-      
+
     })()
   }, [party])
-  
+
   // template
   return (
     <Segment className="daml-section">
@@ -50,8 +66,8 @@ const AllRequests: React.FC = () => {
       <Divider />
 
       <List relaxed className="items">
-        { requests.map((item: any, key) => (
-          <Segment key={item.user + item.flight.timeStart + item.flight.timeEnd}>
+        {itemsDiplays && itemsDiplays.map((item, key) => (
+          <Segment key={item.contractId}>
             {(item.approvers.length === item.parties.length) ?
               <Label color='green' ribbon className="label">
                 Approve
