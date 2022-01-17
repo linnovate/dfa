@@ -56,8 +56,7 @@ class DamlJsonApi {
     // select params
     const url = new URL(window.location.toString());
     const ledgerId = url.searchParams.get('ledgerId')
-    const applicationId = url.searchParams.get('applicationId')
-    if (!ledgerId || !applicationId) {
+    if (!ledgerId) {
       alert("'ledgerId' must appear in URL parameters.");
       return;
     }
