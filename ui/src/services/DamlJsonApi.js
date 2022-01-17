@@ -58,7 +58,7 @@ class DamlJsonApi {
     const ledgerId = url.searchParams.get('ledgerId')
     const applicationId = url.searchParams.get('applicationId')
     if (!ledgerId || !applicationId) {
-      alert("'ledgerId' and 'applicationId' must appear in URL parameters.");
+      alert("'ledgerId' must appear in URL parameters.");
       return;
     }
 
@@ -66,7 +66,7 @@ class DamlJsonApi {
     const payload = {
       "https://daml.com/ledger-api": {
         "ledgerId": ledgerId,
-        "applicationId": applicationId,
+        "applicationId": "dfa-sandbox",
         //"participantId": null,
         //"admin": true,
         //"readAs": ["Bob"]
@@ -225,9 +225,12 @@ class DamlJsonApi {
    */
   querySocket(templateIds, query, readers) {
 
+    // select protocol
+    const protocol = (window.location.protocol == 'https:') ? 'wss' : 'ws';
+    
     // create service
     const ws = new WebSocket(
-      `ws://${this.baseUrl}/stream/query`,
+      `${protocol}://${this.baseUrl}/stream/query`,
       [`jwt.token.${this.token}`, 'daml.ws.auth']
     );
 
