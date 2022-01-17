@@ -57,18 +57,18 @@ services:
   ############################# React ##############################
 ##################################################################
 
-#  reactB:
-#    image: node:alpine
-#    working_dir: /usr/src/app
-#    environment:
-#      - JSON_API_URL=${JSON_API_URL_A} 
-#    ports:
-#      - ${REACT_PORT_B}:3000
-#    volumes:
-#     - ./ui:/usr/src/app
-#    command: sh -c "yarn install && yarn start"
-#    links:
-#      - jsonApiB
+  reactB:
+    image: node:alpine
+    working_dir: /usr/src/app
+    environment:
+      - JSON_API_URL=${JSON_API_URL_A} 
+    ports:
+      - ${REACT_PORT_B}:3000
+    volumes:
+     - ./ui:/usr/src/app
+    command: sh -c "yarn install && yarn start"
+    links:
+      - jsonApiB
 
 ##################################################################
   ########################### Wordpress ############################

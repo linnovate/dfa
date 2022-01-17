@@ -7,6 +7,7 @@ target
 # Wordpress
 wordpress/*
 !/wordpress/wp-content
+/wordpress/wp-content/uploads
 !/wordpress/static
 
 # Daml
