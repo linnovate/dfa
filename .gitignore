@@ -2,7 +2,7 @@
 target
 
 # Data
-data
+/data
 
 # Wordpress
 wordpress/*

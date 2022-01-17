@@ -1,0 +1,76 @@
+diff --git a/.env b/.env
+index 3025232..810d3ca 100644
+--- a/.env
++++ b/.env
+@@ -1,7 +1,7 @@
+ 
+-### Used in (canton)
++### Used in (canton) + changed for dz2 
+ CANTON_DOMAIN_PORT=2000
+-CANTON_DOMAIN_URL=http://cantonA:2000
++CANTON_DOMAIN_URL=http://dfa_cantonA:2000
+ 
+ ### Used in (canton, navigator, json_api)
+ LEDGER_PORT_A=1000
+@@ -23,6 +23,14 @@ JSON_API_URL_B=http://jsonApiB:4001
+ REACT_PORT_A=5500
+ REACT_PORT_B=5501
+ 
+-### Used in (nginx)
+-NGINX_PORT_A=5000
+-NGINX_PORT_B=5001
+\ No newline at end of file
++### Used in (nginx) + changed for dz2
++NGINX_PORT_A=8081
++NGINX_PORT_B=8082
++
++
++### only for dz2
++CONTAINER_NAME_WEB=dfa2
++COMPOSE_PROJECT_NAME=dfa2
++VIRTUAL_HOST_URL=dfa2-my.gcp-dz2.linnovate.net, ui.dfa2-my.gcp-dz2.linnovate.net, nav.dfa2-my.gcp-dz2.linnovate.net
++LETSENCRYPT_EMAIL=sysadmin@linnovate.net
++
+diff --git a/daml/daml.yaml b/daml/daml.yaml
+old mode 100644
+new mode 100755
+diff --git a/daml/daml/User.daml b/daml/daml/User.daml
+old mode 100644
+new mode 100755
+diff --git a/nginx_b.conf b/nginx_b.conf
+index 29f9e56..348505f 100644
+--- a/nginx_b.conf
++++ b/nginx_b.conf
+@@ -5,7 +5,8 @@
+ 
+ server {
+     listen 80;
+-    server_name localhost;
++    # server_name localhost;
++    server_name dfa2.gcp-dz2.linnovate.net;
+ 
+     root /var/www/html;
+     index index.php;
+@@ -31,4 +32,21 @@ server {
+     location /v1 {
+       proxy_pass http://jsonApiB:4001/v1;
+     }
++
++}
++
++#server {
++#    server_name ui.dfa2.gcp-dz2.linnovate.net;
++#    listen 80;
++#    location / {
++#    proxy_pass  http://reactB:5501;
++#    }
++#}
++
++server {
++    server_name nav.dfa2.gcp-dz2.linnovate.net;
++    listen 80;
++    location / {
++      proxy_pass http://navigatorB:4501;
++    }
+ }
+

@@ -1,0 +1,91 @@
+diff --git a/.env b/.env
+index 3025232..7cd7c0c 100644
+--- a/.env
++++ b/.env
+@@ -23,6 +23,14 @@ JSON_API_URL_B=http://jsonApiB:4001
+ REACT_PORT_A=5500
+ REACT_PORT_B=5501
+ 
+-### Used in (nginx)
+-NGINX_PORT_A=5000
+-NGINX_PORT_B=5001
+\ No newline at end of file
++### Used in (nginx) + changed for dz2
++NGINX_PORT_A=8081
++NGINX_PORT_B=8082
++
++
++### only for dz2
++CONTAINER_NAME_WEB=dfa
++COMPOSE_PROJECT_NAME=dfa
++VIRTUAL_HOST_URL=dfa.gcp-dz2.linnovate.net, ui.dfa.gcp-dz2.linnovate.net, nav.dfa.gcp-dz2.linnovate.net
++LETSENCRYPT_EMAIL=sysadmin@linnovate.net
++
+diff --git a/docker-compose.yml b/docker-compose.yml
+index ef1f848..6b73660 100644
+--- a/docker-compose.yml
++++ b/docker-compose.yml
+@@ -88,6 +88,10 @@ services:
+     links:
+       - wordpressA
+       - jsonApiA
++    environment:
++      VIRTUAL_HOST: "${VIRTUAL_HOST_URL}"
++      LETSENCRYPT_HOST: "${VIRTUAL_HOST_URL}"
++      LETSENCRYPT_EMAIL: "${LETSENCRYPT_EMAIL}"
+ 
+   wordpressA:
+     image: wordpress:php7.4-fpm-alpine
+@@ -110,3 +114,9 @@ services:
+      - MYSQL_DATABASE=wordpress
+     volumes:
+      - ./data/mysqlA:/var/lib/mysql
++
++### only for dz2
++networks:
++  default:
++    external:
++      name: nginx-proxy
+diff --git a/nginx.conf b/nginx.conf
+index 0e00a0b..3a63915 100644
+--- a/nginx.conf
++++ b/nginx.conf
+@@ -5,7 +5,8 @@
+ 
+ server {
+     listen 80;
+-    server_name localhost;
++    # server_name localhost;
++    server_name dfa.gcp-dz2.linnovate.net;
+ 
+     root /var/www/html;
+     index index.php;
+@@ -28,7 +29,25 @@ server {
+       fastcgi_param SCRIPT_NAME $fastcgi_script_name;
+     }
+ 
+-    location /v1 {
+-      proxy_pass http://jsonApiA:4000/v1;
++   location /v1 {
++     proxy_pass http://jsonApiA:4000/v1;
++   }
++
++}
++
++#server {
++#    server_name ui.dfa.gcp-dz2.linnovate.net;
++#    listen 80;
++#    location / {
++#    proxy_pass  http://reactA:3000;
++#    }
++#}
++
++server {
++    server_name nav.dfa.gcp-dz2.linnovate.net;
++    listen 80;
++    location / {
++    proxy_pass http://navigatorA:4500;
+     }
+ }
++
+
