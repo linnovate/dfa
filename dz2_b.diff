@@ -1,5 +1,5 @@
 diff --git a/.env b/.env
-index 3025232..810d3ca 100644
+index 3025232..0d5b987 100644
 --- a/.env
 +++ b/.env
 @@ -1,7 +1,7 @@
@@ -8,7 +8,7 @@ index 3025232..810d3ca 100644
 +### Used in (canton) + changed for dz2 
  CANTON_DOMAIN_PORT=2000
 -CANTON_DOMAIN_URL=http://cantonA:2000
-+CANTON_DOMAIN_URL=http://dfa_cantonA:2000
++CANTON_DOMAIN_URL=http://172.18.0.69:2000
  
  ### Used in (canton, navigator, json_api)
  LEDGER_PORT_A=1000
@@ -31,12 +31,33 @@ index 3025232..810d3ca 100644
 +VIRTUAL_HOST_URL=dfa2-my.gcp-dz2.linnovate.net, ui.dfa2-my.gcp-dz2.linnovate.net, nav.dfa2-my.gcp-dz2.linnovate.net
 +LETSENCRYPT_EMAIL=sysadmin@linnovate.net
 +
-diff --git a/daml/daml.yaml b/daml/daml.yaml
-old mode 100644
-new mode 100755
-diff --git a/daml/daml/User.daml b/daml/daml/User.daml
-old mode 100644
-new mode 100755
+diff --git a/docker-compose-b.yml b/docker-compose-b.yml
+index 7cb7ea5..7bfc73c 100644
+--- a/docker-compose-b.yml
++++ b/docker-compose-b.yml
+@@ -87,7 +87,11 @@ services:
+     links:
+       - wordpressB
+       - jsonApiB
+-
++    environment:
++      VIRTUAL_HOST: "${VIRTUAL_HOST_URL}"
++      LETSENCRYPT_HOST: "${VIRTUAL_HOST_URL}"
++      LETSENCRYPT_EMAIL: "${LETSENCRYPT_EMAIL}"
++ 
+   wordpressB:
+     image: wordpress:php7.4-fpm-alpine
+     environment:
+@@ -109,3 +113,9 @@ services:
+      - MYSQL_DATABASE=wordpress
+     volumes:
+      - ./data/mysqlB:/var/lib/mysql
++
++### only for dz2
++networks:
++  default:
++    external:
++      name: nginx-proxy
 diff --git a/nginx_b.conf b/nginx_b.conf
 index 29f9e56..348505f 100644
 --- a/nginx_b.conf
