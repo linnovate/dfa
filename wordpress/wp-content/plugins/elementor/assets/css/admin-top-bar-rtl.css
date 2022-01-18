@@ -1,4 +1,4 @@
-/*! elementor - v3.3.1 - 20-07-2021 */
+/*! elementor - v3.5.3 - 28-12-2021 */
 #e-dashboard-widget-admin-top-bar {
   position: absolute;
   opacity: 0;
@@ -106,7 +106,7 @@
       padding-top: 10px; }
       #e-admin-top-bar-root.e-admin-top-bar--active ~ #wpbody .wrap h1 {
         display: none; }
-  #e-admin-top-bar-root.e-admin-top-bar--inactive ~ #wpbody .wrap h1, #e-admin-top-bar-root.e-admin-top-bar--inactive ~ #wpbody .wrap .page-title-action {
+  #e-admin-top-bar-root:not(.e-admin-top-bar--active) ~ #wpbody .wrap h1, #e-admin-top-bar-root:not(.e-admin-top-bar--active) ~ #wpbody .wrap .page-title-action {
     display: inline-block; }
   #e-admin-top-bar-root .e-admin-top-bar__bar-button {
     -webkit-box-align: center;
@@ -132,7 +132,7 @@
   #e-admin-top-bar-root .e-admin-top-bar__bar-button-title {
     font-size: 13px;
     font-weight: 500;
-    font-family: 'Roboto';
+    font-family: Roboto, Arial, Helvetica, Verdana, sans-serif;
     margin: 0 4px;
     line-height: normal; }
   #e-admin-top-bar-root ~ #wpbody .wrap h1, #e-admin-top-bar-root ~ #wpbody .wrap .page-title-action {

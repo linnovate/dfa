@@ -1,4 +1,4 @@
-/*! elementor - v3.3.1 - 20-07-2021 */
+/*! elementor - v3.5.3 - 28-12-2021 */
 .elementor-edit-area-active .elementor-top-section > .elementor-container > .elementor-row {
   min-height: 40px; }
 
@@ -13,12 +13,4 @@
 
 .elementor-edit-area-active .handle {
   display: none; }
-
-[data-elementor-device-mode="desktop"] .elementor-edit-area-active .elementor-hidden-desktop > .elementor-widget-container, [data-elementor-device-mode="desktop"] .elementor-edit-area-active .elementor-hidden-desktop > .elementor-column-wrap,
-[data-elementor-device-mode="tablet"] .elementor-edit-area-active .elementor-hidden-tablet > .elementor-widget-container,
-[data-elementor-device-mode="tablet"] .elementor-edit-area-active .elementor-hidden-tablet > .elementor-column-wrap,
-[data-elementor-device-mode="mobile"] .elementor-edit-area-active .elementor-hidden-phone > .elementor-widget-container,
-[data-elementor-device-mode="mobile"] .elementor-edit-area-active .elementor-hidden-phone > .elementor-column-wrap {
-  -webkit-filter: opacity(0.4) saturate(0);
-          filter: opacity(0.4) saturate(0); }
 /*# sourceMappingURL=editor-preview-legacy.css.map */
