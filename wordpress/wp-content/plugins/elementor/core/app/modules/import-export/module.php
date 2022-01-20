@@ -4,6 +4,7 @@ namespace Elementor\Core\App\Modules\ImportExport;
 use Elementor\Core\Base\Document;
 use Elementor\Core\Base\Module as BaseModule;
 use Elementor\Core\Common\Modules\Ajax\Module as Ajax;
+use Elementor\Core\Files\Uploads_Manager;
 use Elementor\Plugin;
 use Elementor\TemplateLibrary\Source_Local;
 use Elementor\Tools;
@@ -24,6 +25,8 @@ class Module extends BaseModule {
 	const EXPORT_TRIGGER_KEY = 'elementor_export_kit';
 
 	const IMPORT_TRIGGER_KEY = 'elementor_import_kit';
+
+	const MANIFEST_ERROR_KEY = 'manifest-error';
 
 	/**
 	 * @var Export
@@ -53,11 +56,12 @@ class Module extends BaseModule {
 
 		$export_nonce = wp_create_nonce( 'elementor_export' );
 
-		$export_url = add_query_arg( [ 'nonce' => $export_nonce ], Plugin::$instance->app->get_base_url() );
+		$export_url = add_query_arg( [ '_nonce' => $export_nonce ], Plugin::$instance->app->get_base_url() );
 
 		return [
 			'exportURL' => $export_url,
 			'summaryTitles' => $this->get_summary_titles(),
+			'isUnfilteredFilesEnabled' => Uploads_Manager::are_unfiltered_uploads_enabled(),
 		];
 	}
 
@@ -98,8 +102,14 @@ class Module extends BaseModule {
 	}
 
 	private function import_stage_1() {
-		if ( ! empty( $_POST['e_import_file'] ) ) {
-			$remote_zip_request = wp_remote_get( $_POST['e_import_file'] );
+		// PHPCS - Already validated in caller function.
+		if ( ! empty( $_POST['e_import_file'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$file_url = $_POST['e_import_file']; // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			if ( ! filter_var( $file_url, FILTER_VALIDATE_URL ) || 0 !== strpos( $file_url, 'http' ) ) {
+				throw new \Error( __( 'Invalid URL', 'elementor' ) );
+			}
+
+			$remote_zip_request = wp_remote_get( $file_url );
 
 			if ( is_wp_error( $remote_zip_request ) ) {
 				throw new \Error( $remote_zip_request->get_error_message() );
@@ -111,18 +121,30 @@ class Module extends BaseModule {
 
 			$file_name = Plugin::$instance->uploads_manager->create_temp_file( $remote_zip_request['body'], 'kit.zip' );
 		} else {
-			$file_name = $_FILES['e_import_file']['tmp_name'];
+			// PHPCS - Already validated in caller function.
+			$file_name = $_FILES['e_import_file']['tmp_name']; // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		}
 
 		$extraction_result = Plugin::$instance->uploads_manager->extract_and_validate_zip( $file_name, [ 'json', 'xml' ] );
 
-		if ( ! empty( $_POST['e_import_file'] ) ) {
+		if ( ! empty( $file_url ) ) {
 			Plugin::$instance->uploads_manager->remove_file_or_dir( dirname( $file_name ) );
 		}
 
 		$session_dir = $extraction_result['extraction_directory'];
 
-		$manifest_data = json_decode( file_get_contents( $session_dir . 'manifest.json', true ), true );
+		$manifest_file_content = file_get_contents( $session_dir . 'manifest.json', true );
+
+		if ( ! $manifest_file_content ) {
+			throw new \Error( self::MANIFEST_ERROR_KEY );
+		}
+
+		$manifest_data = json_decode( $manifest_file_content, true );
+
+		// In case that the manifest content is not a valid JSON or empty.
+		if ( ! $manifest_data ) {
+			throw new \Error( self::MANIFEST_ERROR_KEY );
+		}
 
 		$manifest_data = $this->import->adapt_manifest_structure( $manifest_data );
 
@@ -147,7 +169,7 @@ class Module extends BaseModule {
 	}
 
 	private function on_admin_init() {
-		if ( ! isset( $_POST['action'] ) || self::IMPORT_TRIGGER_KEY !== $_POST['action'] || ! wp_verify_nonce( $_POST['nonce'], Ajax::NONCE_KEY ) ) {
+		if ( ! isset( $_POST['action'] ) || self::IMPORT_TRIGGER_KEY !== $_POST['action'] || ! wp_verify_nonce( $_POST['_nonce'], Ajax::NONCE_KEY ) ) {
 			return;
 		}
 
@@ -155,9 +177,12 @@ class Module extends BaseModule {
 
 		$import_settings['directory'] = Plugin::$instance->uploads_manager->get_temp_dir() . $import_settings['session'] . '/';
 
-		$this->import = new Import( $import_settings );
+		// Set the Request's state as an Elementor upload request, in order to support unfiltered file uploads.
+		Plugin::$instance->uploads_manager->set_elementor_upload_state( true );
 
 		try {
+			$this->import = new Import( $import_settings );
+
 			if ( 1 === $import_settings['stage'] ) {
 				$result = $this->import_stage_1();
 			} elseif ( 2 === $import_settings['stage'] ) {
@@ -171,7 +196,7 @@ class Module extends BaseModule {
 	}
 
 	private function on_init() {
-		if ( ! isset( $_GET[ self::EXPORT_TRIGGER_KEY ] ) || ! wp_verify_nonce( $_GET['nonce'], 'elementor_export' ) ) {
+		if ( ! isset( $_GET[ self::EXPORT_TRIGGER_KEY ] ) || ! wp_verify_nonce( $_GET['_nonce'], 'elementor_export' ) ) {
 			return;
 		}
 
@@ -193,15 +218,15 @@ class Module extends BaseModule {
 				'file' => base64_encode( $file ),
 			] );
 		} catch ( \Error $error ) {
-			wp_die( $error->getMessage() );
+			wp_send_json_error( $error->getMessage() );
 		}
 	}
 
 	private function render_import_export_tab_content() {
-		$intro_text_link = sprintf( '<a href="https://go.elementor.com/wp-dash-import-export-general" target="_blank">%s</a>', __( 'Learn more', 'elementor' ) );
+		$intro_text_link = sprintf( '<a href="https://go.elementor.com/wp-dash-import-export-general" target="_blank">%s</a>', esc_html__( 'Learn more', 'elementor' ) );
 
 		$intro_text = sprintf(
-			/* translators: %1$s: New line break, %2$s: Learn More link. */
+			/* translators: 1: New line break, 2: Learn More link. */
 			__( 'Design sites faster with a template kit that contains some or all components of a complete site, like templates, content & site settings.%1$sYou can import a kit and apply it to your site, or export the elements from this site to be used anywhere else. %2$s', 'elementor' ),
 			'<br>',
 			$intro_text_link
@@ -209,63 +234,63 @@ class Module extends BaseModule {
 
 		$content_data = [
 			'export' => [
-				'title' => __( 'Export a Template Kit', 'elementor' ),
+				'title' => esc_html__( 'Export a Template Kit', 'elementor' ),
 				'button' => [
 					'url' => Plugin::$instance->app->get_base_url() . '#/export',
-					'text' => __( 'Start Export', 'elementor' ),
+					'text' => esc_html__( 'Start Export', 'elementor' ),
 				],
-				'description' => __( 'Bundle your whole site - or just some of its elements - to be used for another website.', 'elementor' ),
+				'description' => esc_html__( 'Bundle your whole site - or just some of its elements - to be used for another website.', 'elementor' ),
 				'link' => [
 					'url' => 'https://go.elementor.com/wp-dash-import-export-export-flow',
-					'text' => __( 'Learn More', 'elementor' ),
+					'text' => esc_html__( 'Learn More', 'elementor' ),
 				],
 			],
 			'import' => [
-				'title' => __( 'Import a Template Kit', 'elementor' ),
+				'title' => esc_html__( 'Import a Template Kit', 'elementor' ),
 				'button' => [
 					'url' => Plugin::$instance->app->get_base_url() . '#/import',
-					'text' => __( 'Start Import', 'elementor' ),
+					'text' => esc_html__( 'Start Import', 'elementor' ),
 				],
-				'description' => __( 'Apply the design and settings of another site to this one.', 'elementor' ),
+				'description' => esc_html__( 'Apply the design and settings of another site to this one.', 'elementor' ),
 				'link' => [
 					'url' => 'https://go.elementor.com/wp-dash-import-export-import-flow',
-					'text' => __( 'Learn More', 'elementor' ),
+					'text' => esc_html__( 'Learn More', 'elementor' ),
 				],
 			],
 		];
 
-		$info_text = __( 'Even after you import and apply a Template Kit, you can undo it by restoring a previous version of your site.', 'elementor' ) . '<br>' . __( 'Open Site Settings > History > Revisions.', 'elementor' );
+		$info_text = esc_html__( 'Even after you import and apply a Template Kit, you can undo it by restoring a previous version of your site.', 'elementor' ) . '<br>' . esc_html__( 'Open Site Settings > History > Revisions.', 'elementor' );
 		?>
 
 		<div class="tab-import-export-kit__content">
-			<p class="tab-import-export-kit__info"><?php echo $intro_text; ?></p>
+			<p class="tab-import-export-kit__info"><?php Utils::print_unescaped_internal_string( $intro_text ); ?></p>
 
 			<div class="tab-import-export-kit__wrapper">
 			<?php foreach ( $content_data as $data ) { ?>
 				<div class="tab-import-export-kit__container">
 					<div class="tab-import-export-kit__box">
-						<h2><?php echo $data['title']; ?></h2>
-						<a href="<?php echo $data['button']['url']; ?>" class="elementor-button elementor-button-success">
-							<?php echo $data['button']['text']; ?>
+						<h2><?php Utils::print_unescaped_internal_string( $data['title'] ); ?></h2>
+						<a href="<?php Utils::print_unescaped_internal_string( $data['button']['url'] ); ?>" class="elementor-button elementor-button-success">
+							<?php Utils::print_unescaped_internal_string( $data['button']['text'] ); ?>
 						</a>
 					</div>
-					<p><?php echo $data['description']; ?></p>
-					<a href="<?php echo $data['link']['url']; ?>" target="_blank"><?php echo $data['link']['text']; ?></a>
+					<p><?php Utils::print_unescaped_internal_string( $data['description'] ); ?></p>
+					<a href="<?php Utils::print_unescaped_internal_string( $data['link']['url'] ); ?>" target="_blank"><?php Utils::print_unescaped_internal_string( $data['link']['text'] ); ?></a>
 				</div>
 			<?php } ?>
 			</div>
 
-			<p class="tab-import-export-kit__info"><?php echo $info_text; ?></p>
+			<p class="tab-import-export-kit__info"><?php Utils::print_unescaped_internal_string( $info_text ); ?></p>
 		</div>
 		<?php
 	}
 
 	public function register_settings_tab( Tools $tools ) {
 		$tools->add_tab( 'import-export-kit', [
-			'label' => __( 'Import / Export Kit', 'elementor' ),
+			'label' => esc_html__( 'Import / Export Kit', 'elementor' ),
 			'sections' => [
 				'intro' => [
-					'label' => __( 'Template Kits', 'elementor' ),
+					'label' => esc_html__( 'Template Kits', 'elementor' ),
 					'callback' => function() {
 						$this->render_import_export_tab_content();
 					},
