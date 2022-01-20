@@ -3,17 +3,10 @@ import { Button, Form, Grid, Header, Segment } from 'semantic-ui-react'
 import { useGlobalState } from "../contexts/GlobalState";
 import DamlJsonApi from '../services/DamlJsonApi';
 
-type Props = {
-  onLogin: (credentials: Credentials) => void;
-}
-
 /**
  * React component for the login screen of the `App`.
  */
-const LoginScreen: React.FC<Props> = ({ onLogin }) => {
-
-  // global states
-  const ledgerId = DamlJsonApi.ledgerId;
+const LoginScreen: React.FC = ({ ledgerId, onLogin }) => {
 
   // local states
   const [party, setParty] = useState('');
@@ -40,7 +33,7 @@ const LoginScreen: React.FC<Props> = ({ onLogin }) => {
   // login handler
   const simpleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
-    DamlJsonApi.createCredentials(party);
+    DamlJsonApi.createCredentials(ledgerId, party);
     onLogin();
   }
 

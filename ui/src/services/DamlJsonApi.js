@@ -50,12 +50,17 @@ class DamlJsonApi {
    * create credentials to Daml service
    * @function createCredentials
    * @param {string} party
+   * @param {string} ledgerId
    */
-  async createCredentials(party) {
+  async createCredentials(ledgerId, party) {
 
-    // select params
-    const url = new URL(window.location.toString());
-    const ledgerId = url.searchParams.get('ledgerId')
+    // select ledgerId
+    if (!ledgerId) {
+      const url = new URL(window.location.toString());
+      ledgerId = url.searchParams.get('ledgerId');
+    }
+
+    // no ledgerId
     if (!ledgerId) {
       alert("'ledgerId' must appear in URL parameters.");
       return;

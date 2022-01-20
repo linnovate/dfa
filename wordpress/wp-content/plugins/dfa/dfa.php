@@ -21,7 +21,7 @@ if (!is_plugin_active('blocktree/blocktree.php') || !is_plugin_active('elementor
 
   add_action('admin_notices', function () {
     printf('<div class="notice notice-error"><p>
-		<strong>Dfa</strong> plugin is <strong>deactivate</strong> (elementree & elementor plugins is Required) !
+		<strong>Dfa</strong> plugin is <strong>deactivate</strong> (blocktree & elementor plugins is Required) !
 	<p></div>');
   });
 

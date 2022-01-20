@@ -7,7 +7,7 @@ import LoginScreen from './LoginScreen';
 /**
  * React component for the `User Widget` of the `App`.
  */
-const UserWidget: React.FC = () => {
+const UserWidget: React.FC = ({ ledgerId }) => {
 
   // global states
   const party = DamlJsonApi.party;
@@ -62,7 +62,7 @@ const UserWidget: React.FC = () => {
       </Menu.Menu>
 
       {showLogin &&
-        <LoginScreen onLogin={onLogin} />
+        <LoginScreen ledgerId={ledgerId} onLogin={onLogin} />
       }
 
     </Menu>
